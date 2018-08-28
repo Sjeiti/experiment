@@ -1,0 +1,55 @@
+{
+  "name": "Experiments",
+  "filename": "index.js",
+  "version": "0.0.1",
+  "description": "",
+  "main": "dist/index.js",
+  "license": "MIT",
+  "author": "Ron Valstar <ron@ronvalstar.nl> (http://www.ronvalstar.nl/)",
+  "homepage": "http://ronvalstar.nl/",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "scripts": {
+    "copy": "copyfiles src/*.html dist -f",
+    "copy:watch": "chokidar \"src/*.html\" -c \"npm run copy\"",
+    "js": "babel src/index.js --out-file dist/index.js --presets=es2015,stage-0,minify",
+    "js:watch": "chokidar \"src/*.js\" -c \"npm run js\"",
+    "jsw": "webpack --config webpack.config.js",
+    "js:test:watch": "chokidar \"test/**/!(*.min).js\" -c \"npm run js:test\"",
+    "lint": "npm run lint:src && npm run lint:doc && npm run lint:test",
+    "lint:src": "eslint src/*.js --fix",
+    "version": "next-version package.json bower.json src/tinysort.js src/jquery.tinysort.js src/tinysort.charorder.js tinysort.nuspec",
+    "serve": "node task/serve dist 8877"
+  },
+  "dependencies": {
+    "gsap": "^2.0.1",
+    "signals": "^1.0.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.24.1",
+    "babel-loader": "^7.1.5",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-minify": "^0.4.3",
+    "babel-preset-stage-0": "^6.24.1",
+    "body-parser": "^1.17.1",
+    "bootstrap": "^3.3.7",
+    "chokidar-cli": "^1.2.0",
+    "copyfiles": "^2.0.0",
+    "eslint": "^3.19.0",
+    "express": "^4.16.3",
+    "jsdoc-api": "^4.0.3",
+    "marked": "^0.4.0",
+    "mkdirp": "^0.5.1",
+    "ncp": "^2.0.0",
+    "next-version": "^0.9.3",
+    "open": "0.0.5",
+    "rimraf": "^2.6.1",
+    "serve-static": "^1.13.2",
+    "webpack": "^4.15.1",
+    "webpack-cli": "^3.0.8"
+  },
+  "keywords": []
+}
