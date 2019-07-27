@@ -45,7 +45,7 @@ let inst = experiment('river',{
     return a
   })([],gridLength)*/
   //
-  ,numPoints = 844
+  ,numPoints = 84
   ,spdv = 0.0018
   ,frc = 0.94
   ,maxhitB = 55
@@ -141,33 +141,36 @@ function initBalls(){
           ,i = neighbours.length
 
         if (i>1) {
-        while (i--) {
-          let p = neighbours[i]
-          if (p!==this){
-            let dx = p.x-x
-              ,dy = p.y-y
-              ,pow = dx*dx+dy*dy
-              ,dist = Math.sqrt(pow)
-              ,maxDist = p.r+this.r
-              ,mdist = 0.2/pow
+          while (i--) {
+            let p = neighbours[i]
+            if (p!==this){
+              let dx = p.x-x
+                ,dy = p.y-y
+                ,pow = dx*dx+dy*dy
+                ,dist = Math.sqrt(pow)
+                ,maxDist = p.r+this.r
+                ,mdist = 0.2/pow
 
-            if (dist<maxDist) {
-              if (b===0&&b===p.b) {
-                b = this.b = p.b = maxhitB
-              } else {
-                this.b = p.b
-                p.b = b
-                b = this.b
+              if (dist<maxDist) {
+                if (b===0&&b===p.b) {
+                  b = this.b = p.b = maxhitB
+                } else {
+                  this.b = p.b
+                  p.b = b
+                  b = this.b
+                }
+                vx -= mdist*dx
+                vy -= mdist*dy
               }
-              vx -= mdist*dx
-              vy -= mdist*dy
             }
           }
-        }
         }
         if (b>0) this.b = b-1
         vx = frc*(vx+spdv*orientationX+fieldHeight*(n-nx))
         vy = frc*(vy+spdv*orientationY+fieldHeight*(n-ny)+0.1)
+        this.color = timeColor.toString()
+        this.oldx = this.x||0
+        this.oldy = this.y||0
         this.x += vx
         this.y += vy
         this.vx = vx
@@ -225,25 +228,21 @@ function initBalls(){
       }*/
       ,draw: function(ctx){
         //if (this.b!==0&&true){
-        let x = this.x
-          ,y = this.y
-          ,r = this.r
-          //,bb = (this.b/maxhitB*255<<0).toString(16)
-          //,c = '#'+bb+bb+bb
-          ,c = timeColor//this.color.clone()//.multiply(this.b/maxhitB).toString()
-          //,ffffgg=log(x,y,r)
-          ,gradient = ctx.createRadialGradient(x,y,r,x,y,0)
-        //
-        //gradient.addColorStop(0,c.setAlpha(0).toString(true))
-        //gradient.addColorStop(1,c.setAlpha(1).toString(true))
-        //gradient.addColorStop(1,c.setAlpha(this.b/maxhitB).toString(true))
-        //ctx.fillStyle = this.b?'#F00':'#FFF'
-        //ctx.fillStyle = '#'+bb+bb+bb
-        ctx.fillStyle = c.toString() //gradient
+        const {oldx,oldy,x,y,r,color} = this
+        const c = timeColor
+        const gradient = ctx.createRadialGradient(x,y,r,x,y,0)
+        /*
+        ctx.lineWidth = '5px'
+        ctx.strokeStyle = color
+        ctx.moveTo(oldx,oldy)
+        ctx.lineTo(x,y)
+        ctx.stroke()
+        /*/
+        ctx.fillStyle = color
         ctx.beginPath()
         ctx.arc(x,y,r,0,Math.PI*2)
         ctx.fill()
-        //}
+        //
         return this
       }
     }

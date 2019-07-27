@@ -5,13 +5,13 @@
   "description": "",
   "main": "dist/index.js",
   "license": "MIT",
-  "author": "Ron Valstar <ron@ronvalstar.nl> (http://www.ronvalstar.nl/)",
+  "author": "Ron Valstar",
   "homepage": "http://ronvalstar.nl/",
   "repository": {
     "type": "git",
     "url": ""
   },
-  "scripts": {
+  "_scripts": {
     "copy": "copyfiles src/*.html dist -f",
     "copy:watch": "chokidar \"src/*.html\" -c \"npm run copy\"",
     "js": "babel src/index.js --out-file dist/index.js --presets=es2015,stage-0,minify",
@@ -23,11 +23,7 @@
     "version": "next-version package.json bower.json src/tinysort.js src/jquery.tinysort.js src/tinysort.charorder.js tinysort.nuspec",
     "serve": "node task/serve dist 8877"
   },
-  "dependencies": {
-    "gsap": "^2.0.1",
-    "signals": "^1.0.0"
-  },
-  "devDependencies": {
+  "_devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-core": "^6.24.1",
     "babel-loader": "^7.1.5",
@@ -51,5 +47,91 @@
     "webpack": "^4.15.1",
     "webpack-cli": "^3.0.8"
   },
-  "keywords": []
+  "scripts": {
+    "start": "run-p build build:watch serve",
+    "build": "run-s clean \"webpack -- --env.development\"",
+    "build:prod": "run-s clean \"webpack -- --env.production\"",
+    "build:watch": "chokidar \"src/**/*.*\" -c \"npm run build\"",
+    "webpack": "npx webpack --config webpack.config.js",
+    "clean": "del-cli dist -f",
+    "serve": "node task/serve dist 8877",
+    "serve:temp": "node task/serve temp 8777",
+    "lint:fix": "eslint src/**/*.js --fix",
+    "version": "next-version package.json",
+    "version:minor": "npm run version -- --minor",
+    "version:major": "npm run version -- --major",
+    "build:test": "npx webpack --config webpack.test.config.js --env.development",
+    "build:test:watch": "npm run build:test & chokidar \"src/**/*.*\" -c \"npm run build:test\""
+  },
+  "dependencies": {
+    "@emmetio/expand-abbreviation": "^0.7.3",
+    "gsap": "^2.1.3",
+    "signals": "^1.0.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.0.0",
+    "@babel/plugin-proposal-class-properties": "^7.0.0",
+    "@babel/plugin-proposal-decorators": "^7.0.0",
+    "@babel/plugin-proposal-do-expressions": "^7.0.0",
+    "@babel/plugin-proposal-export-default-from": "^7.0.0",
+    "@babel/plugin-proposal-export-namespace-from": "^7.0.0",
+    "@babel/plugin-proposal-function-bind": "^7.0.0",
+    "@babel/plugin-proposal-function-sent": "^7.0.0",
+    "@babel/plugin-proposal-json-strings": "^7.0.0",
+    "@babel/plugin-proposal-logical-assignment-operators": "^7.0.0",
+    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.0.0",
+    "@babel/plugin-proposal-numeric-separator": "^7.0.0",
+    "@babel/plugin-proposal-optional-chaining": "^7.0.0",
+    "@babel/plugin-proposal-pipeline-operator": "^7.0.0",
+    "@babel/plugin-proposal-throw-expressions": "^7.0.0",
+    "@babel/plugin-syntax-dynamic-import": "^7.0.0",
+    "@babel/plugin-syntax-import-meta": "^7.0.0",
+    "@babel/preset-env": "^7.0.0",
+    "@johh/three-effectcomposer": "github:johh/three-effectcomposer",
+    "babel-eslint": "^9.0.0",
+    "babel-loader": "^8.0.0",
+    "babel-preset-babili": "0.0.12",
+    "babel-preset-minify": "^0.4.3",
+    "body-parser": "^1.18.2",
+    "chokidar-cli": "^1.2.0",
+    "copy-webpack-plugin": "^4.5.3",
+    "css-loader": "^1.0.0",
+    "css-properties-values": "^1.0.0",
+    "del-cli": "^1.1.0",
+    "eslint": "^3.19.0",
+    "express": "^4.16.3",
+    "file-loader": "^2.0.0",
+    "html-loader": "^0.5.5",
+    "less": "^3.9.0",
+    "less-loader": "^5.0.0",
+    "mkdirp": "^0.5.1",
+    "next-version": "^0.11.7",
+    "node-fetch": "^2.6.0",
+    "node-html-parser": "^1.1.12",
+    "node-sass": "^4.12.0",
+    "npm-run-all": "^4.1.5",
+    "open": "0.0.5",
+    "raw-loader": "^0.5.1",
+    "rimraf": "^2.6.1",
+    "sass-loader": "^6.0.6",
+    "serve-static": "^1.13.2",
+    "style-loader": "^0.23.0",
+    "url-loader": "^1.1.1",
+    "webpack": "^4.29.3",
+    "webpack-cli": "^3.2.3",
+    "yorkie": "^2.0.0"
+  },
+  "postcss": {
+    "plugins": {
+      "autoprefixer": {}
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 10"
+  ],
+  "gitHooks": {
+    "pre-commit": "npm run version"
+  }
 }
