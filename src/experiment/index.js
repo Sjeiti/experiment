@@ -16,11 +16,11 @@ import earth from './earth'
 import marbles from './marbles'
 import vertical from './vertical'
 import noiseballs from './noiseballs'
-import voronoi from './voronoi'
+//import voronoi from './voronoi'
 import fire from './fire'
 import plasma from './plasma'
 import webgl from './webgl'
-import flowfield from './flowfield'
+//import flowfield from './flowfield'
 import radialdifference from './radialdifference'
 
 export default {
@@ -43,10 +43,10 @@ export default {
   ,vertical
   ,experiments
   ,noiseballs
-  ,voronoi
+  //,voronoi
   ,fire
   ,plasma
   ,webgl
-  ,flowfield
+  //,flowfield
   ,radialdifference
 }

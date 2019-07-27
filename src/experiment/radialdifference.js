@@ -5,7 +5,9 @@
  */
 import experiment from './base'
 import color from '../math/color'
-import {Cubic, TweenMax} from 'gsap'
+import {Power2, TweenMax} from 'gsap'
+
+const Cubic = Power2
 
 // get an instance
 let inst = experiment('radialdifference',{

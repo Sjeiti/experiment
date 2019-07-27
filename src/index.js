@@ -3,6 +3,6 @@
 /*window.onerror = function(msg,uri) {
     alert('Error caught'+msg+uri)
 }*/
-import xp from './experiment/river'
+import xp from './experiment'
 //alert(!!xp)
-xp.init(document.body)
+xp.river.init(document.body)
