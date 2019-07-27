@@ -38,7 +38,7 @@ export default {
   ,copyclouds
   ,knottywood
   ,touches
-  ,earth,,
+  ,earth
   ,marbles
   ,vertical
   ,experiments
