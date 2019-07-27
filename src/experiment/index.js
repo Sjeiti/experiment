@@ -41,8 +41,6 @@ export default {
   ,earth
   ,marbles
   ,vertical
-  ,experiments
-  ,noiseballs
   //,voronoi
   ,fire
   ,plasma
