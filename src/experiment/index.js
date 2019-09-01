@@ -38,13 +38,13 @@ export default {
   ,copyclouds
   ,knottywood
   ,touches
-  ,earth
+  // ,earth
   ,marbles
   ,vertical
   //,voronoi
   ,fire
   ,plasma
-  ,webgl
+  // ,webgl
   //,flowfield
   ,radialdifference
 }

@@ -4,6 +4,6 @@
     alert('Error caught'+msg+uri)
 }*/
 import xp from './experiment'
-//alert(!!xp)
+//alert(!!xp)s
 // xp.river.init(document.body)
-xp.boids.init(document.body)
+xp.vertical.init(document.body)
