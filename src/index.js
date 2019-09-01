@@ -5,4 +5,5 @@
 }*/
 import xp from './experiment'
 //alert(!!xp)
-xp.river.init(document.body)
+// xp.river.init(document.body)
+xp.boids.init(document.body)

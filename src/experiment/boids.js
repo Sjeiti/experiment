@@ -318,7 +318,7 @@ function drawFishAsset(){
       ,fX = (bReverse?0.5-(oPoint[0]-0.5):oPoint[0])*iFishSize
       ,fY = oPoint[1]*iFishSize
 
-    if (i===0)	oCtxFish.moveTo(fX,fY)
+    if (j===0)	oCtxFish.moveTo(fX,fY)
     else		oCtxFish.lineTo(fX,fY)
   }
   oCtxFish.fill()
