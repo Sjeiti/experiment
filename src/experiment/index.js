@@ -22,6 +22,7 @@ import plasma from './plasma'
 import webgl from './webgl'
 //import flowfield from './flowfield'
 import radialdifference from './radialdifference'
+import bezier from './bezier'
 
 export default {
   glass
@@ -47,4 +48,5 @@ export default {
   // ,webgl
   //,flowfield
   ,radialdifference
+  ,bezier
 }
