@@ -1,23 +1,26 @@
 import experiment from './base'
 import color from '../math/color'
 import vector from '../math/vector'
+import perlin from '../math/perlin'
 
 let inst = experiment('plasma',{
     init
     ,handleAnimate
     ,handleResize
+    ,handleClick
   })
   ,zuper = inst.zuper
-  //
-  // private variables
+  
   ,scale = 1
   ,center = vector(0,0)
   ,points = []
-  ,num = 30
+  ,num = 90
   ,elmCanvas
   ,context
   ,w,h
   ,target
+  ,fillStyle = '#'+('00000'+(Math.random()*(1<<24)|0).toString(16)).slice(-6)
+  ,strokeStyle = '#'+('00000'+(Math.random()*(1<<24)|0).toString(16)).slice(-6)
 
 function init(_target) {
   //
@@ -28,44 +31,51 @@ function init(_target) {
   elmCanvas.style.zoom = scale
   //
   context = inst.context
-  context.fillStyle = '#fff'
-  context.strokeStyle = '#000'
-  context.strokeWidth = '4px' 
-  //context.translate(center.getX(),center.getY())
   //
-  points.length = 0
-  for (let i = 0; i<num; i++) points.push(point())
+  //points.length = 0
+  //for (let i = 0; i<num; i++) points.push(point())
   //
   handleResize()
   //
   return elmCanvas
 }
 
-// protected methods
+function handleClick(){
+  fillStyle = '#'+('00000'+(Math.random()*(1<<24)|0).toString(16)).slice(-6)
+  strokeStyle = '#'+('00000'+(Math.random()*(1<<24)|0).toString(16)).slice(-6)
+  context.fillStyle = fillStyle
+  context.strokeStyle = strokeStyle
+}
 
 function handleAnimate(deltaT,millis) {
 
-  //elmCanvas.width = elmCanvas.width
+  context.clearRect(0,0,w,h)
 
-  //context.globalCompositeOperation = 'source-over'
- 
-  //context.fillRect(0,0,w,h)
-  //context.fill()
-  
-
-  context.translate(center.getX(),center.getY())
-  //context.globalCompositeOperation = 'lighter'
   context.beginPath()
-  for (let i = 0; i<num; i++) draw(points[i].step(millis),i)
-  //context.translate(-center.getX(),-center.getY())
+  context.rect(0,0,w,h)
+  context.fill()
+  context.closePath()
+ 
+  const f = 0.005
+  const pn = (x,y)=>
+    perlin.noise(f*x, f*y, 0.0005*millis)-0.5
 
-  context.stroke()
-  context.endPath()
-
-  //context.fillStyle = '#800';//'#800'
-  //context.shadowBlur = 0
-  //context.shadowColor = 0;//'rgb(0,0,0,0)'
-  //context.fillRect(0,0,w,h)
+  for(let i=0;i<num;i++){
+    const y = h/num*i
+    const p0 = [0,y]
+    const p1 = [w/3,y]
+    const p2 = [2*w/3,y]
+    const p3 = [w,y]
+    p0[1] += 111*pn(...p0)
+    p1[1] += 333*pn(...p1)
+    p2[1] += 333*pn(...p2)
+    p3[1] += 111*pn(...p3)
+    context.beginPath()
+    context.moveTo(...p0)
+    context.bezierCurveTo(...p1,...p2,...p3)
+    context.stroke()
+    context.closePath()
+  }
 }
 
 function handleResize(){
@@ -74,6 +84,11 @@ function handleResize(){
   center.set(w/2,h/2,w/4+h/4)
   elmCanvas.width = w
   elmCanvas.height = h
+
+  context.fillStyle = fillStyle
+  context.strokeStyle = strokeStyle
+
+  context.lineWidth = h/num/2
 }
 
 // private methods
