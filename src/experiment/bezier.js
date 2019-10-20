@@ -3,6 +3,8 @@ import color from '../math/color'
 import vector from '../math/vector'
 import perlin from '../math/perlin'
 
+perlin.noiseDetail(1, 0.5)
+
 let inst = experiment('plasma',{
     init
     ,handleAnimate
@@ -14,7 +16,7 @@ let inst = experiment('plasma',{
   ,scale = 1
   ,center = vector(0,0)
   ,points = []
-  ,num = 90
+  ,num = 80
   ,elmCanvas
   ,context
   ,w,h
@@ -51,29 +53,45 @@ function handleAnimate(deltaT,millis) {
 
   context.clearRect(0,0,w,h)
 
+  context.fillStyle = fillStyle
   context.beginPath()
   context.rect(0,0,w,h)
   context.fill()
   context.closePath()
  
-  const f = 0.005
+  context.fillStyle = strokeStyle
+  const f = 0.01
   const pn = (x,y)=>
     perlin.noise(f*x, f*y, 0.0005*millis)-0.5
 
+  const offset = 444
+  const lineDist = h/num
   for(let i=0;i<num;i++){
-    const y = h/num*i
+    const part = i/num
+    const y = lineDist*i
+    const lineH = (part+0.1)*lineDist
     const p0 = [0,y]
     const p1 = [w/3,y]
     const p2 = [2*w/3,y]
     const p3 = [w,y]
-    p0[1] += 111*pn(...p0)
-    p1[1] += 333*pn(...p1)
-    p2[1] += 333*pn(...p2)
-    p3[1] += 111*pn(...p3)
+    p0[1] += offset*pn(...p0)
+    p1[1] += offset*pn(...p1)
+    p2[1] += offset*pn(...p2)
+    p3[1] += offset*pn(...p3)
+    const p4 = [0,y+lineH]
+    const p5 = [w/3,y+lineH]
+    const p6 = [2*w/3,y+lineH]
+    const p7 = [w,y+lineH]
+    p4[1] += offset*pn(...p4)
+    p5[1] += offset*pn(...p5)
+    p6[1] += offset*pn(...p6)
+    p7[1] += offset*pn(...p7)
     context.beginPath()
     context.moveTo(...p0)
     context.bezierCurveTo(...p1,...p2,...p3)
-    context.stroke()
+    context.lineTo(...p7)
+    context.bezierCurveTo(...p6,...p5,...p4)
+    context.fill()
     context.closePath()
   }
 }
@@ -84,10 +102,6 @@ function handleResize(){
   center.set(w/2,h/2,w/4+h/4)
   elmCanvas.width = w
   elmCanvas.height = h
-
-  context.fillStyle = fillStyle
-  context.strokeStyle = strokeStyle
-
   context.lineWidth = h/num/2
 }
 
