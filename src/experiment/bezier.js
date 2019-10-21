@@ -16,7 +16,7 @@ let inst = experiment('plasma',{
   ,scale = 1
   ,center = vector(0,0)
   ,points = []
-  ,num = 80
+  ,num = 120
   ,elmCanvas
   ,context
   ,w,h
@@ -33,9 +33,6 @@ function init(_target) {
   elmCanvas.style.zoom = scale
   //
   context = inst.context
-  //
-  //points.length = 0
-  //for (let i = 0; i<num; i++) points.push(point())
   //
   handleResize()
   //
@@ -64,12 +61,23 @@ function handleAnimate(deltaT,millis) {
   const pn = (x,y)=>
     perlin.noise(f*x, f*y, 0.0005*millis)-0.5
 
-  const offset = 444
+  // zoom
+  context.save()
+  if (false){
+    const s = 1 + 2*(pn(262662,2770)+0.5)
+    context.translate(w/2,h/2)
+    context.scale(s,s)
+    context.translate(-w/2,-h/2)
+  }
+
+  const offset = 1444
   const lineDist = h/num
   for(let i=0;i<num;i++){
-    const part = i/num
+    //const part = i/num
+    //const part = (1+Math.cos(i/num*Math.PI))/2
+    const part = 1 - Math.abs(i/num*2 - 1)
     const y = lineDist*i
-    const lineH = (part+0.1)*lineDist
+    const lineH = (part+0.1)*lineDist * 0.7
     const p0 = [0,y]
     const p1 = [w/3,y]
     const p2 = [2*w/3,y]
@@ -94,6 +102,8 @@ function handleAnimate(deltaT,millis) {
     context.fill()
     context.closePath()
   }
+
+  context.restore()
 }
 
 function handleResize(){
@@ -103,68 +113,6 @@ function handleResize(){
   elmCanvas.width = w
   elmCanvas.height = h
   context.lineWidth = h/num/2
-}
-
-// private methods
-
-function point(){
-  let position = vector(0,0,0)
-    ,speed = vector(0,0,0)
-    ,size
-    ,color1 = null
-    ,color2 = null
-    ,color1Time = 1
-    ,color2Time = 1
-    ,o = {
-      toString:function(){return '[object Point]';}
-      ,color:null
-      ,size:null
-      ,setPos:position.set
-      ,x:position.getX()
-      ,y:position.getY()
-      ,setSpd:speed.set
-      ,step:step
-      ,reset:reset
-      ,resetColor:resetColor
-    }
-  reset()
-  function reset() {
-    let iSze = 900/scale
-      ,fSpd = 3/scale
-    position.set(rnd(iSze),rnd(iSze))
-    speed.set(rnd(fSpd),rnd(fSpd))
-    color1 = color()
-    color2 = color()
-    o.color = color()
-    size = Math.random()*iSze
-    return o
-  }
-  function resetColor(t){
-    color2.set(color1.get())
-    color1.randomize()
-    color1Time = t
-    color2Time = t + 10000 + (10000*Math.random()<<0)
-  }
-  function step(t){
-    speed.add(position.clone().multiply(-0.0001)).add(vector(rnd(0.0001),rnd(0.0001)))
-    position.add(speed)
-    o.x = position.getX()
-    o.y = position.getY()
-    o.size = 0.1*w+Math.sin(t*0.0004+size)*0.1*w
-    if (t>color2Time) resetColor(t)
-    o.color.set(color1.get()).average(color2,1-(t-color1Time)/(color2Time-color1Time))
-    return o
-  }
-  return o
-}
-function draw(point,i){
-  //let i = point.size
-  //context.shadowColor = point.color.hex
-  //context.fillColor = point.color.hex
-  //context.shadowBlur = i
-  //context.fillRect(point.x-i/2,point.y-i/2,i,i)
-  const fn = (i===0&&context.moveTo||context.lineTo).bind(context)
-  fn(point.x, point.y)
 }
 
 function rnd(f) {
