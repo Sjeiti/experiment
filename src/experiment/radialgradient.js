@@ -5,33 +5,37 @@
  */
 import experiment from './base'
 import {animate} from '../signal/signals'
-import {random, rnd} from '../math/lcg'
+import {random,rnd,presetJava,presetLehmer,presetNumeralRecipes} from '../math/lcg'
 import {noise} from '../math/perlin'
+
+presetLehmer(true)
+presetNumeralRecipes()
+presetJava()
 
 let target
 let input
 
 const array = num => new Array(num).fill(0)
-// const percent = () => Math.round(-50 + random()*200) + '%'
-// const percent = n => Math.round(-50 + (n||random())*200) + '%'
-const speed = 0.00001
+const speed = 0.000005
+const speedScale = Math.PI
+const scale = 400
 const percent = now => {
-  // const n = noise(now*speed, rnd())
-  const n = noise(rnd() + now*speed, rnd())
-  return (-100 + n*300) + '%'
+  const n = noise(random()*speedScale + now*speed, random()*speedScale) - 0.5
+  return n*scale + 50 + '%'
 }
 const clr = () => '#'+('00000'+(random()*(1<<24)|0).toString(16)).slice(-6)
 
 const getRange = (clr, num=10) => {
-  const part = 100/num
-  return array(num).map((o,i)=>`${clr} ${(i)*part}%, transparent ${(1+i)*part}%`).join(', ')
+  const divide = 0.5 + 2*random()
+  const parts = new Array(num+1).fill(0).map((o,i)=>(Math.pow(i/num, divide))*100)
+  const [clrIn, clrOut] = random()>0.5?[clr, 'transparent']:['transparent', clr]
+  return array(num).map((o,i)=>`${clrIn} ${parts[i]}%, ${clrOut} ${parts[i+1]}%`).join(', ')
 }
 
-function setColor(){
+function setColor(deltaT, millis){
   random(input.value, 222)
-  const now = Date.now()
   target.style.background = array(3+random()*4<<0).map(() =>
-      `radial-gradient(circle at ${percent(now)} ${percent(now)}, ${getRange(clr(), 2+random()*random()*30<<0)})`).join(',')
+      `radial-gradient(circle at ${percent(millis)} ${percent(millis)}, ${getRange(clr(), 2+random()*random()*20<<0)})`).join(',')
 }
 
 function init(_target){
@@ -40,19 +44,24 @@ function init(_target){
 
   input = document.createElement('input')
   input.type = 'number'
-  input.value = 223
+  input.value = 8191
   Object.assign(input.style, {
-    border:0
-    ,background:'transparent'
-    ,width:'100%'
-    ,height:'100%'
-    ,verticalAlign:'top'
+    border: '0'
+    ,outline: 'none'
+    ,background: 'transparent'
+    ,width: '100%'
+    ,height: '4rem'
+    ,verticalAlign: 'top'
+    ,fontFamily: 'courier'
+    ,textAlign: 'center'
+    ,fontSize: '2rem'
+    ,fontWeight: 'bold'
   })
-  input.addEventListener('change', setColor)
+  // input.addEventListener('change', setColor)
+  target.appendChild(input)
 
-  _target.appendChild(input)
+  target.addEventListener('click', ()=>input.value = random()*1E9<<0)
 
-  setColor()
   animate.add(setColor)
 }
 
