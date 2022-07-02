@@ -39,7 +39,7 @@ var iMultiplier = 48271
  * @param {number} [iterate] The number of iterations
  * @returns {number} An integer between zero and the set modulus
  */
-function rnd(seed,iterate) {
+export function rnd(seed,iterate) {
 	if (seed!==undefined) iSeed = seed;
 	if (iterate===undefined) iterate = 1;
 	while (iterate--) iSeed = (iMultiplier*iSeed+iIncrement)%iModulus;
@@ -53,7 +53,7 @@ function rnd(seed,iterate) {
  * @param {number} [iterate] The number of iterations
  * @returns {number} A floating point between zero and one
  */
-function random(seed,iterate) {
+export function random(seed,iterate) {
 	return rnd(seed,iterate)/iModulus;
 }
 
@@ -61,7 +61,13 @@ function random(seed,iterate) {
  * @memberOf math.lcg
  * @param {number} seed The integer seed
  */
-function setSeed(seed) { iSeed = seed; }
+export function setSeed(seed) { iSeed = seed; }
+
+/**
+ * @memberOf math.lcg
+ * @returns {number} seed The integer seed
+ */
+export function getSeed(seed) { return iSeed }
 
 /**
  * @memberOf math.lcg

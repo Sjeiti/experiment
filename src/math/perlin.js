@@ -66,7 +66,7 @@ function octFreqPers() {
  * @public
  * @name math.perlin.noise
  */
-function noise(x,y,z) {
+export function noise(x,y,z) {
 
 	x = x||0;
 	y = y||0;

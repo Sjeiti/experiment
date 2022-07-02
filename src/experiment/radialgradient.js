@@ -4,14 +4,41 @@
  * @see module:experiment/base
  */
 import experiment from './base'
+import {animate} from '../signal/signals'
+import {random, rnd} from '../math/lcg'
+import {noise} from '../math/perlin'
 
-let inst = experiment('radialgradient',{init})
+let target
+let input
 
-function init(target){
+const array = num => new Array(num).fill(0)
+// const percent = () => Math.round(-50 + random()*200) + '%'
+// const percent = n => Math.round(-50 + (n||random())*200) + '%'
+const speed = 0.00001
+const percent = now => {
+  // const n = noise(now*speed, rnd())
+  const n = noise(rnd() + now*speed, rnd())
+  return (-100 + n*300) + '%'
+}
+const clr = () => '#'+('00000'+(random()*(1<<24)|0).toString(16)).slice(-6)
 
-  const {style} = target
+const getRange = (clr, num=10) => {
+  const part = 100/num
+  return array(num).map((o,i)=>`${clr} ${(i)*part}%, transparent ${(1+i)*part}%`).join(', ')
+}
 
-  const input = document.createElement('input')
+function setColor(){
+  random(input.value, 222)
+  const now = Date.now()
+  target.style.background = array(3+random()*4<<0).map(() =>
+      `radial-gradient(circle at ${percent(now)} ${percent(now)}, ${getRange(clr(), 2+random()*random()*30<<0)})`).join(',')
+}
+
+function init(_target){
+
+  target = _target
+
+  input = document.createElement('input')
   input.type = 'number'
   input.value = 223
   Object.assign(input.style, {
@@ -21,38 +48,12 @@ function init(target){
     ,height:'100%'
     ,verticalAlign:'top'
   })
-  target.appendChild(input)
-
-  const multiplier = 25214903917//48271//
-  const increment = 11
-  const modulus = 2E48//2147483647//
-  let seed = 123
-  function rnd(_seed,iterate=1) {
-    if (_seed!==undefined) seed = _seed
-    while (iterate--) seed = (multiplier*seed+increment)%modulus
-    return seed
-  }
-  function random(seed,iterate) {
-    return rnd(seed,iterate)/modulus
-  }
-
-  const array = num => new Array(num).fill(0)
-  const percent = () => Math.round(-50 + random()*200) + '%'
-  const clr = () => '#'+('00000'+(random()*(1<<24)|0).toString(16)).slice(-6)
-
-  const getRange = (clr, num=10) => {
-    const part = 100/num
-    return array(num).map((o,i)=>`${clr} ${(i)*part}%, transparent ${(1+i)*part}%`).join(', ')
-  }
-
-  function setColor(){
-    seed = input.value
-    random(seed, 22)
-    style.background = array(3+random()*4<<0).map(()=>`radial-gradient(circle at ${percent()} ${percent()}, ${getRange(clr(), 2+random()*random()*30<<0)})`).join(',')
-  }
   input.addEventListener('change', setColor)
 
+  _target.appendChild(input)
+
   setColor()
+  animate.add(setColor)
 }
 
-export default inst.expose
+export default experiment('radialgradient',{init}).expose
