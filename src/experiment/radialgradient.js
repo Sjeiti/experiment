@@ -62,6 +62,14 @@ function initEvents(){
   animate.add(setColor)
 }
 
+function exit(){
+  input.removeEventListener('change', onInputChange)
+  target.removeEventListener('click', onTargetClick)
+  window.removeEventListener('hashchange', onHashChange)
+  animate.remove(setColor)
+  target.style.removeProperty('background')
+}
+
 function onTargetClick(){
   location.hash = input.value = Math.random()*1E9<<0
   setState()
@@ -114,4 +122,4 @@ function array(num, map){
   return map?a.map(map):a
 }
 
-export default experiment('radialgradient', {init}).expose
+export default experiment('radialgradient', {init, exit}).expose
