@@ -5,24 +5,22 @@
  */
 import experiment from './base'
 import {animate} from '../signal/signals'
-import {random,rnd,presetJava,presetLehmer,presetNumeralRecipes} from '../math/lcg'
+import {random,rnd,presetJava} from '../math/lcg'
 import {noise} from '../math/perlin'
 
-presetLehmer(true)
-presetNumeralRecipes()
 presetJava()
 
 let target
 let input
 
-const array = num => new Array(num).fill(0)
+const array = (num, map) => {
+  const a = new Array(num).fill(0)
+  return map?a.map(map):a
+}
 const speed = 0.000005
 const speedScale = Math.PI
 const scale = 400
-const percent = now => {
-  const n = noise(random()*speedScale + now*speed, random()*speedScale) - 0.5
-  return n*scale + 50 + '%'
-}
+const state = []
 const clr = () => '#'+('00000'+(random()*(1<<24)|0).toString(16)).slice(-6)
 
 const getRange = (clr, num=10) => {
@@ -32,10 +30,16 @@ const getRange = (clr, num=10) => {
   return array(num).map((o,i)=>`${clrIn} ${parts[i]}%, ${clrOut} ${parts[i+1]}%`).join(', ')
 }
 
+function getPosition(start,millis){
+  return start.map(([a,b])=>{
+    const n = noise(a + millis*speed, b) - 0.5
+    return n*scale + 50 + '%'
+  }).join(' ')
+}
+
 function setColor(deltaT, millis){
-  random(input.value, 222)
-  target.style.background = array(3+random()*4<<0).map(() =>
-      `radial-gradient(circle at ${percent(millis)} ${percent(millis)}, ${getRange(clr(), 2+random()*random()*20<<0)})`).join(',')
+  target.style.background = state.map(({positions,gradient}) =>
+    `radial-gradient(circle at ${getPosition(positions, millis)}, ${gradient})`).join(',')
 }
 
 function init(_target){
@@ -57,12 +61,27 @@ function init(_target){
     ,fontSize: '2rem'
     ,fontWeight: 'bold'
   })
-  // input.addEventListener('change', setColor)
+  input.addEventListener('change', onChangeSeed)
   target.appendChild(input)
 
-  target.addEventListener('click', ()=>input.value = random()*1E9<<0)
+  target.addEventListener('click', ()=>{
+    input.value = Math.random()*1E9<<0
+    onChangeSeed()
+  })
 
+  onChangeSeed()
   animate.add(setColor)
 }
+
+function onChangeSeed(){
+  random(input.value, 22)
+  state.length = 0
+  state.push(...array(3+random()*4<<0 ,()=>({
+    positions: array(2,()=>array(2,()=>random()*speedScale))
+    ,gradient: getRange(clr(), 2+random()*random()*20<<0)
+  })))
+}
+
+window.onerror = alert
 
 export default experiment('radialgradient',{init}).expose
