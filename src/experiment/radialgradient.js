@@ -17,6 +17,7 @@ const array = (num, map) => {
   const a = new Array(num).fill(0)
   return map?a.map(map):a
 }
+const percentDecimals = 2
 const speed = 0.000005
 const speedScale = Math.PI
 const scale = 400
@@ -25,7 +26,7 @@ const clr = () => '#'+('00000'+(random()*(1<<24)|0).toString(16)).slice(-6)
 
 const getRange = (clr, num=10) => {
   const divide = 0.5 + 2*random()
-  const parts = new Array(num+1).fill(0).map((o,i)=>(Math.pow(i/num, divide))*100)
+  const parts = new Array(num+1).fill(0).map((o,i)=>(Math.pow(i/num, divide)*100).toFixed(percentDecimals))
   const [clrIn, clrOut] = random()>0.5?[clr, 'transparent']:['transparent', clr]
   return array(num).map((o,i)=>`${clrIn} ${parts[i]}%, ${clrOut} ${parts[i+1]}%`).join(', ')
 }
@@ -33,7 +34,7 @@ const getRange = (clr, num=10) => {
 function getPosition(start,millis){
   return start.map(([a,b])=>{
     const n = noise(a + millis*speed, b) - 0.5
-    return n*scale + 50 + '%'
+    return (n*scale + 50).toFixed(percentDecimals) + '%'
   }).join(' ')
 }
 
@@ -66,8 +67,14 @@ function init(_target){
 
   target.addEventListener('click', ()=>{
     input.value = Math.random()*1E9<<0
+    location.hash = input.value
     onChangeSeed()
   })
+
+  window.addEventListener('hashchange', ()=>{
+    input.value = parseInt(location.hash.substr(1), 10)
+    onChangeSeed()
+  }, false)
 
   onChangeSeed()
   animate.add(setColor)
@@ -81,7 +88,5 @@ function onChangeSeed(){
     ,gradient: getRange(clr(), 2+random()*random()*20<<0)
   })))
 }
-
-window.onerror = alert
 
 export default experiment('radialgradient',{init}).expose
