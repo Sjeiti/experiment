@@ -12,6 +12,7 @@ let iMultiplier = 48271
 let iIncrement = 0
 let iModulus = 2147483647
 let iSeed = 123
+
 const oReturn = {
   rnd
 	,random
@@ -26,6 +27,8 @@ const oReturn = {
 	,presetJava
 	,presetNumeralRecipes
 }
+
+presetNumeralRecipes()
 
 
 /**

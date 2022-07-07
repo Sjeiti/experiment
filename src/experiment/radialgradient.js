@@ -5,14 +5,12 @@
  */
 import experiment from './base'
 import {animate} from '../signal/signals'
-import {random,presetJava} from '../math/lcg'
+import {random} from '../math/lcg'
 import {noise} from '../math/perlin'
-
-presetJava()
 
 let target
 let input
-const percentDecimals = 2
+const percentDecimals = 4
 const speed = 0.000005
 const speedScale = Math.PI
 const scale = 400
@@ -49,7 +47,7 @@ function init(_target){
   })
   label.appendChild(input)
 
-  target.appendChild(label)
+  //target.appendChild(label)
 
   setState()
   initEvents()
@@ -100,6 +98,7 @@ function setColor(deltaT, millis){
 }
 
 function getPosition(start,millis){
+  millis = Date.now()
   return start.map(([a,b])=>{
     const n = noise(a + millis*speed, b) - 0.5
     return (n*scale + 50).toFixed(percentDecimals) + '%'
@@ -107,10 +106,24 @@ function getPosition(start,millis){
 }
 
 function getRange(clr, num=10) {
-  const divide = 0.5 + 2*random()
-  const parts = new Array(num+1).fill(0).map((o,i)=>(Math.pow(i/num, divide)*100).toFixed(percentDecimals))
+  const divide = random()
+  const parts = array(num+1,(o,i)=>100*easeCirc(i/num,divide).toFixed(percentDecimals))
   const [clrIn, clrOut] = random()>0.5?[clr, 'transparent']:['transparent', clr]
   return array(num).map((o,i)=>`${clrIn} ${parts[i]}%, ${clrOut} ${parts[i+1]}%`).join(', ')
+}
+
+function easeOutCirc(x){
+  return Math.sqrt(1 - Math.pow(x - 1, 2))
+}
+
+function easeInCirc(x){
+  return 1 - Math.sqrt(1 - Math.pow(x, 2))
+}
+
+function easeCirc(x, part){
+  return part<0.4 && easeInCirc(x)
+      || part>0.6 && easeOutCirc(x)
+      || x
 }
 
 function clr(){
