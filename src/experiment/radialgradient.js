@@ -31,7 +31,7 @@ function init(_target){
 
   input = document.createElement('input')
   input.type = 'number'
-  input.value = 8191
+  input.value = location.hash.substr(1)||8191
   Object.assign(input.style, {
     border: '0'
     ,outline: 'none'
