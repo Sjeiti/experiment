@@ -24,7 +24,7 @@ const extend = Object.assign
  * @returns {HTMLCanvasElement}
  */
 function init(target){
-  
+
   console.log('init',target) // todo: remove log
 
   let canvas = document.createElement('canvas')
@@ -71,7 +71,7 @@ function exit() {
  * Pause experiment by removing the animation signal
  */
 function pause(_pause) {
-  if (this.canvas.parentNode&&(_pause===undefined||_pause!==this.paused)) {
+  if (this.canvas&&this.canvas.parentNode&&(_pause===undefined||_pause!==this.paused)) {
     this.paused && animate.add(this.handleAnimate) || animate.remove(this.handleAnimate)
     this.paused = !this.paused
   }
@@ -82,7 +82,7 @@ function pause(_pause) {
  */
 function handleResize() {
   let clientWidth = Math.max(2,this.target.clientWidth)
-      ,clientHeight = Math.max(2,this.target.clientHeight)
+    ,clientHeight = Math.max(2,this.target.clientHeight)
   if (this.w!==clientWidth) {
     this.w = clientWidth
     this.canvas.width = clientWidth
