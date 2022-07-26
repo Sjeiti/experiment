@@ -24,6 +24,7 @@ import webgl from './webgl'
 import radialdifference from './radialdifference'
 import radialgradient from './radialgradient'
 import bezier from './bezier'
+import moire from './moire'
 
 export default {
   glass
@@ -51,4 +52,5 @@ export default {
   ,radialdifference
   ,bezier
   ,radialgradient
+  ,moire
 }

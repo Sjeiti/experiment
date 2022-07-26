@@ -11,4 +11,5 @@ window.onerror = alert
 // xp.river.init(document.body)
 // xp.vertical.init(document.body)
 // xp.fire.init(document.body)
-xp.radialgradient.init(document.body)
+// xp.radialgradient.init(document.body)
+xp.moire.init(document.body)
