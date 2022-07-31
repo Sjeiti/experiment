@@ -5,8 +5,7 @@
  */
 import experiment from './base'
 import {animate} from '../signal/signals'
-// import {random} from '../math/lcg'
-// import {noise} from '../math/perlin'
+import {noise} from '../math/perlin'
   
 let main
 let mainStyle
@@ -27,10 +26,28 @@ function initWrapper(root){
 
   form = element('form',main,null,{input:onFormInput,change:onFormChange})
 
+  ;['clr','bclr'].forEach((name,i)=>{
+    element('input',form,{name,type:'color',value:['white','black'][i]})
+  })
+
+  element('br',form)
+
   const name = 'type'
   const type = 'radio'
-  ;['yellow','circles','rainbow','matrix','one','lines','still'].forEach(value=>{
-    element('input',form,{name,value,type})
+    ;[
+      'yellow'
+      ,'circles'
+      ,'rainbow'
+      ,'matrix'
+      ,'one'
+      ,'lines'
+      ,'petals'
+      ,'bulge'
+      ,'corner'
+      ,'still'
+    ].forEach(value=>{
+    const label = element('label',form,{class:'label-'+value})
+    element('input',label,{name,value,type})
   })
 
   element('br',form)
@@ -90,11 +107,13 @@ function onFormInput(e){
 let start
 function onAnimate(deltaT,millis){
   start||(start=millis)
-  const speed = 0.001
+  const speed = 0.0005
   const elapsed = millis-start
   setCSSProp('t', elapsed)
   setCSSProp('sin', Math.sin(speed*elapsed))
   setCSSProp('cos', Math.cos(speed*elapsed))
+  setCSSProp('x', noise(speed*elapsed,3876.13))
+  setCSSProp('y', noise(speed*elapsed,999.123))
 }
 
 function element(type, prnt, atts, evts) {
@@ -106,11 +125,12 @@ function element(type, prnt, atts, evts) {
 }
 
 function setValue(name,value){
+  //alert(name+value)
   name==='type'
     ?setMainClass(value)
     :setCSSProp(
       name
-      ,name==='part'
+      ,['clr','bclr','part'].includes(name)
         ?value
         :easeInCirc(easeInCirc(value))
     )
@@ -146,10 +166,13 @@ function getStyle(){
 :root {
   --start: 0.4deg;
   --end: 2deg;
-  --clr: rgba(255,255,255,0.3);
+  --clr: white;
+  --bclr: black;
   --t: 0;
   --sin: 0;
   --cos: 1;
+  --x: 1;
+  --y: 1;
   --part: 0.1;
   --total: 1;
 }
@@ -159,6 +182,7 @@ function getStyle(){
   width: 100%;
   height: 100%;
   padding: 1rem;
+  background-color: var(--bclr);
 
   --tt: calc(var(--t)*0.001deg);
 
@@ -202,93 +226,130 @@ function getStyle(){
     transparent .5% 1.4%
   );
 
-  --radial-total: calc(10%*var(--total));
-  --radial-part: calc(var(--part)*var(--radial-total));
-  background: repeating-radial-gradient(
-    circle at 65% 45%,
-    #FFFFFF 0% var(--radial-part),
-    transparent var(--radial-part) var(--radial-total)
-  ), repeating-radial-gradient(
-    circle at 35% 15%,
-    #FFFFFF 0% var(--radial-part),
-    transparent var(--radial-part) var(--radial-total)
-  );
 
 
-  --tt: calc(var(--t)*0.0001deg);
-  --radial-total: calc(10%*var(--total));
-  --ravdial-part: calc(var(--part)*var(--radial-total));
-  --end: calc(var(--total)*20deg);
-  --start: calc(var(--part)*var(--end));
+
+
+}
+/*/////////////////////////////////*/
+
+::-webkit-color-swatch,
+::-moz-color-swatch {
+  border-color: transparent;
+}
+.moire input[type=color] {
+  display: inline-block;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  margin: 0 0.25rem 0.25rem 0;
+  border: 2px solid var(--bclr);
+}
+.moire input[name=bclr] {
+  border: 2px solid var(--clr);
+}
+
+.moire label {
+  display: inline-block;
+  width: 2rem;
+  height: 2rem;
+  background: linear-gradient(black,white);
+  border-radius: 50%;
+  margin-right: 0.25rem;
+  background-color: var(--bclr);
+  box-shadow: 0 0 0 2px var(--bclr) inset;
+}
+.moire label input {
+  opacity: 0;
+}
+
+.moire .label-yellow {
   background: repeating-conic-gradient(
-    from calc(0.0001deg*var(--t)) at 50% 50%,
-    #FF0 0deg var(--start),
-    transparent var(--start) var(--end)
-  ),repeating-linear-gradient(
-    calc(var(--t)*-0.001deg),
-    #FF0 0% var(--radial-part),
-    transparent var(--radial-part) var(--radial-total)
+    var(--clr) 0 10%,
+    var(--bclr) 10% 20%
   );
-
-  /*
-  --clr: #FF0;
-  --tt: calc(var(--t)*0.0001deg);
-  --linear-total: calc(5%*var(--total));
-  --linear-part: calc(var(--part)*var(--linear-total));
-  --radial-total: calc(10%*var(--total));
-  --radial-part: calc(var(--part)*var(--radial-total));
-  background: repeating-radial-gradient(
-    circle at 50% 50%,
-    var(--clr) 0 var(--radial-part),
-    transparent var(--radial-part) var(--radial-total)
-  ),0 calc(0.01px*var(--t)) repeating-linear-gradient(
-    calc(var(--total)*var(--t)*-0.013deg),
-    #FF0 0% var(--linear-part),
-    transparent var(--linear-part) var(--linear-total)
-  );
-  */
 }
 .moire.yellow {
-  --end: calc(var(--total)*4deg);
+  --end: calc(var(--total)*36deg);
   --start: calc(var(--part)*var(--end));
   background: repeating-conic-gradient(
     from calc(0.0001deg*var(--t)) at 50% 50%,
-    #FFFF00 0deg var(--start),
-    transparent var(--start) var(--end)
+    var(--clr) 0deg var(--start),
+    var(--bclr) var(--start) var(--end)
+  );
+}
+
+.moire .label-circles {
+  background: repeating-radial-gradient(
+    circle at 80% 20%,
+    var(--clr) 0 5%,
+    transparent 5% 20%
+  ),repeating-radial-gradient(
+    circle at 20% 80%,
+    var(--clr) 0 5%,
+    var(--bclr) 5% 20%
   );
 }
 .moire.circles {
   --tt: calc(var(--t)*0.0001deg);
-  --radial-total: calc(10%*var(--total));
+  --radial-total: calc(20%*var(--total));
   --radial-part: calc(var(--part)*var(--radial-total));
   --clr: rgba(255,255,255,1);
   background: repeating-radial-gradient(
-    circle at calc(57% + 10%*var(--sin)) calc(50% + 35%*var(--cos)),
+    circle at calc(100%*var(--x)) calc(100%*var(--y)),
     var(--clr) 0 var(--radial-part),
     transparent var(--radial-part) var(--radial-total)
   ),repeating-radial-gradient(
     circle at 50% 50%,
     var(--clr) 0 var(--radial-part),
-    transparent var(--radial-part) var(--radial-total)
+    var(--bclr) var(--radial-part) var(--radial-total)
+  );
+}
+
+.moire .label-rainbow {
+  --p: calc(100%/18);
+  background: repeating-conic-gradient(
+    #00F 0,
+    #F0F calc(1*var(--p)),
+    #F00 calc(2*var(--p)),
+    #FF0 calc(3*var(--p)),
+    #0F0 calc(4*var(--p)),
+    #0FF calc(5*var(--p)),
+    #00F calc(6*var(--p))
   );
 }
 .moire.rainbow {
-  --tt: calc(var(--t)*0.0001deg);
-  --end: calc(var(--total)*16deg);
-  --start: calc(var(--part)*var(--end));
-  --clr: rgba(255,255,255,1);
+  --p: calc(var(--end)/6);
+  --tt: calc(0.01deg*var(--part)*var(--total)*var(--t));
   background: repeating-conic-gradient(
     from var(--tt) at 50% 50%,
-    rgba(0,255,0,1) 0 var(--start),
+    #00F 0,
+    #F0F calc(1*var(--p)),
+    #F00 calc(2*var(--p)),
+    #FF0 calc(3*var(--p)),
+    #0F0 calc(4*var(--p)),
+    #0FF calc(5*var(--p)),
+    #00F var(--end)
+  );
+}
+
+.moire .label-matrix {
+  --p: 0.866;
+  --end: 20deg;
+  --part: 0.2;
+  --start: calc(var(--part)*var(--end));
+  background: repeating-conic-gradient(
+    from 0 at calc(50% - 2rem) 50%,
+    var(--clr) 0 var(--start),
     transparent var(--start) var(--end)
-  ),repeating-conic-gradient(
-    from calc(-1.3*var(--tt)) at 50% 50%,
-    rgba(255,0,0,1) 0 var(--start),
+  ), repeating-conic-gradient(
+    from 0 at calc(50% + 2rem) 50%,
+    var(--clr) 0 var(--start),
     transparent var(--start) var(--end)
-  ),repeating-conic-gradient(
-    from calc(-1.9*var(--tt)) at 50% 50%,
-    rgba(0,0,255,1) 0 var(--start),
-    transparent var(--start) var(--end)
+  ), repeating-conic-gradient(
+    from 0 at 50% calc(50% + var(--p)*2rem),
+    var(--clr) 0 var(--start),
+    var(--bclr) var(--start) var(--end)
   );
 }
 .moire.matrix {
@@ -296,7 +357,6 @@ function getStyle(){
   --tt: calc(var(--t)*0.001deg);
   --end: calc(var(--total)*20deg);
   --start: calc(var(--part)*var(--end));
-  --clr: lime;
   background: repeating-conic-gradient(
     from var(--tt) at calc(50% - var(--min)) 50%,
     var(--clr) 0 var(--start),
@@ -308,18 +368,32 @@ function getStyle(){
   ), repeating-conic-gradient(
     from calc(-1*var(--tt)) at 50% calc(50% + var(--p)*var(--min)),
     var(--clr) 0 var(--start),
-    transparent var(--start) var(--end)
+    var(--bclr) var(--start) var(--end)
+  );
+}
+
+.moire .label-one {
+  background: repeating-radial-gradient(
+    var(--clr) 0 10%,
+    var(--bclr) 10% 20%
   );
 }
 .moire.one {
   --tt: calc(var(--t)*0.0001deg);
   --radial-total: calc(50%*var(--total));
   --radial-part: calc(var(--part)*var(--radial-total));
-  --clr: rgba(255,255,255,1);
   background: repeating-radial-gradient(
     circle at calc(50% + 0.1%*var(--sin)) calc(50% + 0.1%*var(--cos)),
     var(--clr) 0 var(--radial-part),
-    transparent var(--radial-part) var(--radial-total)
+    var(--bclr) var(--radial-part) var(--radial-total)
+  );
+}
+
+.moire .label-lines{
+  background: repeating-linear-gradient(
+    30deg,
+    var(--clr) 0% 10%,
+    var(--bclr) 10% 20%
   );
 }
 .moire.lines{
@@ -328,9 +402,97 @@ function getStyle(){
   --radial-part: calc(var(--part)*var(--radial-total));
   background: repeating-linear-gradient(
     var(--tt),
-    #FF0 0% var(--radial-part),
-    transparent var(--radial-part) var(--radial-total)
+    var(--clr) 0% var(--radial-part),
+    var(--bclr) var(--radial-part) var(--radial-total)
   );
 }
+
+.moire .label-petals{
+  background: repeating-conic-gradient(
+    var(--clr) 0 4%,
+    transparent 4% 10%
+  )
+  ,repeating-linear-gradient(
+    30deg,
+    var(--clr) 0% 5%,
+    var(--bclr) 5% 15%
+  );
+}
+.moire.petals{
+  --tt: calc(var(--t)*0.0001deg);
+  --radial-total: calc(6%*var(--total));
+  --radial-part: calc(var(--part)*var(--radial-total));
+  --end: calc(var(--total)*20deg);
+  --start: calc(var(--part)*var(--end));
+  background: repeating-conic-gradient(
+    from calc(0.0001deg*var(--t)) at 50% 50%,
+    var(--clr) 0deg var(--start),
+    transparent var(--start) var(--end)
+  ),repeating-linear-gradient(
+    calc(var(--t)*-0.001deg),
+    var(--clr) 0% var(--radial-part),
+    var(--bclr) var(--radial-part) var(--radial-total)
+  );
+}
+
+.moire .label-bulge{
+  background: repeating-conic-gradient(
+    var(--clr) 0 4%,
+    transparent 4% 10%
+  )
+  ,repeating-radial-gradient(
+    var(--clr) 0% 5%,
+    var(--bclr) 5% 12%
+  );
+}
+.moire.bulge{
+  --radial-total: calc(20%*var(--total));
+  --radial-part: calc(var(--part)*var(--radial-total));
+  --end: calc(var(--total)*36deg);
+  --start: calc(var(--part)*var(--end));
+  background: repeating-radial-gradient(
+    circle at calc(180%*var(--x) - 40%) calc(180%*var(--y) - 40%),
+    var(--clr) 0% var(--radial-part),
+    transparent var(--radial-part) var(--radial-total)
+  ), repeating-conic-gradient(
+    from calc(0.0001deg*var(--t)) at 50% 50%,
+    var(--clr) 0deg var(--start),
+    var(--bclr) var(--start) var(--end)
+  );
+}
+
+.moire .label-corner{
+  background: repeating-linear-gradient(
+    30deg,
+    var(--clr) 0% 5%,
+    transparent 5% 12%
+  )
+  ,repeating-radial-gradient(
+    var(--clr) 0% 5%,
+    var(--bclr) 5% 12%
+  );
+}
+.moire.corner{
+  --radial-total: calc(20%*var(--total));
+  --radial-part: calc(var(--part)*var(--radial-total));
+  --radiall-total: calc(10%*var(--total));
+  --radiall-part: calc(var(--part)*var(--radiall-total));
+  background: repeating-radial-gradient(
+    circle at calc(50%*var(--x) + 25%) calc(50%*var(--y) + 25%),
+    var(--clr) 0% var(--radial-part),
+    transparent var(--radial-part) var(--radial-total)
+  ), repeating-linear-gradient(
+    calc(var(--t)*-0.001deg),
+    var(--clr) 0% var(--radiall-part),
+    var(--bclr) var(--radiall-part) var(--radiall-total)
+  );
+}
+
+
+
+
+
+
+
   `
 }
