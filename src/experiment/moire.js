@@ -36,15 +36,14 @@ function initWrapper(root){
   const type = 'radio'
     ;[
       'yellow'
-      ,'circles'
-      ,'rainbow'
-      ,'matrix'
       ,'one'
       ,'lines'
+      ,'matrix'
+      ,'circles'
       ,'petals'
       ,'bulge'
       ,'corner'
-      ,'still'
+      ,'rainbow'
     ].forEach(value=>{
     const label = element('label',form,{class:'label-'+value})
     element('input',label,{name,value,type})
@@ -159,8 +158,6 @@ function setData(){
 
 export default experiment('moire', {init, exit}).expose
 
-
-
 function getStyle(){
   return `
 :root {
@@ -175,62 +172,16 @@ function getStyle(){
   --y: 1;
   --part: 0.1;
   --total: 1;
+  --min: min(100vw,100vh);
+  --max: max(100vw,100vh);
 }
-
 
 .moire {
   width: 100%;
   height: 100%;
   padding: 1rem;
-  background-color: var(--bclr);
-
-  --tt: calc(var(--t)*0.001deg);
-
-  background: repeating-conic-gradient(
-    from 0deg at calc(50% + 10%*var(--sin)) 50%,
-    #FF0000 0deg var(--start),
-    transparent var(--start) var(--end)
-  ), repeating-conic-gradient(
-    from calc(0.01deg*var(--t)) at 30% 40%,
-    #00FF00 0deg var(--start),
-    transparent var(--start) var(--end)
-  ), repeating-conic-gradient(
-    from 45deg at 55% 35%,
-    #0000FF 0deg var(--start),
-    transparent var(--start) var(--end)
-  );
-
-  --tt: calc(var(--t)*0.0001deg);
-  --start: 0.15deg;
-  --end: 1.5deg;
-  --clr: rgba(255,255,255,1);
-  --min: min(100vw,100vh);
-  --max: max(100vw,100vh);
-  background: repeating-conic-gradient(
-    from var(--tt) at 50% 50%,
-    var(--clr) 0 var(--start),
-    transparent var(--start) var(--end)
-  ),repeating-radial-gradient(
-    circle at 50% 50%,
-    var(--clr) 0 0.2%,
-    transparent 0.2% 0.8%
-  );
-
-  background: repeating-radial-gradient(
-    circle at 65% 45%,
-    #FFFFFF 0% .5%,
-    transparent .5% 1.4%
-  ), repeating-radial-gradient(
-    circle at 35% 15%,
-    #FFFFFF 0% .5%,
-    transparent .5% 1.4%
-  );
-
-
-
-
-
 }
+
 /*/////////////////////////////////*/
 
 ::-webkit-color-swatch,
@@ -319,6 +270,7 @@ function getStyle(){
   );
 }
 .moire.rainbow {
+  --end: calc(var(--total)*36deg);
   --p: calc(var(--end)/6);
   --tt: calc(0.01deg*var(--part)*var(--total)*var(--t));
   background: repeating-conic-gradient(
@@ -425,7 +377,7 @@ function getStyle(){
   --end: calc(var(--total)*20deg);
   --start: calc(var(--part)*var(--end));
   background: repeating-conic-gradient(
-    from calc(0.0001deg*var(--t)) at 50% 50%,
+    from calc(0.0001deg*var(--t)) at calc(180%*var(--x) - 40%) calc(180%*var(--y) - 40%),
     var(--clr) 0deg var(--start),
     transparent var(--start) var(--end)
   ),repeating-linear-gradient(
