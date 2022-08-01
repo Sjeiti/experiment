@@ -50,7 +50,6 @@ function initWrapper(root){
   })
 
   element('br',form)
-  element('br',form)
 
   const min = 0
   const max = 1
@@ -193,7 +192,7 @@ function getStyle(){
   width: 2rem;
   height: 2rem;
   padding: 0;
-  margin: 0 0.25rem 0.25rem 0;
+  margin: 0 0.25rem 0.5rem 0;
   border: 2px solid var(--bclr);
 }
 .moire input[name=bclr] {
@@ -206,13 +205,43 @@ function getStyle(){
   height: 2rem;
   background: linear-gradient(black,white);
   border-radius: 50%;
-  margin-right: 0.25rem;
+  margin: 0.5rem 0.25rem 0.5rem 0;
   background-color: var(--bclr);
   box-shadow: 0 0 0 2px var(--bclr) inset;
 }
 .moire label input {
   opacity: 0;
 }
+
+
+
+
+
+
+.moire input[type=range] {
+  width: 100%;
+  background: transparent;
+  margin: 0.5rem auto;
+  -webkit-appeareance: none;
+}
+.moire input[type=range]::-moz-range-track,
+.moire input[type=range]::-webkit-slider-runnable-track {
+  background: var(--bclr);
+  border: 2px solid var(--clr);
+}
+.moire input[type=range]::-moz-range-thumb,
+.moire input[type=range]::-webkit-slider-thumb {
+  background: var(--clr);
+  border: 2px solid var(--bclr);
+  border-radius: 50%;
+}
+.moire input[type=range]:focus::-webkit-slider-runnable-track {
+}
+
+
+
+
+
 
 .moire .label-yellow {
   background: repeating-conic-gradient(
