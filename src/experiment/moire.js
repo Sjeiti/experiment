@@ -21,8 +21,10 @@ function init(_target){
 
 function initWrapper(root){
 
-  main = element('div',root,{class:'moire'})
+  main = element('label',root,{class:'moire',for:'ui'})
   mainStyle = main.style
+
+  element('input',main,{type:'checkbox',id:'ui'})
 
   form = element('form',main,null,{input:onFormInput,change:onFormChange})
 
@@ -67,7 +69,16 @@ function initWrapper(root){
 function initLocation(form){
   try {
     const {hash} = location
-    const data = JSON.parse(decodeURIComponent(hash.substring(1)))
+    const data = tryParse(
+      decodeURIComponent(hash.substring(1))
+      ,{
+        clr: '#ff0044'
+        ,bclr: '#000000'
+        ,type: 'bulge'
+        ,total: 0.9
+        ,part: 0.5
+      }
+    )
     Object.entries(data).forEach(([name,value])=>{
       form[name].value = value
       setValue(name,value)
@@ -153,6 +164,13 @@ function setData(){
   location.hash = JSON.stringify(object)
 }
 
+function tryParse(s,data={}){
+  try {
+    data = JSON.parse(s)
+  } catch(err){}
+  return data
+}
+
 ////////
 
 export default experiment('moire', {init, exit}).expose
@@ -176,9 +194,17 @@ function getStyle(){
 }
 
 .moire {
+  display: block;
   width: 100%;
   height: 100%;
   padding: 1rem;
+}
+
+.moire #ui {
+  opacity: 0;
+}
+.moire #ui:not(:checked) + form {
+  display: none;
 }
 
 /*/////////////////////////////////*/
