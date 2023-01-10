@@ -25,6 +25,7 @@ import radialdifference from './radialdifference'
 import radialgradient from './radialgradient'
 import bezier from './bezier'
 import moire from './moire'
+import rotate from './rotate'
 
 export default {
   glass
@@ -53,4 +54,5 @@ export default {
   ,bezier
   ,radialgradient
   ,moire
+  ,rotate
 }
