@@ -93,7 +93,7 @@
     "babel-preset-babili": "0.0.12",
     "babel-preset-minify": "^0.4.3",
     "body-parser": "^1.20.1",
-    "chokidar-cli": "^1.2.0",
+    "chokidar-cli": "^1.2.3",
     "copy-webpack-plugin": "^4.5.3",
     "css-loader": "^6.7.2",
     "css-properties-values": "^1.0.0",
