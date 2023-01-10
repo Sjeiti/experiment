@@ -28,7 +28,7 @@ function init(target){
   console.log('init',target) // todo: remove log
 
   let canvas = document.createElement('canvas')
-      ,context = canvas.getContext(this.contextType,{preserveDrawingBuffer:true}) // preserveDrawingBuffer is for webgl to save images, but slower than the default false (=swapping instead of copying)
+    ,context = canvas.getContext(this.contextType,{preserveDrawingBuffer:true}) // preserveDrawingBuffer is for webgl to save images, but slower than the default false (=swapping instead of copying)
 
   extend(this,{
     target
