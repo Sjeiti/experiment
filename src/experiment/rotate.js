@@ -22,6 +22,12 @@ function initWrapper(root){
   main.addEventListener('click', ()=>{
     setCSSProp('c1', getRandomColor())
     setCSSProp('c2', getRandomColor())
+    const size = 0.125 + 12*Math.random()
+    const sizeRem = size.toFixed(2)+'rem'
+    const sizeRem2 = (2*size).toFixed(2)+'rem'
+    setCSSProp('size', sizeRem)
+    setCSSProp('size2', sizeRem2)
+    setCSSProp('borderRadius', Math.random()<0.5?0:'999rem')
   })
 
   Array.from(new Array(22)).reduce(acc=>element('div', acc), main)
@@ -34,6 +40,9 @@ function initStyle(root){
       --t: 0;
       --c1: black;
       --c2: #F04;
+      --size: 4rem;
+      --size2: 8rem;
+      --borderRadius: 0;
     }
     
     .rotate {
@@ -41,7 +50,7 @@ function initStyle(root){
       height: 100%;
       padding: min(3vw, 3vh);
       background-size: 100% 100%;
-      background-image: repeating-linear-gradient(calc(-0.01deg*var(--t)), var(--c1) 0 4rem, var(--c2) 4rem 8rem);
+      background-image: repeating-linear-gradient(calc(-0.01deg*var(--t)), var(--c1) 0 var(--size), var(--c2) var(--size) var(--size2));
       overflow: hidden;
     }
     
@@ -52,7 +61,7 @@ function initStyle(root){
       background-image: inherit;
       transform: rotate(calc(0.001deg*var(--t)));
       transform-origin: 50% 50%;
-      /*border-radius: 998rem;*/
+      border-radius: var(--borderRadius);
     }`
   root.appendChild(style)
 }
