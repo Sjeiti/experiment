@@ -6,17 +6,27 @@
 import experiment from './base'
 import {animate} from '../signal/signals'
 
+
+const inst = experiment('rotate',{
+  init
+  ,exit
+  // ,handleAnimate
+  // ,handleResize
+})
+// const {zuper} = inst
+
+let root
 let main
 let mainStyle
 
 function init(_target){
+  root = _target
   initWrapper(_target)
   initStyle(_target)
   initEvents()
 }
 
 function initWrapper(root){
-
   main = element('div', root,{class:'rotate'})
   mainStyle = main.style
   main.addEventListener('click', ()=>{
@@ -66,11 +76,21 @@ function initStyle(root){
   root.appendChild(style)
 }
 
+// let start
+// function handleAnimate(deltaT,millis){
+//   console.log('handleAnimate', arguments) // todo: remove log
+//   start||(start=millis)
+//   const elapsed = millis-start
+//   setCSSProp('t', elapsed)
+// }
+
 function initEvents(){
   animate.add(onAnimate)
 }
 
 function exit(){
+  // zuper.exit()
+  while (root.children.length) root.firstChild.remove()
   animate.remove(onAnimate)
 }
 
@@ -99,4 +119,5 @@ function getRandomColor(){
 
 ////////
 
-export default experiment('rotate', {init, exit}).expose
+// export default experiment('rotate', {init, exit}).expose
+export default inst.expose

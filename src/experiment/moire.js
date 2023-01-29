@@ -6,13 +6,14 @@
 import experiment from './base'
 import {animate} from '../signal/signals'
 import {noise} from '../math/perlin'
-  
+
+let root
 let main
 let mainStyle
 let form
 
 function init(_target){
-
+  root = _target
   initWrapper(_target)
   initStyle(_target)
   initEvents()
@@ -36,17 +37,17 @@ function initWrapper(root){
 
   const name = 'type'
   const type = 'radio'
-    ;[
-      'yellow'
-      ,'one'
-      ,'lines'
-      ,'matrix'
-      ,'circles'
-      ,'petals'
-      ,'bulge'
-      ,'corner'
-      ,'rainbow'
-    ].forEach(value=>{
+  ;[
+    'yellow'
+    ,'one'
+    ,'lines'
+    ,'matrix'
+    ,'circles'
+    ,'petals'
+    ,'bulge'
+    ,'corner'
+    ,'rainbow'
+  ].forEach(value=>{
     const label = element('label',form,{class:'label-'+value})
     element('input',label,{name,value,type})
   })
@@ -99,6 +100,7 @@ function initEvents(){
 }
 
 function exit(){
+  while (root.children.length) root.firstChild.remove()
   animate.remove(onAnimate)
 }
 
