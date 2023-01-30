@@ -24,12 +24,9 @@ const extend = Object.assign
  * @returns {HTMLCanvasElement}
  */
 function init(target){
-
-  console.log('init',target) // todo: remove log
-
-  let canvas = document.createElement('canvas')
-    ,context = canvas.getContext(this.contextType,{preserveDrawingBuffer:true}) // preserveDrawingBuffer is for webgl to save images, but slower than the default false (=swapping instead of copying)
-
+  const canvas = document.createElement('canvas')
+  const context = canvas.getContext(this.contextType,{preserveDrawingBuffer:true}) // preserveDrawingBuffer is for webgl to save images, but slower than the default false (=swapping instead of copying)
+  //
   extend(this,{
     target
     ,canvas
@@ -59,8 +56,6 @@ function init(target){
  */
 function exit() {
   const {target} = this
-  //this.canvas.parentNode&&this.target.removeChild(this.canvas)
-  //this.canvas?.remove()
   resize.remove(this.handleResize)
   animate.remove(this.handleAnimate)
   dragstart.remove(this.handleDragStart)

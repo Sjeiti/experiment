@@ -4,20 +4,22 @@
  * @see module:experiment/base
  */
 import experiment from './base'
-import {animate} from '../signal/signals'
 import {noise} from '../math/perlin'
 
-let root
 let main
 let mainStyle
 let form
 
+const inst = experiment('moire', {
+  init
+  , handleAnimate
+})
+const {zuper} = inst
+
 function init(_target){
-  root = _target
   initWrapper(_target)
   initStyle(_target)
-  initEvents()
-
+  zuper.init(_target)
 }
 
 function initWrapper(root){
@@ -95,14 +97,14 @@ function initStyle(root){
   root.appendChild(style)
 }
 
-function initEvents(){
-  animate.add(onAnimate)
-}
-
-function exit(){
-  while (root.children.length) root.firstChild.remove()
-  animate.remove(onAnimate)
-}
+// function initEvents(){
+//   animate.add(onAnimate)
+// }
+//
+// function exit(){
+//   while (root.children.length) root.firstChild.remove()
+//   animate.remove(onAnimate)
+// }
 
 function onFormChange(e){
   const {target: {name, value}} = e
@@ -116,7 +118,7 @@ function onFormInput(e){
 }
 
 let start
-function onAnimate(deltaT,millis){
+function handleAnimate(deltaT,millis){
   start||(start=millis)
   const speed = 0.0005
   const elapsed = millis-start
@@ -175,7 +177,7 @@ function tryParse(s,data={}){
 
 ////////
 
-export default experiment('moire', {init, exit}).expose
+export default inst.expose
 
 function getStyle(){
   return `

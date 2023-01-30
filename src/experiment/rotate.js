@@ -4,26 +4,19 @@
  * @see module:experiment/base
  */
 import experiment from './base'
-import {animate} from '../signal/signals'
-
 
 const inst = experiment('rotate',{
   init
-  //,exit
   ,handleAnimate
-  // ,handleResize
 })
 const {zuper} = inst
 
-let root
 let main
 let mainStyle
 
 function init(_target){
-  root = _target
   initWrapper(_target)
   initStyle(_target)
-  //initEvents()
   zuper.init(_target)
 }
 
@@ -79,28 +72,10 @@ function initStyle(root){
 
 let start
 function handleAnimate(deltaT,millis){
-  console.log('handleAnimate', arguments) // todo: remove log
   start||(start=millis)
   const elapsed = millis-start
   setCSSProp('t', elapsed)
 }
-
-/*function initEvents(){
-  animate.add(onAnimate)
-}
-
-function exit(){
-  // zuper.exit()
-  while (root.children.length) root.firstChild.remove()
-  animate.remove(onAnimate)
-}
-
-let start
-function onAnimate(deltaT,millis){
-  start||(start=millis)
-  const elapsed = millis-start
-  setCSSProp('t', elapsed)
-}*/
 
 function element(type, prnt, atts, evts) {
   const elm = document.createElement(type)
