@@ -9,11 +9,11 @@ import {animate} from '../signal/signals'
 
 const inst = experiment('rotate',{
   init
-  ,exit
-  // ,handleAnimate
+  //,exit
+  ,handleAnimate
   // ,handleResize
 })
-// const {zuper} = inst
+const {zuper} = inst
 
 let root
 let main
@@ -23,7 +23,8 @@ function init(_target){
   root = _target
   initWrapper(_target)
   initStyle(_target)
-  initEvents()
+  //initEvents()
+  zuper.init(_target)
 }
 
 function initWrapper(root){
@@ -76,15 +77,15 @@ function initStyle(root){
   root.appendChild(style)
 }
 
-// let start
-// function handleAnimate(deltaT,millis){
-//   console.log('handleAnimate', arguments) // todo: remove log
-//   start||(start=millis)
-//   const elapsed = millis-start
-//   setCSSProp('t', elapsed)
-// }
+let start
+function handleAnimate(deltaT,millis){
+  console.log('handleAnimate', arguments) // todo: remove log
+  start||(start=millis)
+  const elapsed = millis-start
+  setCSSProp('t', elapsed)
+}
 
-function initEvents(){
+/*function initEvents(){
   animate.add(onAnimate)
 }
 
@@ -99,7 +100,7 @@ function onAnimate(deltaT,millis){
   start||(start=millis)
   const elapsed = millis-start
   setCSSProp('t', elapsed)
-}
+}*/
 
 function element(type, prnt, atts, evts) {
   const elm = document.createElement(type)

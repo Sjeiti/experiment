@@ -58,13 +58,16 @@ function init(target){
  * Remove the canvas element, remove event listeners
  */
 function exit() {
-  this.canvas.parentNode&&this.target.removeChild(this.canvas)
+  const {target} = this
+  //this.canvas.parentNode&&this.target.removeChild(this.canvas)
+  //this.canvas?.remove()
   resize.remove(this.handleResize)
   animate.remove(this.handleAnimate)
   dragstart.remove(this.handleDragStart)
   drag.remove(this.handleDrag)
   dragend.remove(this.handleDragEnd)
-  this.canvas.removeEventListener('click',this.handleClick)
+  this.canvas?.removeEventListener('click',this.handleClick)
+  while (target.children.length) target.firstChild.remove()
 }
 
 /**
