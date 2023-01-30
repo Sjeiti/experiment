@@ -29,7 +29,7 @@ import rotate from './rotate'
 
 export default {
   glass
-  ,river
+//  ,river
   ,blob
   ,grid
   ,snow
@@ -39,7 +39,7 @@ export default {
   ,clouds
   ,infinitecubes
   ,starzoom
-  ,copyclouds
+//  ,copyclouds
   ,knottywood
   ,touches
   // ,earth
