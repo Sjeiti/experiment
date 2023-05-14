@@ -16,7 +16,7 @@ export default (function(){
 		function () {return new ActiveXObject("Msxml3.XMLHTTP");},
 		function () {return new ActiveXObject("Microsoft.XMLHTTP");}
 	];
- 
+
 	function sendRequest(url,callback,errorCallback,postData) {
 		var oXHR = getXHR()
 			,sMethod = (postData)?'POST':'GET';
@@ -29,7 +29,7 @@ export default (function(){
 		oXHR.onreadystatechange = function () {
 			if (oXHR.readyState!=4) return;
 			if (oXHR.status!=200 && oXHR.status!=304) {
-				errorCallback('HTTP error ' + oXHR.status); // todo: check error stati and flow
+				(errorCallback||console.error)('HTTP error ' + oXHR.status); // todo: check error stati and flow
 				return;
 			}
 			callback(oXHR);
@@ -38,7 +38,7 @@ export default (function(){
 		oXHR.send(postData);
 		return oXHR;
 	}
- 
+
 	/**
 	 * Create an xhttp object
 	 * @name iddqd.network.xhttp.create
@@ -58,7 +58,7 @@ export default (function(){
 		return xmlhttp;
 	}
 	sendRequest.create = getXHR;
- 
+
 	return sendRequest;
 //[
 //	'Content-length'

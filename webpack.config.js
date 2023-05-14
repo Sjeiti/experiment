@@ -20,43 +20,43 @@ module.exports = env => {
     ,devtool: 'source-map'
     ,module: {
       rules: [{
-          test: /\.less$/
-          ,use: [
-              'style-loader' // creates style nodes from JS strings
-              ,'css-loader' // translates CSS into CommonJS
-              ,'less-loader' // compiles Less to CSS, using Node Sass by default
-          ]
+        test: /\.less$/
+        ,use: [
+          'style-loader' // creates style nodes from JS strings
+          ,'css-loader' // translates CSS into CommonJS
+          ,'less-loader' // compiles Less to CSS, using Node Sass by default
+        ]
       },{
-          test: /\.scss$/
-          ,use: [
-              'style-loader' // creates style nodes from JS strings
-              ,'css-loader' // translates CSS into CommonJS
-              ,'sass-loader' // compiles Sass to CSS, using Node Sass by default
-          ]
+        test: /\.scss$/
+        ,use: [
+          'style-loader' // creates style nodes from JS strings
+          ,'css-loader' // translates CSS into CommonJS
+          ,'sass-loader' // compiles Sass to CSS, using Node Sass by default
+        ]
       },{
         test: /\.(log|frag|vert|txt|css)/
         ,use: [{
-            loader: 'raw-loader'
-            ,options: {
-                name: `data/${fileName}`
-            }
+          loader: 'raw-loader'
+          ,options: {
+            name: `data/${fileName}`
+          }
         }]
       },{
         test: /\.(mp3|mp4)$/
         ,use: [{
-            loader: 'file-loader'
-            ,options: {
-                name: `media/${fileName}`
-            }
+          loader: 'file-loader'
+          ,options: {
+            name: `media/${fileName}`
+          }
         }]
       },{
         test: /\.(eot|woff|woff2|ttf|png|jp(e*)g|svg)$/
         ,use: [{
-            loader: 'url-loader'
-            ,options: {
-                limit: 8000 // Convert images < 8kb to base64 strings
-                ,name: `img/${fileName}`
-            }
+          loader: 'url-loader'
+          ,options: {
+            limit: 8000 // Convert images < 8kb to base64 strings
+            ,name: `img/${fileName}`
+          }
         }]
       },{
         test: /\.js$/
@@ -68,7 +68,8 @@ module.exports = env => {
       }]
     }
     ,plugins: [
-      new CopyWebpackPlugin([
+      new CopyWebpackPlugin({
+        patterns: [
           { from: 'src/index.html', to: './'}
 
           //,{ from: 'src/style/screen.css', to: './style/'}
@@ -82,7 +83,8 @@ module.exports = env => {
           ,{ from: 'src/data/root', to: './data/root', ignore:['*.html','*.txt']}
           ,{ from: 'src/data/audio', to: './data/audio'}
           ,{ from: 'src/test.html', to: './'}*/
-      ], {})
+        ]
+      })
       ,new webpack.DefinePlugin({
         _VERSION: JSON.stringify(require('./package.json').version)
         ,_ENV: JSON.stringify(env||{})
