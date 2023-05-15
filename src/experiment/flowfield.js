@@ -1,6 +1,6 @@
 import experiment from './base'
 import perlin from '../math/perlin'
-import pool from '../pattern/pool'
+// import pool from '../pattern/pool'
 import color from '../math/color'
 
 let inst = experiment('flowfield',{
@@ -21,12 +21,12 @@ let inst = experiment('flowfield',{
 	,timeScale = 0.0009
 	,particleSpeed = 0.25
 	,flowfieldScale = 2
-	,flowfield = []
+	,flowfieldInstances = []
 	,canvas,context
 	,canvasTemp = document.createElement('canvas')
 	,contextTemp = canvasTemp.getContext("2d")
 	,aFPos = [[-1,-1],[0,-1],[1,-1],[1,0],[1,1],[0,1],[-1,1],[-1,0]]
-	,point = pool(point_)
+	,point = /*pool*/(point_)
 ;
 
 function init(_target) {
@@ -82,11 +82,11 @@ function handleAnimate(deltaT,millis,frame){
 	//
 	let aCheck = []
 		,oPoint, iAge, n, x, y, xy, fSpeed, iModMillis;
-	flowfield.length = 0;
+	flowfieldInstances.length = 0;
 	i = particlesNum;
 	while (--i) {
 		oPoint = particles[i];
-		oPoint.run(deltaT,millis,flowfield);
+		oPoint.run(deltaT,millis,flowfieldInstances);
 		iAge = oPoint.getAge();
 		x = oPoint.getX()<<0;
 		y = oPoint.getY()<<0;
@@ -112,7 +112,7 @@ function addParticle() {
 }
 
 function removeParticle() {
-	particles.pop().drop();
+	// particles.pop().drop();
 	particlesNum = particles.length;
 }
 
