@@ -1,53 +1,7 @@
-import {
-  glass
-  , blob
-  , grid
-  , snow
-  , boids
-  , hypno
-  , spiralmap
-  , clouds
-  , infinitecubes
-  , starzoom
-  , knottywood
-  , touches
-  , marbles
-  , vertical
-  , fire
-  , plasma
-  , radialdifference
-  , radialgradient
-  , bezier
-  , moire
-  , rotate
-} from './experiment'
+import * as experiments from './experiment'
 import {createElement} from './utils/html'
 
 window.onerror = alert
-
-const experiments = /** @type {Object.<string, Experiment>} */{
-  glass
-  , blob
-  , grid
-  , snow
-  , boids
-  , hypno
-  , spiralmap
-  , clouds
-  , infinitecubes
-  , starzoom
-  , knottywood
-  , touches
-  , marbles
-  , vertical
-  , fire
-  , plasma
-  , radialdifference
-  , radialgradient
-  , bezier
-  , moire
-  , rotate
-}
 
 const experimentWrapper = document.querySelector('.experiment')
 
