@@ -253,4 +253,4 @@ function orientationhandler(e){
   // use e.gamma, e.beta, and e.alpha according to dev.w3.org/geo/api/spec-source-orientation
 }
 
-export default inst.expose
+export const radialdifference = inst.expose

@@ -18,7 +18,7 @@ let random = Math.random
     ,world
     //
     ,numMarbles = 16
-    ,marbles = []
+    ,marblesList = []
     ,marbleSelected
     //
     ,w,h
@@ -68,9 +68,9 @@ function init(){
           world.gravity.y = 0
 
           for (let i=0;i<numMarbles;i++) {
-            marbles.push(setMarble())
+            marblesList.push(setMarble())
           }
-          Matter.World.add(world,marbles);
+          Matter.World.add(world,marblesList);
           isMatterLoaded = true
       },err=>console.warn(err))
 }
@@ -87,7 +87,7 @@ function handleAnimate(fps,millis){
       ,h = inst.h
       ,dw = w/2
       ,dh = h/2
-  marbles.forEach(marble=>{
+  marblesList.forEach(marble=>{
     let position = marble.position
         ,x = position.x
         ,y = position.y
@@ -146,7 +146,7 @@ function handleAnimate(fps,millis){
   if (randomPulseTime<millis) {
     setRandomPulseTime(500,5000)
     if (!inst.isMouseDown) {
-      let rndMarble = marbles[Math.random()*numMarbles<<0]
+      let rndMarble = marblesList[Math.random()*numMarbles<<0]
       Body.setVelocity(rndMarble, {x:rnd(22),y:rnd(11)})
     }
   }
@@ -163,7 +163,7 @@ function handleAnimate(fps,millis){
   // view
   let gl = this.gl
       ,program = this.program
-  marbles.forEach((marble,i)=>{
+  marblesList.forEach((marble,i)=>{
     let location
         ,position = marble.position
         ,baseName = 'marbles['+i+']'
@@ -234,7 +234,7 @@ function handleDragStart(add,touches,e){
       ,y = -(pos.y - inst.h/2)
       ,closest
       ,closestD = Number.POSITIVE_INFINITY
-  marbles.forEach(marble=>{
+  marblesList.forEach(marble=>{
     let pos = marble.position
         ,dx = x-pos.x
         ,dy = y-pos.y
@@ -282,4 +282,4 @@ function setRandomPulseTime(mint=10000,maxt=15000){
   randomPulseTime = Date.now() + Math.round(mint+(maxt-mint)*Math.random())
 }
 
-export default inst.expose
+export const marbles = inst.expose

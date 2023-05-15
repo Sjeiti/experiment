@@ -168,4 +168,4 @@ function cos(f) {
   return sin(f+PIH)
 }
 
-export default inst.expose
+export const snow = inst.expose

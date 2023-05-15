@@ -125,4 +125,4 @@ function rnd(f) {
   return f*(Math.random()-0.5)
 }
 
-export default inst.expose
+export const plasma = inst.expose

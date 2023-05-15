@@ -9,4 +9,4 @@ let inst = webgl('knottywood','/static/glsl/lines.glsl',{
     u_image0: '/static/img/knottywood.jpg'
   }
 })
-export default inst.expose
+export const lines = inst.expose

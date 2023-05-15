@@ -99,4 +99,4 @@ function handleCanvasClick() {
   })
 }
 
-export default inst.expose
+export const glass = inst.expose

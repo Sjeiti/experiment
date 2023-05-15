@@ -189,4 +189,4 @@ function point_(_x,_y) {
 	};
 }
 
-export default inst.expose;
+export const flowfield = inst.expose

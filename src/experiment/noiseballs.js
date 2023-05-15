@@ -274,4 +274,4 @@ function onOrientation(evt){
   orientationY = evt.beta
 }
 
-export default inst.expose
+export const noiseballs = inst.expose

@@ -93,7 +93,4 @@ function getRandomColor(){
   return '#'+('00000'+(Math.random()*(1<<24)|0).toString(16)).slice(-6)
 }
 
-////////
-
-// export default experiment('rotate', {init, exit}).expose
-export default inst.expose
+export const rotate = inst.expose

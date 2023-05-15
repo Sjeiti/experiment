@@ -1,58 +1,28 @@
-import glass from './glass'
-import river from './river'
-import blob from './blob'
-import grid from './grid'
-import snow from './snow'
-import boids from './boids'
-import hypno from './hypno'
-import spiralmap from './spiralmap'
-import clouds from './clouds'
-import infinitecubes from './infinitecubes'
-import starzoom from './starzoom'
-import copyclouds from './copyclouds'
-import knottywood from './knottywood'
-import touches from './touches'
-import earth from './earth'
-import marbles from './marbles'
-import vertical from './vertical'
-import noiseballs from './noiseballs'
-//import voronoi from './voronoi'
-import fire from './fire'
-import plasma from './plasma'
-import webgl from './webgl'
-//import flowfield from './flowfield'
-import radialdifference from './radialdifference'
-import radialgradient from './radialgradient'
-import bezier from './bezier'
-import moire from './moire'
-import rotate from './rotate'
-
-export default {
-  glass
-//  ,river
-  ,blob
-  ,grid
-  ,snow
-  ,boids
-  ,hypno
-  ,spiralmap
-  ,clouds
-  ,infinitecubes
-  ,starzoom
-//  ,copyclouds
-  ,knottywood
-  ,touches
-  // ,earth
-  ,marbles
-  ,vertical
-  //,voronoi
-  ,fire
-  ,plasma
-  // ,webgl
-  //,flowfield
-  ,radialdifference
-  ,bezier
-  ,radialgradient
-  ,moire
-  ,rotate
-}
+export * from './glass'
+export * from './blob'
+export * from './grid'
+export * from './snow'
+export * from './boids'
+export * from './hypno'
+export * from './spiralmap'
+export * from './clouds'
+export * from './infinitecubes'
+export * from './starzoom'
+export * from './knottywood'
+export * from './touches'
+export * from './marbles'
+export * from './vertical'
+export * from './fire'
+export * from './plasma'
+export * from './radialdifference'
+export * from './radialgradient'
+export * from './bezier'
+export * from './moire'
+export * from './rotate'
+// export * from './voronoi'
+// export * from './river'
+// export * from './copyclouds'
+// export * from './earth'
+// export * from './noiseballs'
+// export * from './webgl'
+// export * from './flowfield'

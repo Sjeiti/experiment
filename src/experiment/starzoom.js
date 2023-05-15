@@ -73,4 +73,4 @@ function handleResize(){
   imgData = context.getImageData(0,0,w,h)
 }
 
-export default inst.expose
+export const starzoom = inst.expose
