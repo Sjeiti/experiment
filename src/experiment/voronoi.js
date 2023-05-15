@@ -1,11 +1,17 @@
+import Voronoi from 'voronoi' // todo: exclude, use loadScript and CDN
 import experiment from './base'
 import perlin from '../math/perlin'
 import color from '../math/color'
 import lcg from '../math/lcg'
-import pool from '../pattern/pool'
+// import pool from '../pattern/pool'
 import {dragstart,drag,dragend} from '../signal/signals'
-import Voronoi from 'voronoi' // todo: exclude, use loadScript and CDN
 // import {loadScript} from '../utils/utils'
+
+const multiplier = 1664525
+const increment = 1013904223
+const modulus = 4294967296
+let seed = 12
+const r = _seed => seed = ( (_seed||seed) * multiplier + increment ) % modulus
 
 let inst = experiment('voronoi',{
     init
@@ -17,7 +23,7 @@ let inst = experiment('voronoi',{
   //
   // private variables
   ,millis = Date.now
-  ,random = lcg.random
+  ,random = r//lcg.random
   ,noise = perlin.noise
   ,PI = Math.PI
   ,PI2 = 2*PI
@@ -48,7 +54,7 @@ let inst = experiment('voronoi',{
   //
   ,bMouseDown = false
   //
-  ,getSite = pool(function(x,y,r){
+  ,getSite = /*pool*/(function(x,y,r){
     let oReturn = {x:x,y:y,r:r,reset:reset};
     function reset(x,y,r) {
       oReturn.x = x;
@@ -65,7 +71,7 @@ let inst = experiment('voronoi',{
   ,iLastX,iLastY
 ;
 
-  function init(_target){
+function init(_target){
   mTarget = _target;
   mCanvas = zuper.init(_target);
   oContext = inst.context;
@@ -115,13 +121,14 @@ function handleResize(){
   iW = mTarget.clientWidth;
   iH = mTarget.clientHeight;
   let iGridAdd = ceilGrid(iGridRadius);
-  iGridX = ceilGrid(iW) + 2*iGridAdd;
-  iGridY = ceilGrid(iH) + 2*iGridAdd;
+  iGridX = ceilGrid(iW) + 2*iGridAdd + 0.5*iGridSize*Math.random();
+  iGridY = ceilGrid(iH) + 2*iGridAdd + 0.5*iGridSize*Math.random();
   mCanvas.width = iW;
   mCanvas.height = iH;
   oBox = {xl:0,xr:iW,yt:0,yb:iH};
   setContextStyle();
 }
+
 function handleAnimate(deltaT,millis) {
   //
   //
@@ -144,7 +151,7 @@ function handleAnimate(deltaT,millis) {
     for (let k = 0; k < iGridY; k++) {
       let iX = i - ceil(fX/iGridSize)
         ,iY = k - ceil(fY/iGridSize)
-        ,iSeed = 131071*iX*iX + 8191*iY*iY
+        ,iSeed = 131071*iX*iX + 38191*iY*iY
         ,fRandom = random(iSeed)
         /*,fNoise1 = 3075 + fNoiseScale*iX
         ,fNoise2 = 4571 + fNoiseScale*iY
@@ -152,7 +159,7 @@ function handleAnimate(deltaT,millis) {
         ,bRandom = fRandom>0.5
         ,fSpd = fRandom*67%1
         ,fRadians = fRandom*2*PI + 2E2*PI + (bRandom?1:-1)*iCounter*5E-5*fSpd
-        ,fRndRadius = iGridRadius//*(127*fRandom%1)
+        ,fRndRadius = iGridRadius//*(127*fRandom%1)//
         ,x = i*iGridSize + fRndRadius*sin(fRadians) - iGridRadius + fX%iGridSize
         ,y = k*iGridSize + fRndRadius*cos(fRadians) - iGridRadius + fY%iGridSize
       ;
@@ -164,7 +171,7 @@ function handleAnimate(deltaT,millis) {
   // cells
   aCells = oDiagram.cells;
   iCells = aCells.length;
-//		console.log('iCells',iCells); // log
+  //		console.log('iCells',iCells); // log
   while (iCells--) {
     let oCell = aCells[iCells]
       ,site = oCell.site
@@ -208,7 +215,7 @@ function handleAnimate(deltaT,millis) {
       //
       oContext.closePath();
     }
-    site.drop();
+    // site.drop();
   }
   // edges
   oContext.beginPath();
@@ -249,4 +256,4 @@ function cos(f) {
   return sin(f+PIH);
 }
 
-export default inst.expose;
+export const voronoi = inst.expose

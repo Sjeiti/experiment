@@ -12,7 +12,7 @@ let inst = experiment('plasma',{
     ,handleClick
   })
   ,zuper = inst.zuper
-  
+
   ,scale = 1
   ,center = vector(0,0)
   ,points = []
@@ -55,7 +55,7 @@ function handleAnimate(deltaT,millis) {
   context.rect(0,0,w,h)
   context.fill()
   context.closePath()
- 
+
   context.fillStyle = strokeStyle
   const f = 0.005
   const pn = (x,y)=>
@@ -101,7 +101,7 @@ function handleAnimate(deltaT,millis) {
         const p3 = ln[j+2]
         context.bezierCurveTo(...c1,...c2,...p3)
         j += 2
-        //const q = 
+        //const q =
         //context.quadraticCurveTo(...q,...p)
         //context.lineTo(...p)
       }
@@ -157,4 +157,4 @@ function rnd(f) {
   return f*(Math.random()-0.5)
 }
 
-export default inst.expose
+export const bezier = inst.expose

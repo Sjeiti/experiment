@@ -226,4 +226,4 @@ function ring(touch){
   return returnValue
 }
 
-export default inst.expose
+export const touches = inst.expose

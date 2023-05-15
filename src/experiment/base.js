@@ -5,7 +5,7 @@
 import {resize,animate,dragstart,drag,dragend,experimentFrame} from '../signal/signals'
 
 const extend = Object.assign
-  ,basePrototype = {
+  ,basePrototype = /** @name Experiment */{
     init
     ,exit
     ,pause
@@ -61,7 +61,7 @@ function exit() {
   dragstart.remove(this.handleDragStart)
   drag.remove(this.handleDrag)
   dragend.remove(this.handleDragEnd)
-  this.canvas?.removeEventListener('click',this.handleClick)
+  this.canvas&&this.canvas.removeEventListener('click',this.handleClick)
   while (target.children.length) target.firstChild.remove()
 }
 
@@ -97,7 +97,7 @@ function handleResize() {
  * @param {number} millis
  */
 function handleAnimate(deltaT,millis) {
-  experimentFrame.dispatch(this.canvas)
+  experimentFrame.dispatch(this.canvas, deltaT, millis)
   // console.warn('overwrite experimentInstance.handleAnimate',deltaT,millis)
 }
 
@@ -147,14 +147,19 @@ function handleClick(){
  * @param {string} name
  * @param {object} extension
  * @param {string} contextType
- * @returns {basePrototype}
+ * @returns {Experiment}
  */
 export default function(name,extension,contextType) {
   let inst = Object.create(basePrototype,baseProperties)
-  extend(inst,{
-    name: name || 'noName',contextType: contextType || '2d'
+  extend(inst,/** @name Experiment */{
+    /** @type {string} */
+    name: name || 'noName'
+    /** @type {string} */
+    ,contextType: contextType || '2d'
     //
+    /** @type {Experiment} */
     ,expose: {} // The property the child object should return (type could be object, Array or function).
+    /** @type {Experiment} */
     ,zuper: {} // Alas, super is reserved
   })
   //
@@ -168,7 +173,7 @@ export default function(name,extension,contextType) {
       inst[s] = basePrototype[s].bind(inst)
     }
   }
-  Object.freeze(inst.zuper); // Because we can
+  Object.freeze(inst.zuper) // Because we can
   //
   // extend the instance
   if (extension) {

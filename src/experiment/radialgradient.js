@@ -135,4 +135,6 @@ function array(num, map){
   return map?a.map(map):a
 }
 
-export default experiment('radialgradient', {init, exit}).expose
+const inst = experiment('radialgradient', {init, exit})
+
+export const radialgradient = inst.expose

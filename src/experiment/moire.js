@@ -177,7 +177,7 @@ function tryParse(s,data={}){
 
 ////////
 
-export default inst.expose
+export const moire = inst.expose
 
 function getStyle(){
   return `

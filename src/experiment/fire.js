@@ -4,4 +4,5 @@
  * @see module:experiment/base
  */
 import webgl from './webgl'
-export default webgl('fire','/static/glsl/fire.glsl').expose
+const inst = webgl('fire','/static/glsl/fire.glsl')
+export const fire = inst.expose

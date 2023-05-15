@@ -160,4 +160,4 @@ function buildPattern() {
   patternContext.fill()
 }
 
-export default inst.expose
+export const vertical = inst.expose

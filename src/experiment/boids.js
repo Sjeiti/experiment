@@ -604,4 +604,4 @@ function getNeighbours(boid) {
   return aNb
 }
 
-export default inst.expose
+export const boids = inst.expose

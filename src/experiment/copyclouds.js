@@ -73,4 +73,4 @@ function handleAnimate(deltaT,millis) {
   context.drawImage(canvasTmp,0,0)
 }
 
-export default inst.expose
+export const copyclouds = inst.expose

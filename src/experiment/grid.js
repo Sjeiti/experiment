@@ -98,4 +98,4 @@ function getPattern(w,h,fn){
   return context.createPattern(patternCanvas,'repeat')
 }
 
-export default inst.expose
+export const grid = inst.expose

@@ -5,4 +5,4 @@
  */
 import webgl from './webgl'
 let inst = webgl('infinitecubes','/static/glsl/infinitecubes.glsl')
-export default inst.expose
+export const infinitecubes = inst.expose

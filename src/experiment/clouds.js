@@ -4,4 +4,6 @@
  * @see module:experiment/base
  */
 import webgl from './webgl'
-export default webgl('clouds','/static/glsl/clouds.glsl').expose
+
+const inst = webgl('clouds','/static/glsl/clouds.glsl')
+export const clouds = inst.expose
