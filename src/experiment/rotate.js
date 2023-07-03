@@ -1,6 +1,6 @@
 /**
- * Moire glitch
- * @module experiment/moire
+ * Recursive rotation
+ * @module experiment/rotate
  * @see module:experiment/base
  */
 import experiment from './base'

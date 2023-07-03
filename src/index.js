@@ -15,6 +15,14 @@ Object.entries(experiments).forEach(([name, /**Experiment*/experiment])=>{
     .addEventListener('click', onClickExperimentButton.bind(null, experiment))
 })
 
+const elmHeight = document.querySelector('#height')
+document.querySelector('#height').addEventListener('change', checkHeight)
+checkHeight()
+function checkHeight(){
+  experimentWrapper.classList.toggle('experiment--height', elmHeight.checked)
+  window.dispatchEvent(new Event('resize'))
+}
+
 /**
  * Select an experiment
  * @param experiment {Experiment}
