@@ -42,7 +42,9 @@ function init(_target){
   <use xlink:href="#tree" style="--scale: 0.778; animation-delay: 942.932ms;"></use>
   <use xlink:href="#tree" style="--scale: 0.829; animation-delay: 59.707ms;"></use>
   <use xlink:href="#tree" style="--scale: 0.884; animation-delay: 268.505ms;"></use>
-  <use xlink:href="#tree" style="--scale: 0.940; animation-delay: 988.430ms;"></use>
+  <use xlink:href="#tree" style="--scale: 0.940; animation-delay: 988.430ms;">
+      <use xlink:href="#tree" style="transform: translate(1px,10px) rotate(45deg); fill: red;"></use>
+  </use>
 
   <style>
     .svg-trees {
@@ -61,11 +63,13 @@ function init(_target){
 			100% { transform: translate(100%, 0) scale(var(--scale));	 }
 		}
 
-		use {
+		g {
+		  position: relative;
 			transform: translate(1E9px, 0);
 			animation: hor calc(var(--t) * (1 / var(--scale))) linear infinite;
 			color: color-mix(in lch, var(--d) calc(var(--scale) * 100%), var(--l));
 		}
+		use use { animation: none; }
   </style>
   <defs>
     <symbol id="tree" viewBox="-10 -64 20 67">
@@ -73,23 +77,38 @@ function init(_target){
     </symbol>
   </defs>
 </svg>`
-
-    // const svg = document.querySelector('.svg-trees')
-    // Array.from(svg.querySelectorAll('use')).forEach(use=>use.remove())
-    // const NSSVG = 'http://www.w3.org/2000/svg'
-    // const NSXLINK = 'http://www.w3.org/1999/xlink'
-    // const fragment = document.createDocumentFragment()
-    // Array.from(new Array(47)).map((o,i,a)=>{
-    //   const scale = (0.3 + 0.7*Math.pow(i/a.length, 2)).toFixed(3)
-    //   const delay = (Math.random()*999).toFixed(3)
-    //   const use = document.createElementNS(NSSVG, 'use')
-    //   use.setAttributeNS(NSXLINK, 'href', '#tree')
-    //   use.setAttribute('style', `--scale: ${scale}; animation-delay: ${delay}ms;`)
-    //   fragment.appendChild(use)
-    // })
-    // svg.appendChild(fragment)
-
   )
+
+  const svg = document.querySelector('.svg-trees')
+  Array.from(svg.querySelectorAll('use')).forEach(use=>use.remove())
+  const NSSVG = 'http://www.w3.org/2000/svg'
+  const NSXLINK = 'http://www.w3.org/1999/xlink'
+  const fragment = document.createDocumentFragment()
+  Array.from(new Array(47)).map((o,i,a)=>{
+    const scale = (0.3 + 0.7*Math.pow(i/a.length, 2)).toFixed(3)
+    const delay = (Math.random()*999).toFixed(3)
+
+    const g = document.createElementNS(NSSVG, 'g')
+    g.setAttribute('style', `--scale: ${scale}; animation-delay: ${delay}ms;`)
+
+    const use = document.createElementNS(NSSVG, 'use')
+    use.setAttributeNS(NSXLINK, 'href', '#tree')
+    g.appendChild(use)
+
+    const branch = document.createElementNS(NSSVG, 'use')
+    branch.setAttributeNS(NSXLINK, 'href', '#tree')
+    branch.setAttribute('style', `
+      transform-origin: center bottom;
+      transform:
+          translate(0,-${6+20*Math.random()}px)
+          rotate(${-50+100*Math.random()}deg)
+          scale(${0.1+0.3*Math.random()},${0.5*Math.random()});
+    `)
+    g.appendChild(branch)
+
+    fragment.appendChild(g)
+  })
+  svg.appendChild(fragment)
 
   zuper.init(_target)
 }
