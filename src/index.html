@@ -21,6 +21,9 @@
         width: 100%;
         height: 100%;
       }
+			.experiment--height {
+				height: 16rem;
+      }
 			.menu {
 				position: absolute;
 				left: 0;
@@ -75,7 +78,9 @@
     <menu class="menu">
       <input class="menu__input" type="checkbox" id="menu" />
       <label class="menu__label" for="menu">[menu]</label>
-      <ul class="menu__list"></ul>
+      <ul class="menu__list">
+        <li><label>Height <input type="checkbox" id="height" /></label></li>
+      </ul>
     </menu>
     <script>
       window.onerror = function(messageOrEvent, source, lineno, colno, error) {
