@@ -194,7 +194,7 @@ function init(_target){
   //   fragment.appendChild(g)
   // })
   // svg.appendChild(fragment)
-  zuper.init(_target)
+  zuper.init(_target).remove()
 }
 
 

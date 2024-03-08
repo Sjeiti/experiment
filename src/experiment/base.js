@@ -61,7 +61,8 @@ function exit() {
   dragstart.remove(this.handleDragStart)
   drag.remove(this.handleDrag)
   dragend.remove(this.handleDragEnd)
-  this.canvas&&this.canvas.removeEventListener('click',this.handleClick)
+  this.canvas?.removeEventListener('click',this.handleClick)
+  this.canvas?.remove()
   while (target.children.length) target.firstChild.remove()
 }
 

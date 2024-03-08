@@ -17,7 +17,7 @@ let mainStyle
 function init(_target){
   initWrapper(_target)
   initStyle(_target)
-  zuper.init(_target)
+  zuper.init(_target).remove()
 }
 
 function initWrapper(root){
