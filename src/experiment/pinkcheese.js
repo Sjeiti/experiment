@@ -18,6 +18,10 @@ let main
 let mainStyle
 const holeStyles = []
 
+const div = document.createElement('div')
+div.innerHTML = '<label><input type="checkbox"><div></div></label>'
+const blueprint = div.querySelector('label')
+
 function init(_target){
   initWrapper(_target)
   initStyle(_target)
@@ -28,17 +32,7 @@ function initWrapper(root){
   main = element('div', root,{class:name})
   mainStyle = main.style
 
-  const div = document.createElement('div')
-  div.innerHTML = '<label><input type="checkbox"><div></div></label>'
-  const blueprint = div.querySelector('label')
-  Array.from(new Array(22)).forEach(()=>{
-    const inst = blueprint.cloneNode(true)
-    const div = inst.querySelector('div')
-    const {style} = div
-    holeStyles.push(style)
-    setHoleStyle(style)
-    main.appendChild(inst)
-  })
+  fillMain()
 
   setColor('#F04')
   main.addEventListener('click', onMainClick)
@@ -85,10 +79,26 @@ function initStyle(root){
   root.appendChild(style)
 }
 
+function fillMain(){
+  while (main.children.length) main.firstChild.remove()
+  const {body:{clientHeight:h,clientWidth:w}} = document
+  const num = 2 + (4E-5*w*h<<0)
+  console.log('num',num)
+  Array.from(new Array(num)).forEach(()=>{
+    const inst = blueprint.cloneNode(true)
+    const div = inst.querySelector('div')
+    const {style} = div
+    //holeStyles.push(style)
+    setHoleStyle(style)
+    main.appendChild(inst)
+  })
+}
+
 function onMainClick(e) {
   if(e.target.classList.contains(name)){
     setColor(getRandomColor())
-    holeStyles.forEach(setHoleStyle)
+    fillMain()
+    //holeStyles.forEach(setHoleStyle)
   }
 }
 
