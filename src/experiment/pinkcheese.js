@@ -51,38 +51,36 @@ function initStyle(root){
   --size: 1em;
   --color: #F04;
   --color-dark: #FA0044;
-
-
+  
   position: relative;
   width: 100%;
   height: 100%;
   background-color: var(--color);
   background-image: radial-gradient(circle at 60% 90%, var(--color) 0, var(--color-dark) 50%);
   
-  div {
-    position: absolute;
-    display: block;
-    width: 40em;
-    height: 40em;
-    transform: translate(-50%,-50%);
-    border-radius: 50%;
-    box-shadow:
-      1em 2em 1em #FFF2,
-      calc(4*var(--size)) calc(3*var(--size)) 3em 1em #0001 inset,
-      calc(5*var(--size)) calc(4*var(--size)) 8em 5em #0002 inset,
-      -1em -2em 1em #0001
-    ;
-    background-color: var(--color-dark);
-  }
-  input {
-    display: none;
-    &:checked ~ div {
-      --size: -1em;
-      background-color: var(--color);
-    }
-  }
 }
-
+.${name} div {
+  position: absolute;
+  display: block;
+  width: 40em;
+  height: 40em;
+  transform: translate(-50%,-50%);
+  border-radius: 50%;
+  box-shadow:
+    1em 2em 1em #FFF2,
+    calc(4*var(--size)) calc(3*var(--size)) 3em 1em #0001 inset,
+    calc(5*var(--size)) calc(4*var(--size)) 8em 5em #0002 inset,
+    -1em -2em 1em #0001
+  ;
+  background-color: var(--color-dark);
+}
+.${name} input {
+  display: none;
+}
+.${name} input :checked ~ div {
+  --size: -1em;
+  background-color: var(--color);
+}
 `
   root.appendChild(style)
 }
