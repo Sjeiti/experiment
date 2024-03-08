@@ -6,6 +6,7 @@ import color from '../math/color'
  * @see module:experiment/base
  */
 import experiment from './base'
+import {requestAnimationFrame} from '../utils/utils'
 const name = 'pinkcheese'
 
 const inst = experiment(name,{
@@ -16,7 +17,6 @@ const {zuper} = inst
 
 let main
 let mainStyle
-const holeStyles = []
 
 const div = document.createElement('div')
 div.innerHTML = '<label><input type="checkbox"><div></div></label>'
@@ -32,7 +32,7 @@ function initWrapper(root){
   main = element('div', root,{class:name})
   mainStyle = main.style
 
-  fillMain()
+  requestAnimationFrame(fillMain)
 
   setColor('#F04')
   main.addEventListener('click', onMainClick)
@@ -61,10 +61,10 @@ function initStyle(root){
   transform: translate(-50%,-50%);
   border-radius: 50%;
   box-shadow:
-    1em 2em 1em #FFF2,
+    calc(1*var(--size)) calc(2*var(--size)) 1em #FFF2,
     calc(4*var(--size)) calc(3*var(--size)) 3em 1em #0001 inset,
     calc(5*var(--size)) calc(4*var(--size)) 8em 5em #0002 inset,
-    -1em -2em 1em #0001
+    calc(-1*var(--size)) calc(-2*var(--size)) 1em #0001
   ;
   background-color: var(--color-dark);
 }
@@ -74,6 +74,7 @@ function initStyle(root){
 .${name} input:checked ~ div {
   --size: -1em;
   background-color: var(--color);
+  background-image: radial-gradient(circle at 33% 33%, #fff6 0, transparent 35%);
 }
 `
   root.appendChild(style)
@@ -81,24 +82,21 @@ function initStyle(root){
 
 function fillMain(){
   while (main.children.length) main.firstChild.remove()
-  const {body:{clientHeight:h,clientWidth:w}} = document
+  const {clientHeight:h,clientWidth:w} = main
   const num = 2 + (4E-5*w*h<<0)
-  console.log('num',num)
   Array.from(new Array(num)).forEach(()=>{
     const inst = blueprint.cloneNode(true)
     const div = inst.querySelector('div')
     const {style} = div
-    //holeStyles.push(style)
     setHoleStyle(style)
     main.appendChild(inst)
   })
 }
 
-function onMainClick(e) {
+function onMainClick(e){
   if(e.target.classList.contains(name)){
     setColor(getRandomColor())
     fillMain()
-    //holeStyles.forEach(setHoleStyle)
   }
 }
 
@@ -109,7 +107,7 @@ function setColor(colorMain){
 
 }
 
-function setHoleStyle(holeStyle) {
+function setHoleStyle(holeStyle){
   const size = 0.05*(1 + 2*Math.random())+'rem'
   Object.assign(holeStyle, {
     left: Math.random()*100+'%',
@@ -127,7 +125,7 @@ function handleAnimate(deltaT,millis){
   setCSSProp('t', elapsed)
 }
 
-function element(type, prnt, atts, evts) {
+function element(type, prnt, atts, evts){
   const elm = document.createElement(type)
   atts&&Object.entries(atts).forEach(([name,value])=>elm.setAttribute(name,value))
   evts&&Object.entries(evts).forEach(([name,value])=>elm.addEventListener(name,value))
@@ -135,7 +133,7 @@ function element(type, prnt, atts, evts) {
   return elm
 }
 
-function setCSSProp(name, value) {
+function setCSSProp(name, value){
   mainStyle.setProperty(`--${name}`, value)
 }
 
