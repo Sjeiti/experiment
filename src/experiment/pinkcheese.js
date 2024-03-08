@@ -77,7 +77,7 @@ function initStyle(root){
 .${name} input {
   display: none;
 }
-.${name} input :checked ~ div {
+.${name} input:checked ~ div {
   --size: -1em;
   background-color: var(--color);
 }
