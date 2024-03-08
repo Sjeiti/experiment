@@ -1,6 +1,6 @@
 module.exports = {
   root: true,
-  parser: 'babel-eslint',
+  parser: '@babel/eslint-parser',
   parserOptions: {
     sourceType: 'module'
   },
@@ -25,10 +25,10 @@ module.exports = {
     'space-before-blocks': ['error', 'never'],
     'space-before-function-paren': ['error', 'never'],
 
-    'comma-style': ['error','first'],
-    'comma-spacing': ['error', { before: false, after: true }],
+    // 'comma-style': ['error','first'],
+    // 'comma-spacing': ['error', { before: false, after: true }],
 
-    'require-jsdoc': 2,
+    // 'require-jsdoc': 2,
     'valid-jsdoc': ['error', { requireReturn: false, requireParamDescription: false, requireReturnDescription: false }],
   }
 }
