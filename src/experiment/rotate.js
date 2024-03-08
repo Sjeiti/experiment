@@ -1,6 +1,6 @@
 /**
- * Moire glitch
- * @module experiment/moire
+ * Recursive rotation
+ * @module experiment/rotate
  * @see module:experiment/base
  */
 import experiment from './base'
@@ -17,7 +17,7 @@ let mainStyle
 function init(_target){
   initWrapper(_target)
   initStyle(_target)
-  zuper.init(_target)
+  zuper.init(_target).remove()
 }
 
 function initWrapper(root){
