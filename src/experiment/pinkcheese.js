@@ -8,6 +8,7 @@ import color from '../math/color'
 import experiment from './base'
 import {requestAnimationFrame} from '../utils/utils'
 const name = 'pinkcheese'
+const colorWhite = color(255,255,255)
 
 const inst = experiment(name,{
   init
@@ -45,13 +46,15 @@ function initStyle(root){
   --size: 1em;
   --color: #F04;
   --color-dark: #FA0044;
+  --color-light: #F2B;
   
   position: relative;
   width: 100%;
   height: 100%;
   background-color: var(--color);
-  background-image: radial-gradient(circle at 60% 90%, var(--color) 0, var(--color-dark) 50%);
-  
+  background-image: radial-gradient(circle at 70% 140%, #fff2 0, transparent 50% 70%, #0002 100%)
+  overflow: hidden;
+  transition: all 300ms ease;
 }
 .${name} div {
   position: absolute;
@@ -61,35 +64,46 @@ function initStyle(root){
   transform: translate(-50%,-50%);
   border-radius: 50%;
   box-shadow:
-    calc(1*var(--size)) calc(2*var(--size)) 1em #FFF2,
-    calc(4*var(--size)) calc(3*var(--size)) 3em 1em #0001 inset,
-    calc(5*var(--size)) calc(4*var(--size)) 8em 5em #0002 inset,
-    calc(-1*var(--size)) calc(-2*var(--size)) 1em #0001
+    calc(1*var(--size)) calc(1*var(--size)) 3em #FFF2,
+    calc(6*var(--size)) calc(6*var(--size)) 12em 4em #0001 inset,
+    calc(5*var(--size)) calc(5*var(--size)) 8em 5em #0002 inset,
+    calc(-7*var(--size)) calc(-7*var(--size)) 9em 0 var(--color) inset,
+    calc(-1*var(--size)) calc(-1*var(--size)) 2em #0001
   ;
   background-color: var(--color-dark);
+  transition: all 300ms ease;
 }
 .${name} input {
   display: none;
 }
 .${name} input:checked ~ div {
   --size: -1em;
-  background-color: var(--color);
-  background-image: radial-gradient(circle at 33% 33%, #fff6 0, transparent 35%);
+  box-shadow:
+    calc(1*var(--size)) calc(1*var(--size)) 2em #FFF2,
+    calc(3*var(--size)) calc(3*var(--size)) 3em 1em #0001 inset,
+    calc(5*var(--size)) calc(5*var(--size)) 8em 5em #0002 inset,
+    calc(9*var(--size)) calc(9*var(--size)) 4em 13em var(--color) inset,
+    calc(-4*var(--size)) calc(-4*var(--size)) 2em #0001
+  ;
+  background-color: var(--color-light);
 }
 `
   root.appendChild(style)
 }
 
 function fillMain(){
-  while (main.children.length) main.firstChild.remove()
   const {clientHeight:h,clientWidth:w} = main
-  const num = 2 + (4E-5*w*h<<0)
-  Array.from(new Array(num)).forEach(()=>{
-    const inst = blueprint.cloneNode(true)
-    const div = inst.querySelector('div')
-    const {style} = div
-    setHoleStyle(style)
-    main.appendChild(inst)
+  const numTarget = 2 + (4E-5*w*h<<0)
+  const numCurrent = main.children.length
+  if (numCurrent>numTarget) {
+    while (main.children.length>numTarget) main.firstChild.remove()
+  } else if (numCurrent<numTarget) {
+    Array.from(new Array(numTarget-numCurrent)).forEach(()=>{
+      main.appendChild(blueprint.cloneNode(true))
+    })
+  }
+  Array.from(main.querySelectorAll('label>div')).forEach((div)=>{
+    setHoleStyle(div.style)
   })
 }
 
@@ -97,13 +111,18 @@ function onMainClick(e){
   if(e.target.classList.contains(name)){
     setColor(getRandomColor())
     fillMain()
+  } else {
+    const inputs = Array.from(main.querySelectorAll('input'))
+    const allChecked = !inputs.map(n=>n.checked).includes(false)
+    allChecked&&setTimeout(()=>inputs.forEach(n=>n.checked = false),1000)
   }
 }
 
 function setColor(colorMain){
   const colorObj = color(colorMain)
   setCSSProp('color', colorMain)
-  setCSSProp('color-dark', colorObj.multiply(0.95).hex)
+  setCSSProp('color-dark', colorObj.clone().multiply(0.95).hex)
+  setCSSProp('color-light', colorObj.average(colorWhite, 0.3).hex)
 
 }
 
