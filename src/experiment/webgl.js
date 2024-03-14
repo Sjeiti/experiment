@@ -38,7 +38,7 @@ let glProto = WebGLRenderingContext.prototype
  */
 function webgl(name,scriptUri,options={}){
   let glslUri = location.port!==''?scriptUri.replace('/wordpress/wp-content/themes/sjeiti',''):scriptUri
-    ,images = options.images
+    ,images = options.images||{}
     ,inst = experiment(name,{
       init
       ,exit
@@ -68,16 +68,18 @@ function webgl(name,scriptUri,options={}){
     ,isMouseDown = false
     //
     ,mouseLast = {x:0,y:0}
-    ,offset = {x:0,y:0}
+    ,offset = {x:options.offset?.x||0,y:options.offset?.y||0}
     //
     ,uniformChanges = []
     ,initialUniforms = Object.assign({
          size:[2]
         ,down:[0]
         ,drag:[0,0]
-        ,offset:[0,0]
+        ,offset:[offset.x,offset.y]
         ,resolution:[10,10]
       },options.uniforms||{})
+  //
+  console.log('offset',offset)
   //
   for (let name in initialUniforms){
     addUniformChange(name,initialUniforms[name])

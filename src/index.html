@@ -83,6 +83,20 @@
       </ul>
     </menu>
     <script>
+      const {body} = document
+      const createElement = document.createElement.bind(document)
+      const isMobile = window.matchMedia('(max-device-width: 600px)').matches
+      const isLocalhost = window.location.hostname==='localhost'
+
+      if (isMobile&&isLocalhost) {
+        const script = document.createElement('script')
+        script.src = '//cdn.jsdelivr.net/npm/eruda'
+        body.appendChild(script)
+        script.onload = function () {
+          eruda.init()
+        }
+      }
+
       window.onerror = function(messageOrEvent, source, lineno, colno, error) {
         alert(messageOrEvent+' '+source)
       }
