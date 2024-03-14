@@ -109,12 +109,16 @@ function fillMain(){
 
 function onMainClick(e){
   if(e.target.classList.contains(name)){
-    setColor(getRandomColor())
     fillMain()
   } else {
     const inputs = Array.from(main.querySelectorAll('input'))
     const allChecked = !inputs.map(n=>n.checked).includes(false)
-    allChecked&&setTimeout(()=>inputs.forEach(n=>n.checked = false),1000)
+    if (allChecked){
+      setTimeout(()=>{
+        setColor(getRandomColor())
+        inputs.forEach(n=>n.checked = false)
+      },1000)
+    }
   }
 }
 
