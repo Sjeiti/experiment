@@ -1,7 +1,7 @@
 {
   "name": "experiments",
   "filename": "index.js",
-  "version": "1.1.31",
+  "version": "1.1.32",
   "description": "",
   "main": "dist/index.js",
   "license": "MIT",
