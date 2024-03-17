@@ -1,9 +1,7 @@
 import xhttp from '../network/xhttp'
-// let xhttp = iddqd.network.xhttp
 
 function parse(uri){
   return new Promise(function(resolve,reject){
-    //XMLHttpRequest
     xhttp(uri,handleXHR.bind(null,resolve,reject))
   })
 }

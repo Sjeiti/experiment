@@ -10,20 +10,20 @@ uniform vec2 offset;
 uniform float down;
 
 void main(){
-	vec4 fragCoord = gl_FragCoord;
-	
+  vec4 fragCoord = gl_FragCoord;
+
   vec2 center = resolution.xy/2.0;
-	vec2 spiralOffset = offset + center + vec2(-200.0,0);
+  vec2 spiralOffset = offset + center + vec2(-200.0,0);
   vec2 pos = fragCoord.xy - center;
   float diagonal = sqrt(resolution.x*resolution.x+resolution.y*resolution.y);
- 
+
   float posdist = sqrt(pos.x*pos.x+pos.y*pos.y)/diagonal*2.0;
   float pdistCurve = 1.0-sin(posdist*HALF_PI+HALF_PI);
   float pdistRound = pow(pdistCurve,0.2);
 
   float angle = atan(fragCoord.y-center.y, fragCoord.x-center.x);
   float angle1 = angle/(2.0*PI)+.5;
- 
+
   float dist = sqrt(pos.x*pos.x+pos.y*pos.y)/diagonal*2.0;
 
   float ang = 0.01*offset.y*time;
@@ -31,9 +31,9 @@ void main(){
   float nx = nd*sin(angle);
   float ny = nd*cos(angle);
   float off = 0.1;
-	float noiser = snoise(vec3(nx,ny,1.0*off+ang));
-	float noiseg = snoise(vec3(nx,ny,2.0*off+ang));
-	float noiseb = snoise(vec3(nx,ny,3.0*off+ang));
+  float noiser = snoise(vec3(nx,ny,1.0*off+ang));
+  float noiseg = snoise(vec3(nx,ny,2.0*off+ang));
+  float noiseb = snoise(vec3(nx,ny,3.0*off+ang));
 
   vec3 wh = vec3(1.0,1.0,1.0);
   vec3 exp = vec3(1.0,1.0,1.0);
@@ -46,5 +46,5 @@ void main(){
 
   vec4 fragColor = vec4(blnd,1.0);
 
-	gl_FragColor = fragColor;
+  gl_FragColor = fragColor;
 }

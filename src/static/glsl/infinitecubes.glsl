@@ -194,7 +194,8 @@ vec3 calcNormal(in vec3 pos){
 
 vec3 render(in vec3 ro, in vec3 rd){
 	vec3 baseColor = vec3(0);
-	vec3 col = baseColor;
+//	vec3 col = baseColor;
+	vec3 col = vec3(24,22,42);
 	vec2 res = castRay(ro,rd);
 	float t = res.x;
 	float m = res.y;

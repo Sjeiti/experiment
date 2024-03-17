@@ -71,18 +71,7 @@ module.exports = env => {
       new CopyWebpackPlugin({
         patterns: [
           { from: 'src/index.html', to: './'}
-
-          //,{ from: 'src/style/screen.css', to: './style/'}
-          //,{ from: 'src/data', to: './data' }
           ,{ from: 'src/static', to: './static' }
-          //,{ from: 'temp/*.json', to: './data', flatten:true }
-          /*{ from: `${isProduction?'temp':'src'}/index.html`, to: './'}
-          ,{ from: 'src/.htaccess', to: './'}
-          ,{ from: 'src/_redirects', to: './'}
-          ,{ from: 'src/index.xml', to: './'}
-          ,{ from: 'src/data/root', to: './data/root', ignore:['*.html','*.txt']}
-          ,{ from: 'src/data/audio', to: './data/audio'}
-          ,{ from: 'src/test.html', to: './'}*/
         ]
       })
       ,new webpack.DefinePlugin({

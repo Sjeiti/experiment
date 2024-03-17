@@ -1,12 +1,12 @@
 /**
- * Perlin noise lines
- * @module experiment/lines
+ * Webgl lines
  * @see module:experiment/base
  */
 import webgl from './webgl'
-let inst = webgl('knottywood','/static/glsl/lines.glsl',{
+let inst = webgl('lines','/static/glsl/lines.glsl',{
   images: {
-    u_image0: '/static/img/knottywood.jpg'
-  }
+    u_image0: '/static/img/crystal0.jpg'
+  },
+  offset: { x: 400, y: 400 }
 })
 export const lines = inst.expose

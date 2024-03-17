@@ -1,4 +1,3 @@
-/*globals WebGLProgram, WebGLShader*/
 /**
  * Base script for initialising a webgl experiment
  * Exposes basic interaction uniforms
@@ -79,8 +78,6 @@ function webgl(name,scriptUri,options={}){
         ,resolution:[10,10]
       },options.uniforms||{})
   //
-  console.log('offset',offset)
-  //
   for (let name in initialUniforms){
     addUniformChange(name,initialUniforms[name])
   }
@@ -101,7 +98,7 @@ function webgl(name,scriptUri,options={}){
    * @param {HTMLElement} _target
    * @returns {HTMLCanvasElement}
    */
-  function init(_target) {
+  function init(_target){
     target = _target
     canvas = zuper.init(_target)
     gl = inst.gl = inst.context
@@ -177,9 +174,12 @@ function webgl(name,scriptUri,options={}){
 
   /**
    * Override base handleDragStart
+   * @param {TouchList} added
+   * @param {TouchList} touches
+   * @param {Event} e
    */
   function handleDragStart(added,touches,e){
-    if (e.target.nodeName==='CANVAS') {
+    if (e.target.nodeName==='CANVAS'){
       isMouseDown = inst.isMouseDown = true
       addUniformChange('down',[1])
       e.preventDefault()
@@ -191,10 +191,11 @@ function webgl(name,scriptUri,options={}){
 
   /**
    * Override base handleDrag
+   * @param {TouchList} touches
    */
-  function handleDrag(touches,e){
+  function handleDrag(touches/*,e*/){
     let pos = touchListPos(touches)
-    if (isMouseDown&&pos) {
+    if (isMouseDown&&pos){
       let dragX = pos.x
         ,dragY = pos.y
         ,lastX = mouseLast.x
@@ -204,7 +205,7 @@ function webgl(name,scriptUri,options={}){
         ,isFirst = lastX===0&&lastY===0
         ,isLast = dragX===0&&dragY===0
 
-      if (!isFirst&&!isLast) {
+      if (!isFirst&&!isLast){
         addUniformChange('offset',[offset.x+=deltaX,offset.y+=deltaY])
       }
       mouseLast.x = dragX
@@ -217,8 +218,8 @@ function webgl(name,scriptUri,options={}){
   /**
    * Override base handleDragEnd
    */
-  function handleDragEnd(removed,touches,e){
-    if (isMouseDown) {
+  function handleDragEnd(/*removed,touches,e*/){
+    if (isMouseDown){
       isMouseDown = inst.isMouseDown = false
       mouseLast.x = 0
       mouseLast.y = 0
@@ -230,6 +231,7 @@ function webgl(name,scriptUri,options={}){
 
   /**
    * Override base handleClick
+   * @param {TouchEvent} e
    */
   function handleClick(e){
     callChildMethod(options.handleClick,arguments)
@@ -252,14 +254,14 @@ function webgl(name,scriptUri,options={}){
   /**
    * Apply uniform changes
    */
-  function applyUniformChanges() {
+  function applyUniformChanges(){
     let numChanges = uniformChanges.length
         ,changed = []
-    while (numChanges--) {
+    while (numChanges--){
       let change = uniformChanges[numChanges]
           ,name = change.name
       // only set last changes
-      if (changed.indexOf(name)===-1) {
+      if (changed.indexOf(name)===-1){
         setUniform(name,change.values)
         changed.push(name)
       }
@@ -272,7 +274,7 @@ function webgl(name,scriptUri,options={}){
    * @param {string} name
    * @param {Array} values
    */
-  function addUniformChange(name,values) {
+  function addUniformChange(name,values){
     uniformChanges.push({name,values})
   }
 
@@ -282,10 +284,11 @@ function webgl(name,scriptUri,options={}){
    * @param {Array} values
    * @param {Function} type
    */
-  function setUniform(name,values,type) {
+  function setUniform(name,values,type){
     let uniformLocation = gl.getUniformLocation(currentProgram,name)
         ,num = values.length
         ,fn = type||uniformsXF[num]
+    console.info('setUniform', name, values)
     fn.call(gl,uniformLocation,values)
   }
 
@@ -304,9 +307,9 @@ function webgl(name,scriptUri,options={}){
           ,uniformLocation = gl.getUniformLocation(program, name)
           ,wrap = srcParams.clamp?gl.CLAMP_TO_EDGE:gl.REPEAT
       // set temporary 1x1 texture
-      gl.bindTexture(gl.TEXTURE_2D, texture);
-      gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,1,1,0,gl.RGBA,gl.UNSIGNED_BYTE,new Uint8Array([255,0,0,255])); // red
-      gl.bindTexture(gl.TEXTURE_2D, null);
+      gl.bindTexture(gl.TEXTURE_2D, texture)
+      gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,1,1,0,gl.RGBA,gl.UNSIGNED_BYTE,new Uint8Array([255,0,0,255])) // red
+      gl.bindTexture(gl.TEXTURE_2D, null)
       //
       return loadImage(src).then(e=>[e.target,wrap,texture,uniformLocation])
     }))
@@ -321,10 +324,11 @@ function webgl(name,scriptUri,options={}){
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
           })
           // then apply all to program
-          loads.forEach(([image,wrap,texture,uniformLocation],i)=>{
+          // loads.forEach(([image,wrap,texture,uniformLocation],i)=>{
+          loads.forEach(([,,texture,uniformLocation],i)=>{
             gl.activeTexture(gl['TEXTURE'+i]) // gl.TEXTURE0
-            gl.bindTexture(gl.TEXTURE_2D, texture);
-            gl.uniform1i(uniformLocation, i);
+            gl.bindTexture(gl.TEXTURE_2D, texture)
+            gl.uniform1i(uniformLocation, i)
           })
         })
     return program
@@ -351,7 +355,7 @@ function webgl(name,scriptUri,options={}){
    * @param {string} fragment
    * @returns {WebGLProgram}
    */
-  function createProgram(vertex,fragment) {
+  function createProgram(vertex,fragment){
     let program = gl.createProgram()
       ,vertexShader = initShader(vertex,gl.VERTEX_SHADER)
       ,fragmentShader = initShader('#ifdef GL_ES\nprecision highp float;\n#endif\n\n' + fragment,gl.FRAGMENT_SHADER)
@@ -361,8 +365,10 @@ function webgl(name,scriptUri,options={}){
     gl.deleteShader(vertexShader)
     gl.deleteShader(fragmentShader)
     gl.linkProgram(program)
-    if (!gl.getProgramParameter(program,gl.LINK_STATUS)) {
-      console.warn("ERROR:\n" + "VALIDATE_STATUS: " + gl.getProgramParameter(program,gl.VALIDATE_STATUS) + "\n" + "ERROR: " + gl.getError() + "\n\n" + "- Vertex Shader -\n" + vertex + "\n\n" + "- Fragment Shader -\n" + fragment)
+
+    const linkStatus = gl.getProgramParameter(program,gl.LINK_STATUS)
+    if (!linkStatus){
+      console.warn('ERROR:\n' + 'VALIDATE_STATUS: ' + gl.getProgramParameter(program,gl.VALIDATE_STATUS) + '\n' + 'ERROR: ' + gl.getError() + '\n\n' + '- Vertex Shader -\n' + vertex + '\n\n' + '- Fragment Shader -\n' + fragment)
       return null
     }
     return program
@@ -374,13 +380,13 @@ function webgl(name,scriptUri,options={}){
    * @param {number} type
    * @returns {WebGLShader}
    */
-  function initShader(src,type) {
+  function initShader(src,type){
     src = src.replace(/^\s+|\s+$/g,'')
     let shader = gl.createShader(type)
     gl.shaderSource(shader,src)
     gl.compileShader(shader)
-    if (!gl.getShaderParameter(shader,gl.COMPILE_STATUS)) {
-      console.warn(( type===gl.VERTEX_SHADER?"VERTEX":"FRAGMENT" ) + " SHADER:\n" + gl.getShaderInfoLog(shader))
+    if (!gl.getShaderParameter(shader,gl.COMPILE_STATUS)){
+      console.warn(( type===gl.VERTEX_SHADER?'VERTEX':'FRAGMENT' ) + ' SHADER:\n' + gl.getShaderInfoLog(shader))
       return null
     }
     return shader
@@ -394,7 +400,7 @@ function webgl(name,scriptUri,options={}){
     let touch
         ,value
     touchList&&touchList.forEach(_touch=>_touch.pos&&(touch = _touch))
-    if (touch) {
+    if (touch){
       let pos = touch.pos
       value = {x:pos.getX(),y:pos.getY()}
     }

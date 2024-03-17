@@ -1,7 +1,7 @@
 {
   "name": "experiments",
   "filename": "index.js",
-  "version": "1.1.30",
+  "version": "1.1.31",
   "description": "",
   "main": "dist/index.js",
   "license": "MIT",
@@ -17,7 +17,7 @@
     "build:prod": "run-s clean \"webpack\"",
     "_build": "run-s clean \"webpack -- --env.development\"",
     "_build:prod": "run-s clean \"webpack -- --env.production\"",
-    "build:watch": "chokidar \"src/**/*.*\" -c \"npm run build\"",
+    "build:watch": "chokidar \"src/**/*.js\" -c \"npm run build\"",
     "crypto-fix": "export NODE_OPTIONS=--openssl-legacy-provider",
     "webpack": "npx webpack --config webpack.config.js",
     "clean": "del-cli dist -f",
