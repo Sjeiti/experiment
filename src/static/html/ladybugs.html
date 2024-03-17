@@ -1,3 +1,10 @@
+<!doctype html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
 <style>
   body, html {
     position: relative;
@@ -5,8 +12,16 @@
     height: 100%;
     margin: 0;
     padding: 0;
-    background-color: #5a7a37;
     overflow: hidden;
+  }
+  html {
+    box-sizing: border-box;
+  }
+  *, *:before, *:after {
+    box-sizing: inherit;
+  }
+  body {
+    background: #462 radial-gradient(circle at 10% 10%, #fff4, transparent);
   }
   :root {
     --radians: 0;
@@ -18,12 +33,16 @@
     --remY: calc(sin(var(--rdns))*-1rem);
     --percX: calc(cos(var(--rdns))*1%);
     --percY: calc(sin(var(--rdns))*-1%);
-		position: relative;
+		position: absolute;
     width: 1.4rem;
     height: 2rem;
     transform: rotate(calc(var(--radians)*1rad));
     transform-origin: 50% 50%;
-    transition: top 400ms ease, left 400ms ease;
+    transition: 
+      transform 300ms ease-out, 
+      top 400ms ease, 
+      left 400ms ease
+    ;
     &:before {
       content: '';
       display: block;
@@ -54,13 +73,13 @@
 				radial-gradient(circle at 20% 50%, #000 0 10%, transparent 12%),
 				radial-gradient(circle at 65% 80%, #000 0 7%, transparent 9%),
 				radial-gradient(circle at 35% 80%, #000 0 7%, transparent 9%),
-				linear-gradient(90deg, transparent 0% 49%, #0008 49% 51%, transparent 51% 100%),
+				linear-gradient(90deg, transparent 0% 48%, #0008 48% 52%, transparent 52% 100%),
 				#F04
 		  ;
 			box-shadow:
 				calc(0.4*var(--remX)) calc(0.4*var(--remY)) 0.5rem #FFF3 inset,
 				calc(-0.3*var(--remX)) calc(-0.3*var(--remY)) 0.3rem #0008 inset,
-				calc(0.2*var(--remX)) calc(0.2*var(--remY)) 0.1rem #0008
+				calc(0.4*var(--remX)) calc(0.4*var(--remY)) 0.1rem #0005
 		  ;
 		}
   }
@@ -87,7 +106,12 @@
     const ladybug = document.createElement('div')
     ladybug.classList.add('ladybug')
     const {style} = ladybug
-    setStyle(style,Math.random()*w,Math.random()*h,Math.random()*2*Math.PI)
+    setStyle(
+      style,
+      Math.random()*w*0.9,
+      Math.random()*h*0.9,
+      Math.random()*2*Math.PI
+    )
     ladybug.addEventListener('click',()=>{
       const x = parseFloat(style.left)
       const y = parseFloat(style.top)
