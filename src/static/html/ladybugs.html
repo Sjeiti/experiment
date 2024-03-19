@@ -26,6 +26,11 @@
   :root {
     --radians: 0;
     --lightRadians: -1.1;
+    --animT: 500ms;
+    --color: #f04;
+    --rndMod: 2147483647;
+    --rndMult: 48271;
+    --index: 111111;
   }
   .ladybug {
     --rdns: calc(var(--radians) + var(--lightRadians));
@@ -33,15 +38,19 @@
     --remY: calc(sin(var(--rdns))*-1rem);
     --percX: calc(cos(var(--rdns))*1%);
     --percY: calc(sin(var(--rdns))*-1%);
+    --rand:  calc(mod(var(--rndMult)*var(--index) + 0,var(--rndMod)) / var(--rndMod));
+    --rand1: calc(mod(var(--rndMult)*var(--index) + 1,var(--rndMod)) / var(--rndMod));
+    --rand: 0.7;
+    --rand1: 0.5;
 		position: absolute;
     width: 1.4rem;
     height: 2rem;
     transform: rotate(calc(var(--radians)*1rad));
     transform-origin: 50% 50%;
     transition: 
-      transform 300ms ease-out, 
-      top 400ms ease, 
-      left 400ms ease
+      transform calc(0.7*var(--animT)) ease-out, 
+      top var(--animT) ease, 
+      left var(--animT) ease
     ;
     &:before {
       content: '';
@@ -64,23 +73,24 @@
 			width: 100%;
 			height: 100%;
 			border-radius: 50% 50% 60% 60%;
-			background:
+      background-color: var(--color);
+			background-image:
 				radial-gradient(ellipse at calc(50% - 20*var(--percX)) calc(50% - 20*var(--percY)), #FFFC 0%, transparent 30%),
 				radial-gradient(circle at 80% 5%, #FFF 0 8%, transparent 8%),
 				radial-gradient(circle at 20% 5%, #FFF 0 8%, transparent 8%),
 				radial-gradient(circle at 50% -10%, #000 0% 35%, transparent 35%),
-				radial-gradient(circle at 80% 50%, #000 0 10%, transparent 12%),
-				radial-gradient(circle at 20% 50%, #000 0 10%, transparent 12%),
-				radial-gradient(circle at 65% 80%, #000 0 7%, transparent 9%),
-				radial-gradient(circle at 35% 80%, #000 0 7%, transparent 9%),
-				linear-gradient(90deg, transparent 0% 48%, #0008 48% 52%, transparent 52% 100%),
-				#F04
+				radial-gradient(circle at calc(50% + 40%*var(--rand)) 50%, #000 0 10%, transparent 12%),
+				radial-gradient(circle at calc(50% - 40%*var(--rand)) 50%, #000 0 10%, transparent 12%),
+				radial-gradient(circle at calc(50% + 40%*var(--rand1)) 80%, #000 0 7%, transparent 9%),
+				radial-gradient(circle at calc(50% - 40%*var(--rand1)) 80%, #000 0 7%, transparent 9%),
+				linear-gradient(90deg, transparent 0% 48%, #0008 48% 52%, transparent 52% 100%)
 		  ;
 			box-shadow:
 				calc(0.4*var(--remX)) calc(0.4*var(--remY)) 0.5rem #FFF3 inset,
-				calc(-0.3*var(--remX)) calc(-0.3*var(--remY)) 0.3rem #0008 inset,
+				calc(-0.4*var(--remX)) calc(-0.4*var(--remY)) 0.4rem #0008 inset,
 				calc(0.4*var(--remX)) calc(0.4*var(--remY)) 0.1rem #0005
 		  ;
+      transition: background-color calc(2.7*var(--animT)) linear;
 		}
   }
 </style>
@@ -91,43 +101,99 @@
 </div>
 
 <script>
-  const w = document.documentElement.clientWidth
-  const h = document.documentElement.clientHeight
-  const input = document.querySelector('input')
-  const ladybug = document.querySelector('.ladybug')
-  const step = 60
+  const {body} = document
+  const createElement = document.createElement.bind(document)
+  const isMobile = window.matchMedia('(max-device-width: 600px)').matches
+  const isLocalhost = window.location.hostname==='localhost'
+
+  if (isMobile&&isLocalhost) {
+    const script = document.createElement('script')
+    script.src = '//cdn.jsdelivr.net/npm/eruda'
+    body.appendChild(script)
+    script.onload = function () {
+      eruda.init()
+      init()
+    }
+  }
   
-  input.addEventListener('input', e=>{
-    const value = e.currentTarget.value
-    ladybug.style.setProperty('--radians', value/50*Math.PI)
-  })
-  
-  Array.from(new Array(20)).forEach(()=>{
-    const ladybug = document.createElement('div')
-    ladybug.classList.add('ladybug')
-    const {style} = ladybug
-    setStyle(
-      style,
-      Math.random()*w*0.9,
-      Math.random()*h*0.9,
-      Math.random()*2*Math.PI
-    )
-    ladybug.addEventListener('click',()=>{
+  //////////////////
+
+  function init(){
+    const w = document.documentElement.clientWidth
+    const h = document.documentElement.clientHeight
+    const input = document.querySelector('input')
+    const ladybug = document.querySelector('.ladybug')
+    const step = 60
+    const num = w*h/3E3<<0
+    
+    input.addEventListener('input', e=>{
+      const value = e.currentTarget.value
+      ladybug.style.setProperty('--radians', value/50*Math.PI)
+    })
+    
+    const bugs = Array.from(new Array(num)).map((o,i)=>{
+      const ladybug = document.createElement('div')
+      ladybug.classList.add('ladybug')
+      const {style} = ladybug
+      Object.assign(style,{
+        left: Math.random()*w*0.9+'px',
+        top: Math.random()*h*0.9+'px'
+      })
+      setStyle(style,{
+        radians: Math.random()*2*Math.PI,
+        index: 11111 + i*1E9
+      })
+      ladybug.addEventListener('click',()=>{
+        walk(style)
+        const color = `hsl(${10+30*(Math.random()-0.5)<<0}, ${100-20*Math.random()}%, ${40+20*(Math.random()-0.5)<<0}%)`
+        setStyle(style,{color})
+      })
+      document.body.appendChild(ladybug)
+      return ladybug
+    })
+    
+    function walk(style){
       const x = parseFloat(style.left)
       const y = parseFloat(style.top)
       const radians = parseFloat(style.getPropertyValue('--radians')) + 3*(Math.random() - 0.5)
-      const newX = x + step*Math.cos(radians - 0.5*Math.PI)
-      const newY = y + step*Math.sin(radians - 0.5*Math.PI)
-      setStyle(style,newX,newY,radians)
-    })
-    document.body.appendChild(ladybug)
-  })
-  
-  function setStyle(style,x,y,radians){
-    Object.assign(style, {
-      left: x+'px',
-      top: y+'px'
-    })
-    style.setProperty('--radians', radians)
+      const nx = x + step*Math.cos(radians - 0.5*Math.PI)
+      const ny = y + step*Math.sin(radians - 0.5*Math.PI)
+      const left = nx + 'px'
+      const top = ny + 'px'
+      Object.assign(style, {left,top})
+      setStyle(style,{radians})
+      setTimeout(()=>{
+        walkClosest(style)
+        (nx>w||nx<0)&&(style.left)
+      },400)
+    }
+
+    function walkClosest(style){
+      const x = toNumber(style.left)
+      const y = toNumber(style.top)
+      console.log('y',style.top,y)
+      const closeBugs = bugs.filter(bug=>{
+        const bugStyle = bug.style
+        if (style!==bugStyle){
+          const bx = toNumber(bugStyle.left)
+          const by = toNumber(bugStyle.top)
+          const dx = x-bx
+          const dy = y-by
+          const d = Math.sqrt(dx*dx+dy*dy)
+      console.log(d)
+          return Math.abs(d)<32
+        }
+      }).forEach(close=>walk(close.style))
+    }
+
+    function toNumber(s){
+      return parseFloat(s.replace(/[^\d.]/g,''))
+    }
+
+    function setStyle(style,props){
+      Object.entries(props).forEach(([key,value])=>{
+        style.setProperty('--'+key, value)
+      })
+    }
   }
 </script>
