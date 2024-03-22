@@ -1,0 +1,113 @@
+<!doctype html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<style>
+  body, html {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    mnargin: 0;
+    pnadding: 0;
+    overflow: hidden;
+  }
+  html {box-sizing: border-box;}
+  *, *:before, *:after {box-sizing: inherit;}
+  body {
+    background: #462 radial-gradient(circle at 10% 10%, #fff4, transparent);
+  }
+
+  :root {
+    --range: 0;
+    --index: 111111;
+
+    /* ZX81 */
+    --rndMod: 65537;
+    --rndMult: 75;
+    --rndIncr: 74;
+
+    /* random0 */
+    --rndMod: 134456;
+    --rndMult: 8121;
+    --rndIncr: 28411;
+
+    /* C++11 */
+    --rndMod: 2147483647;
+    --rndMult: 48271;
+    --rndIncr: 0;
+
+  }
+
+  input {width:100%;}
+  div {
+    --px: calc(1px*var(--range));
+    --pc: calc(1%*var(--range));
+
+    --seed: var(--range) + var(--index);
+    --mod: mod(calc(var(--seed) * var(--rndMult) + var(--rndIncr)),var(--rndMod));
+    --rand: calc(var(--mod) / var(--rndMod));
+    --randpc: calc(var(--rand)*100%);
+
+    border: 1px solid red;
+/*
+    --rdns: calc(var(--radians) + var(--lightRadians));
+    --remX: calc(cos(var(--rdns))*1rem);
+    --remY: calc(sin(var(--rdns))*-1rem);
+    --percX: calc(cos(var(--rdns))*1%);
+    --percY: calc(sin(var(--rdns))*-1%);
+    --mod0: mod(calc(var(--rndMult) * var(--index) + 123),var(--rndMod));
+    --mod1: mod(calc(var(--rndMult) * var(--index) - 321),var(--rndMod));
+    --rand0: calc(var(--mod0) / var(--rndMod));
+    --rand1: calc(var(--mod1) / var(--rndMod));
+*/
+    &:before {
+      content: attr(class);
+    }
+  }
+  .range {box-shadow:var(--px) 0 0 red inset;}
+  .percent {background:linear-gradient(90deg, red 0 var(--pc),transparent var(--pc) 100%);}
+  .random {background:linear-gradient(90deg, red 0 var(--randpc),transparent var(--randpc) 100%);}
+</style>
+
+<input type="range" />
+<div class="range"></div>
+<div class="percent"></div>
+<div class="random" style="--index:111;"></div>
+<div class="random" style="--index:112;"></div>
+
+<script>
+  const {body} = document
+  const createElement = document.createElement.bind(document)
+  const isMobile = window.matchMedia('(max-device-width: 600px)').matches
+  const isLocalhost = window.location.hostname==='localhost'
+
+  if (isMobile&&isLocalhost) {
+    const script = document.createElement('script')
+    script.src = '//cdn.jsdelivr.net/npm/eruda'
+    body.appendChild(script)
+    script.onload = function () {
+      eruda.init()
+      init()
+    }
+  } else {
+    init()
+  }
+  
+  //////////////////
+
+  function init(){
+    const w = document.documentElement.clientWidth // todo update onresize
+    const h = document.documentElement.clientHeight
+    const input = document.querySelector('input')
+    
+    input.addEventListener('input', e=>{
+      const value = e.currentTarget.value
+      body.style.setProperty('--range', value)
+    })
+    input.dispatchEvent(new CustomEvent('input'))
+  }
+    
+</script>
