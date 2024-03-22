@@ -12,13 +12,13 @@
     height: 100%;
     margin: 0;
     padding: 0;
-    overflow: hidden;
   }
   html {box-sizing: border-box;}
   *, *:before, *:after {box-sizing: inherit;}
   body {
     padding: 1rem;
     background: #232327;
+    font-size: 8px;
   }
 
   :root {
@@ -90,6 +90,14 @@
 		--rndMult: 22695477;
 		--rndIncr: 12345;
 		--rndMod: 99999999;
+    
+    /* ################################### non modulus */
+
+		--rndMult: 7121;
+
+		--rndMult: 6737;
+
+		--rndMult: 6247;
 
   }
   
@@ -98,14 +106,20 @@
   input {width:100%;}
   div {
     --px: calc(1px*var(--range));
-    --pc: calc(1%*var(--range));
+    --pc: calc(0.1%*var(--range));
 
+    /*
     --seed: calc(var(--range) + var(--index));
     --mod: mod(calc(var(--seed) * var(--rndMult) + var(--rndIncr)), var(--rndMod));
     --rand: calc(var(--mod) / var(--rndMod));
     --randpc: calc(var(--rand)*100%);
+    */
+    
+		--seed: calc((var(--range) + var(--index))*var(--rndMult));
+		--rand: calc(0.5 + 0.5*sin(var(--seed)));
+		--randpc: calc(var(--rand)*100%);
+  
 
-    border: 1px solid #333;
 /*
     --rdns: calc(var(--radians) + var(--lightRadians));
     --remX: calc(cos(var(--rdns))*1rem);
@@ -118,7 +132,7 @@
     --rand1: calc(var(--mod1) / var(--rndMod));
 */
     &:before {
-      content: attr(class);
+      content: attr(class) attr(style);
     }
   }
   .range {box-shadow:var(--px) 0 0 var(--color) inset;}
@@ -130,7 +144,8 @@
   .random {background:linear-gradient(90deg, var(--color) 0 var(--randpc),transparent var(--randpc) 100%);}
 </style>
 
-<input type="range" />
+<input type="range" max="1000" class="seed" />
+<input type="range" max="10000000" class="multiplier" />
 <hr>
 <div class="range"></div>
 <div class="percent"></div>
@@ -138,27 +153,57 @@
 <div class="seed"   style="--index:910;"></div>
 <div class="mod"    style="--index:910;"></div>
 <hr>
-<div class="random" style="--index:0;"></div>
-<div class="random" style="--index:1;"></div>
-<div class="random" style="--index:2;"></div>
-<div class="random" style="--index:3;"></div>
-<div class="random" style="--index:4;"></div>
-<div class="random" style="--index:5;"></div>
-<div class="random" style="--index:6;"></div>
-<div class="random" style="--index:7;"></div>
-<div class="random" style="--index:8;"></div>
-<div class="random" style="--index:9;"></div>
+<!--<div class="random" style="&#45;&#45;index:0;"></div>
+<div class="random" style="&#45;&#45;index:1;"></div>
+<div class="random" style="&#45;&#45;index:2;"></div>
+<div class="random" style="&#45;&#45;index:3;"></div>
+<div class="random" style="&#45;&#45;index:4;"></div>
+<div class="random" style="&#45;&#45;index:5;"></div>
+<div class="random" style="&#45;&#45;index:6;"></div>
+<div class="random" style="&#45;&#45;index:7;"></div>
+<div class="random" style="&#45;&#45;index:8;"></div>
+<div class="random" style="&#45;&#45;index:9;"></div>
+<div class="random" style="&#45;&#45;index:10;"></div>
+<div class="random" style="&#45;&#45;index:11;"></div>
+<div class="random" style="&#45;&#45;index:12;"></div>
+<div class="random" style="&#45;&#45;index:13;"></div>
+<div class="random" style="&#45;&#45;index:14;"></div>
+<div class="random" style="&#45;&#45;index:15;"></div>
+<div class="random" style="&#45;&#45;index:16;"></div>
+<div class="random" style="&#45;&#45;index:17;"></div>
+<div class="random" style="&#45;&#45;index:18;"></div>
+<div class="random" style="&#45;&#45;index:19;"></div>
+<div class="random" style="&#45;&#45;index:20;"></div>
+<div class="random" style="&#45;&#45;index:21;"></div>
+<div class="random" style="&#45;&#45;index:22;"></div>
+<div class="random" style="&#45;&#45;index:23;"></div>
+<div class="random" style="&#45;&#45;index:24;"></div>
+<div class="random" style="&#45;&#45;index:25;"></div>
+<div class="random" style="&#45;&#45;index:26;"></div>
+<div class="random" style="&#45;&#45;index:27;"></div>
+<div class="random" style="&#45;&#45;index:28;"></div>
+<div class="random" style="&#45;&#45;index:29;"></div>
+<div class="random" style="&#45;&#45;index:30;"></div>
+<div class="random" style="&#45;&#45;index:31;"></div>
+<div class="random" style="&#45;&#45;index:32;"></div>
+<div class="random" style="&#45;&#45;index:33;"></div>
+<div class="random" style="&#45;&#45;index:34;"></div>
+<div class="random" style="&#45;&#45;index:35;"></div>
+<div class="random" style="&#45;&#45;index:36;"></div>
+<div class="random" style="&#45;&#45;index:37;"></div>
+<div class="random" style="&#45;&#45;index:38;"></div>
+<div class="random" style="&#45;&#45;index:39;"></div>
 <hr>
-<div class="random" style="--index:900;"></div>
-<div class="random" style="--index:901;"></div>
-<div class="random" style="--index:902;"></div>
-<div class="random" style="--index:903;"></div>
-<div class="random" style="--index:904;"></div>
-<div class="random" style="--index:905;"></div>
-<div class="random" style="--index:906;"></div>
-<div class="random" style="--index:907;"></div>
-<div class="random" style="--index:908;"></div>
-<div class="random" style="--index:909;"></div>
+<div class="random" style="&#45;&#45;index:900;"></div>
+<div class="random" style="&#45;&#45;index:901;"></div>
+<div class="random" style="&#45;&#45;index:902;"></div>
+<div class="random" style="&#45;&#45;index:903;"></div>
+<div class="random" style="&#45;&#45;index:904;"></div>
+<div class="random" style="&#45;&#45;index:905;"></div>
+<div class="random" style="&#45;&#45;index:906;"></div>
+<div class="random" style="&#45;&#45;index:907;"></div>
+<div class="random" style="&#45;&#45;index:908;"></div>
+<div class="random" style="&#45;&#45;index:909;"></div>-->
 
 <script>
   const {body} = document
@@ -183,14 +228,27 @@
   function init(){
     const w = document.documentElement.clientWidth // todo update onresize
     const h = document.documentElement.clientHeight
-    const input = document.querySelector('input')
     
-    input.addEventListener('input', e=>{
-      const value = e.currentTarget.value
-      body.style.setProperty('--range', value)
+    const inputSeed = document.querySelector('.seed')
+    const inputMult = document.querySelector('.multiplier')
+    
+    document.addEventListener('input', e=>{
+      const {target, target: {value}} = e
+      const prop = target===inputSeed&&'--range'
+          ||target===inputMult&&'--rndMult'
+          ||''
+      // console.log('setProperty', prop, value) // todo: remove log
+      body.style.setProperty(prop, value)
     })
-    input.dispatchEvent(new CustomEvent('input'))
+    document.dispatchEvent(new CustomEvent('input'))
     // Array.from(document.querySelectorAll('.random')).forEach((div,i)=>div.setProperty('--index', i))
+    
+    Array.from(new Array(80)).forEach((o,i)=>{
+      const div = document.createElement('div')
+      div.classList.add('random')
+      div.style.setProperty('--index', i)
+      document.body.appendChild(div)
+    })
   }
   
 </script>
