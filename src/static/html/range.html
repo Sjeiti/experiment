@@ -10,48 +10,102 @@
     position: relative;
     width: 100%;
     height: 100%;
-    mnargin: 0;
-    pnadding: 0;
+    margin: 0;
+    padding: 0;
     overflow: hidden;
   }
   html {box-sizing: border-box;}
   *, *:before, *:after {box-sizing: inherit;}
   body {
-    background: #462 radial-gradient(circle at 10% 10%, #fff4, transparent);
+    padding: 1rem;
+    background: #232327;
   }
 
   :root {
     --range: 0;
     --index: 111111;
+    --color: #59BFC1;
 
-    /* ZX81 */
-    --rndMod: 65537;
-    --rndMult: 75;
-    --rndIncr: 74;
+		/* test: fails for high seeds */
+		--rndMult: 1103515245;
+		--rndIncr: 12345;
+		--rndMod: 32767;
 
-    /* random0 */
-    --rndMod: 134456;
-    --rndMult: 8121;
-    --rndIncr: 28411;
+		/* test: too regular */
+		--rndMult: 48271;
+		--rndIncr: 0;
+		--rndMod: 32768;
 
-    /* C++11 */
-    --rndMod: 2147483647;
-    --rndMult: 48271;
-    --rndIncr: 0;
+		/* test: good spread, bad range */
+		--rndMult: 5;
+		--rndIncr: 3;
+		--rndMod: 8;
+
+		/* test: too regular */
+		--rndMult: 1013;
+		--rndIncr: 193;
+		--rndMod: 65535;
+
+		/* C++11: fails */
+		--rndMult: 48271;
+		--rndIncr: 0;
+		--rndMod: 2147483649;
+
+		/* ZX81: too regular */
+		--rndMult: 75;
+		--rndIncr: 74;
+		--rndMod: 65537;
+
+		/* Numerical recipes: too regular */
+		--rndMult: 1664525;
+		--rndIncr: 1013904223;
+		--rndMod: 4294967296;
+
+		/* random0 */
+		--rndMult: 8121;
+		--rndIncr: 28411;
+		--rndMod: 134456;
+
+		/* test: okayish */
+		--rndMult: 1664525;
+		--rndIncr: 1013904223;
+		--rndMod: 65536;
+
+		/* test: okayish */
+		--rndMult: 22695477;
+		--rndIncr: 1;
+		--rndMod: 9999999;
+
+		/* test: okayish */
+		--rndMult: 22695477;
+		--rndIncr: 12345;
+		--rndMod: 9999999;
+
+		/* test: okayish */
+		--rndMult: 22695477;
+		--rndIncr: 1;
+		--rndMod: 99999999;
+
+		/* test: okayish */
+		--rndMult: 22695477;
+		--rndIncr: 12345;
+		--rndMod: 99999999;
 
   }
+  
+  hr { border-color: #333; }
 
   input {width:100%;}
   div {
     --px: calc(1px*var(--range));
     --pc: calc(1%*var(--range));
 
-    --seed: var(--range) + var(--index);
-    --mod: mod(calc(var(--seed) * var(--rndMult) + var(--rndIncr)),var(--rndMod));
+    --seed: calc(var(--range) + var(--index));
+    --mod: mod(calc(var(--seed) * var(--rndMult) + var(--rndIncr)), var(--rndMod));
     --rand: calc(var(--mod) / var(--rndMod));
     --randpc: calc(var(--rand)*100%);
 
-    border: 1px solid red;
+    border: 1px solid #333;
 /*
     --rdns: calc(var(--radians) + var(--lightRadians));
     --remX: calc(cos(var(--rdns))*1rem);
@@ -67,16 +121,44 @@
       content: attr(class);
     }
   }
-  .range {box-shadow:var(--px) 0 0 red inset;}
-  .percent {background:linear-gradient(90deg, red 0 var(--pc),transparent var(--pc) 100%);}
-  .random {background:linear-gradient(90deg, red 0 var(--randpc),transparent var(--randpc) 100%);}
+  .range {box-shadow:var(--px) 0 0 var(--color) inset;}
+  .percent {background:linear-gradient(90deg, var(--color) 0 var(--pc),transparent var(--pc) 100%);}
+  
+	.seed {box-shadow:calc(1px*var(--seed)) 0 0 var(--color) inset;}
+	.mod {box-shadow:calc(1px*var(--mod)) 0 0 var(--color) inset;}
+  
+  .random {background:linear-gradient(90deg, var(--color) 0 var(--randpc),transparent var(--randpc) 100%);}
 </style>
 
 <input type="range" />
+<hr>
 <div class="range"></div>
 <div class="percent"></div>
-<div class="random" style="--index:111;"></div>
-<div class="random" style="--index:112;"></div>
+<hr>
+<div class="seed"   style="--index:910;"></div>
+<div class="mod"    style="--index:910;"></div>
+<hr>
+<div class="random" style="--index:0;"></div>
+<div class="random" style="--index:1;"></div>
+<div class="random" style="--index:2;"></div>
+<div class="random" style="--index:3;"></div>
+<div class="random" style="--index:4;"></div>
+<div class="random" style="--index:5;"></div>
+<div class="random" style="--index:6;"></div>
+<div class="random" style="--index:7;"></div>
+<div class="random" style="--index:8;"></div>
+<div class="random" style="--index:9;"></div>
+<hr>
+<div class="random" style="--index:900;"></div>
+<div class="random" style="--index:901;"></div>
+<div class="random" style="--index:902;"></div>
+<div class="random" style="--index:903;"></div>
+<div class="random" style="--index:904;"></div>
+<div class="random" style="--index:905;"></div>
+<div class="random" style="--index:906;"></div>
+<div class="random" style="--index:907;"></div>
+<div class="random" style="--index:908;"></div>
+<div class="random" style="--index:909;"></div>
 
 <script>
   const {body} = document
@@ -108,6 +190,7 @@
       body.style.setProperty('--range', value)
     })
     input.dispatchEvent(new CustomEvent('input'))
+    // Array.from(document.querySelectorAll('.random')).forEach((div,i)=>div.setProperty('--index', i))
   }
-    
+  
 </script>
