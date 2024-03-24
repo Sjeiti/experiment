@@ -29,21 +29,8 @@
     --animT: 500ms;
     --color: #f04;
     
-		--rndMult: 22695477;
-		--rndIncr: 12345;
-		--rndMod: 99999999;
-  
-		--rndMult: 7121;
-		--rndIncr: 5003;
-		--rndMod: 7919;
-  
-		--rndMult: 6247;
-		--rndIncr: 5003;
-
-		--rndMult: 965;
 		--rndMult: 9999973;
-
-		--index: 111111;
+		--index: 111;
   }
   .ladybug {
     --rdns: calc(var(--radians) + var(--lightRadians));
@@ -51,25 +38,6 @@
     --remY: calc(sin(var(--rdns))*-1rem);
     --percX: calc(cos(var(--rdns))*1%);
     --percY: calc(sin(var(--rdns))*-1%);
-    
-    /*
-		--seed: calc(var(--range) + var(--index));
-		--mod: mod(calc(var(--seed) * var(--rndMult) + var(--rndIncr)), var(--rndMod));
-		--rand: calc(var(--mod) / var(--rndMod));
-		--randpc: calc(var(--rand)*100%);
-    */
-
-    /*
-		--seed0: calc(123 + var(--index));
-		--mod0: mod(calc(var(--seed0) * var(--rndMult) + var(--rndIncr)), var(--rndMod));
-		--rand0: calc(var(--mod0) / var(--rndMod));
-		--randpc0: calc(var(--rand0)*100%);
-
-		--seed1: calc(234 + var(--index));
-		--mod1: mod(calc(var(--seed1) * var(--rndMult) + var(--rndIncr)), var(--rndMod));
-		--rand1: calc(var(--mod1) / var(--rndMod));
-		--randpc1: calc(var(--rand1)*100%);
-    */
     
 		--seed0: calc((1 + var(--index))*var(--rndMult));
 		--rand0: calc(0.5 + 0.5*sin(var(--seed0)));
@@ -83,15 +51,16 @@
 		--seed3: calc((4 + var(--index))*var(--rndMult));
 		--rand3: calc(0.5 + 0.5*sin(var(--seed1)));
 
-		/*--rand0: sin(calc((1 + var(--index) + var(--rndIncr))*var(--rndMult) / var(--rndMod)));*/
-		/*--rand1: sin(calc((2 + var(--index) + var(--rndIncr))*var(--rndMult) / var(--rndMod)));*/
-    
-    /*
-    --mod0: mod(calc(var(--rndMult) * var(--index) + 123),var(--rndMod));
-    --mod1: mod(calc(var(--rndMult) * var(--index) - 321),var(--rndMod));
-    --rand0: calc(var(--mod0) / var(--rndMod));
-    --rand1: calc(var(--mod1) / var(--rndMod));
-    */
+		--seed4: calc((5 + var(--index))*var(--rndMult));
+		--rand4: calc(0.5 + 0.5*sin(var(--seed4)));
+
+		--seed5: calc((6 + var(--index))*var(--rndMult));
+		--rand5: calc(0.5 + 0.5*sin(var(--seed5)));
+
+		--seed6: calc((7 + var(--index))*var(--rndMult));
+		--rand6: calc(0.5 + 0.5*sin(var(--seed6)));
+  
+		--color: hsl(calc(20 * var(--rand4)) calc(100% - 40% * var(--rand5)) calc(35% + 15% * var(--rand6)));
     
     position: absolute;
     width: 1.4rem;
@@ -124,7 +93,7 @@
 			width: 100%;
 			height: 100%;
 			border-radius: 50% 50% 60% 60%;
-            background-color: var(--color);
+      background-color: var(--color);
 			background-image:
 				radial-gradient(ellipse at calc(50% - 20*var(--percX)) calc(50% - 20*var(--percY)), #FFFA 0%, transparent 30%),
 				radial-gradient(circle at 80% 5%, #FFF 0 8%, transparent 8%),
@@ -141,7 +110,7 @@
 				calc(-0.4*var(--remX)) calc(-0.4*var(--remY)) 0.4rem #0008 inset,
 				calc(0.4*var(--remX)) calc(0.4*var(--remY)) 0.1rem #0005
 		  ;
-      transition: background-color calc(2.7*var(--animT)) linear;
+      /*transition: background-color calc(2.7*var(--animT)) linear;*/
 		}
   }
 </style>
@@ -179,7 +148,6 @@
     const step = 60
     const num = w*h/3E3<<0
 
-    console.log('hatching', num, 'ladybugs') // todo: remove log
     
     input.addEventListener('input', e=>{
       const value = e.currentTarget.value
@@ -196,12 +164,10 @@
       })
       setStyle(style,{
         radians: Math.random()*2*Math.PI,
-        index: 100 + i
+        index: 100 + i,
+        animT: (300 + Math.random()*200<<0)+'ms'
       })
-      ladybug.addEventListener('click',()=>{
-        walk(style)
-        colorise(style)
-      })
+      ladybug.addEventListener('click',()=>walk(style))
       document.body.appendChild(ladybug)
       return ladybug
     })
@@ -214,6 +180,7 @@
       const ny = y + step*Math.sin(radians - 0.5*Math.PI)
       const left = nx + 'px'
       const top = ny + 'px'
+      const animT = parseInt(style.getPropertyValue('--animT'),10)
       Object.assign(style, {left,top})
       setStyle(style,{radians})
       setTimeout(()=>{
@@ -224,7 +191,7 @@
           ;(ny>h||ny<0)&&(style.top = (ny + 2*h)%h + 'px')
           requestAnimationFrame(()=>style.removeProperty('transition'))
         })
-      },400)
+      },animT)
     }
 
     function walkClosest(style){
@@ -242,13 +209,7 @@
         }
       }).forEach(close=>{
         walk(close.style)
-        colorise(style)
       })
-    }
-
-    function colorise(style){
-      const color = `hsl(${10+30*(Math.random()-0.5)<<0}, ${100-20*Math.random()}%, ${40+20*(Math.random()-0.5)<<0}%)`
-      setStyle(style,{color})
     }
 
     function toNumber(s){
