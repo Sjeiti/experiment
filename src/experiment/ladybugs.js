@@ -30,10 +30,12 @@ function initStyle(_target){
   --animT: 500ms;
   --color: #f04;
 
-  --rndMult: 9999973;
+  --rndMult: 9999827;
   --index: 111;
 }
-.experiment {
+.leaf {
+  width: 100%;
+  height: 100%;
   background: #462 radial-gradient(circle at 10% 10%, #fff4, transparent);
 }
 .ladybug {
@@ -126,6 +128,10 @@ function initDOM(_target){
   const h = document.documentElement.clientHeight
   const step = 60
   const num = w*h/3E3<<0
+    
+  const leaf = document.createElement('div')
+  leaf.classList.add('leaf')
+  _target.appendChild(leaf)
 
   const bugs = Array.from(new Array(num)).map((o,i)=>{
     const ladybug = document.createElement('div')
@@ -137,11 +143,11 @@ function initDOM(_target){
     })
     setStyle(style,{
       radians: Math.random()*2*Math.PI,
-      index: 10 + i,
+      index: 88 + i,
       animT: (300 + Math.random()*200<<0)+'ms'
     })
     ladybug.addEventListener('click',()=>walk(style))
-    _target.appendChild(ladybug)
+    leaf.appendChild(ladybug)
     return ladybug
   })
 
