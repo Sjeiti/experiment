@@ -1,12 +1,13 @@
 import color from '../math/color'
+import experiment from './base'
+import {requestAnimationFrame} from '../utils/utils'
 
 /**
- * Recursive rotation
+ * Pink cheese
  * @module experiment/rotate
  * @see module:experiment/base
  */
-import experiment from './base'
-import {requestAnimationFrame} from '../utils/utils'
+
 const name = 'pinkcheese'
 const colorWhite = color(255,255,255)
 
@@ -42,6 +43,15 @@ function initWrapper(root){
 function initStyle(root){
   const style = document.createElement('style')
   style.textContent = `
+:root {
+  --deg: 0;
+  --radians: 0;
+  --lightRadians: -2.1;
+  --w: 40;
+  --h: 40;
+  --sin: 1;
+  --t: 1;
+}
 .${name} {
   --size: 1em;
   --color: #F04;
@@ -55,37 +65,47 @@ function initStyle(root){
   background-image: radial-gradient(circle at 70% 140%, #fff2 0, transparent 50% 70%, #0002 100%)
   overflow: hidden;
   transition: all 300ms ease;
-}
-.${name} div {
-  position: absolute;
-  display: block;
-  width: 40em;
-  height: 40em;
-  transform: translate(-50%,-50%);
-  border-radius: 50%;
-  box-shadow:
-    calc(1*var(--size)) calc(1*var(--size)) 3em #FFF2,
-    calc(6*var(--size)) calc(6*var(--size)) 12em 4em #0001 inset,
-    calc(5*var(--size)) calc(5*var(--size)) 8em 5em #0002 inset,
-    calc(-7*var(--size)) calc(-7*var(--size)) 9em 0 var(--color) inset,
-    calc(-1*var(--size)) calc(-1*var(--size)) 2em #0001
-  ;
-  background-color: var(--color-dark);
-  transition: all 300ms ease;
-}
-.${name} input {
-  display: none;
-}
-.${name} input:checked ~ div {
-  --size: -1em;
-  box-shadow:
-    calc(1*var(--size)) calc(1*var(--size)) 2em #FFF2,
-    calc(3*var(--size)) calc(3*var(--size)) 3em 1em #0001 inset,
-    calc(5*var(--size)) calc(5*var(--size)) 8em 5em #0002 inset,
-    calc(9*var(--size)) calc(9*var(--size)) 4em 13em var(--color) inset,
-    calc(-4*var(--size)) calc(-4*var(--size)) 2em #0001
-  ;
-  background-color: var(--color-light);
+  
+  div {
+    --radians: calc(var(--deg)/-180*pi);
+    --rdns: calc(var(--radians) + var(--lightRadians));
+    --emX: calc(cos(var(--rdns))*1em);
+    --emY: calc(sin(var(--rdns))*1em);
+    
+    position: absolute;
+    display: block;
+    width:  calc(1em*var(--w));
+    height: calc(1em*var(--h));
+    transform: translate(-50%,-50%) rotate(calc(1deg*var(--deg))) scale(calc(1 + 0.5*sin(calc(var(--sin) + 0.00005*var(--t)))));
+    border-radius: 50%;
+    box-shadow:
+      calc( 1*var(--emX)) calc( 1*var(--emY)) 3em #FFF2,
+      calc( 6*var(--emX)) calc( 6*var(--emY)) 12em 4em #0001 inset,
+      calc( 5*var(--emX)) calc( 5*var(--emY)) 8em 5em #0002 inset,
+      calc(-7*var(--emX)) calc(-7*var(--emY)) 9em 0 var(--color) inset,
+      calc(-1*var(--emX)) calc(-1*var(--emY)) 2em #0001
+    ;
+    background-color: var(--color-dark);
+    transition: all 300ms ease;
+  }
+  input {
+    display: none;
+  }
+  input:checked ~ div {
+    --radians: calc(var(--deg)/-180*pi);
+    --rdns: calc(var(--radians) + var(--lightRadians));
+    --emX: calc(cos(var(--rdns))*1em);
+    --emY: calc(sin(var(--rdns))*1em);
+    
+    box-shadow:
+      calc( 1*var(--emX)) calc( 1*var(--emY)) 2em #FFF2,
+      calc( 3*var(--emX)) calc( 3*var(--emY)) 3em 1em #0001 inset,
+      calc( 5*var(--emX)) calc( 5*var(--emY)) 8em 5em #0002 inset,
+      calc( 9*var(--emX)) calc( 9*var(--emY)) 4em 13em var(--color) inset,
+      calc(-4*var(--emX)) calc(-4*var(--emY)) 2em #0001
+    ;
+    background-color: var(--color-light);
+  }
 }
 `
   root.appendChild(style)
@@ -93,7 +113,8 @@ function initStyle(root){
 
 function fillMain(){
   const {clientHeight:h,clientWidth:w} = main
-  const numTarget = 2 + (4E-5*w*h<<0)
+  main.style.fontSize = Math.sqrt(w*h*5E-5) + 'px'
+  const numTarget = 12
   const numCurrent = main.children.length
   if (numCurrent>numTarget) {
     while (main.children.length>numTarget) main.firstChild.remove()
@@ -131,14 +152,16 @@ function setColor(colorMain){
 }
 
 function setHoleStyle(holeStyle){
-  const size = 0.05*(1 + 2*Math.random())+'rem'
   Object.assign(holeStyle, {
     left: Math.random()*100+'%',
     top: Math.random()*100+'%',
-    fontSize: size,
-    transform: `translate(-50%, -50%) rotate(${40*(Math.random()-0.5)<<0}deg) scale(calc(1.5 + 0.5*sin(${1E4*Math.random()} + 0.00015*var(--t))))`,
     borderRadius: [0,0,0,0].map(()=>(45+Math.random()*30<<0)+'%').join(' ')
   })
+  const randomSize = Math.random()
+  holeStyle.setProperty('--w', 30+20*randomSize<<0)
+  holeStyle.setProperty('--h', 30+20*(1-randomSize)<<0)
+  holeStyle.setProperty('--deg', 360*(Math.random()-0.5)<<0)
+  holeStyle.setProperty('--sin', 1E4*Math.random())
 }
 
 let start
