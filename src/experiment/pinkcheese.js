@@ -69,8 +69,8 @@ function initStyle(root){
   div {
     --radians: calc(var(--deg)/-180*pi);
     --rdns: calc(var(--radians) + var(--lightRadians));
-    --emX: calc(cos(var(--rdns))*1em);
-    --emY: calc(sin(var(--rdns))*1em);
+    --emX: calc(cos(var(--rdns))*-1em);
+    --emY: calc(sin(var(--rdns))*-1em);
     
     position: absolute;
     display: block;
@@ -86,7 +86,14 @@ function initStyle(root){
       calc(-1*var(--emX)) calc(-1*var(--emY)) 2em #0001
     ;
     background-color: var(--color-dark);
-    transition: all 300ms ease;
+    transition: 
+        left 300ms ease,
+        top 300ms ease,
+        width 300ms ease,
+        height 300ms ease,
+        box-shadow 300ms ease,
+        backgroumd-color 300ms ease
+    ;
   }
   input {
     display: none;
@@ -113,7 +120,7 @@ function initStyle(root){
 
 function fillMain(){
   const {clientHeight:h,clientWidth:w} = main
-  main.style.fontSize = Math.sqrt(w*h*5E-5) + 'px'
+  main.style.fontSize = Math.sqrt(w*h*4E-5) + 'px'
   const numTarget = 12
   const numCurrent = main.children.length
   if (numCurrent>numTarget) {
@@ -158,8 +165,8 @@ function setHoleStyle(holeStyle){
     borderRadius: [0,0,0,0].map(()=>(45+Math.random()*30<<0)+'%').join(' ')
   })
   const randomSize = Math.random()
-  holeStyle.setProperty('--w', 30+20*randomSize<<0)
-  holeStyle.setProperty('--h', 30+20*(1-randomSize)<<0)
+  holeStyle.setProperty('--w', 35+15*randomSize<<0)
+  holeStyle.setProperty('--h', 35+15*(1-randomSize)<<0)
   holeStyle.setProperty('--deg', 360*(Math.random()-0.5)<<0)
   holeStyle.setProperty('--sin', 1E4*Math.random())
 }
