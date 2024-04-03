@@ -1,0 +1,90 @@
+<style>
+  :root{
+    --deg: 0;
+    --min: 1;
+    --origin: 0;
+    --duration: 1ms;
+  }
+  html, body {
+    width: 100%;
+    height: 100%;
+
+    background: radial-gradient(#203134, #15191e);
+    background-position: 10% 10%;
+		overflow: hidden;
+  
+		/*--s: 100px;
+		--_g: #ECEDDC !* first color *! 90deg, #0000 90.5deg;
+		background:
+			conic-gradient(from -45deg,var(--_g)),
+			conic-gradient(from 135deg,var(--_g)) calc(var(--s)/2) 0,
+			#29AB87; !* second color *!
+    background-repeat: repeat;*/
+  }
+  .leaf {
+    --leafColor: hsl(31 43% 28%);
+    
+    position: absolute;
+    width: 1em;
+    height: 1em;
+    border-radius: 0 100%;
+    
+    /*transform-origin: -2em -2em;*/
+    transform-origin: var(--origin) var(--origin);
+    transform: rotate(calc(0.1deg*var(--t)*var(--min) + 1deg*var(--deg))) skew(-11deg,-11deg);
+
+    /*left: mod(calc(0.1%*var(--t)),100%);*/
+	  animation: linear var(--duration) infinite flow;
+    
+    background: repeating-linear-gradient(180deg, #493a2a 2%, #4b4030 20%);
+    
+    /*box-shadow: .1em .1em .2em #000 inset;*/
+    
+    &:after {
+      content: '';
+      display: block;
+			width: 1em;
+			height: 1em;
+			border-radius: 0 100%;
+			clip-path: polygon(0 0, 0% 100%, 100% 100%);
+			background: repeating-linear-gradient(90deg, #3f3325 2%, #463b2d 20%);
+    }
+  }
+
+	@keyframes flow {
+		from { left: -10%; }
+		to { left: 110%; }
+	}
+</style>
+
+<body>
+<script>
+  const duration = 10000
+  const num = 100
+  const {body} = document
+  Array.from(new Array(num)).forEach(()=>{
+    const leaf = document.createElement('div')
+    const {style} = leaf
+    leaf.classList.add('leaf')
+    const size = Math.random()*Math.random()
+    Object.assign(style, {
+      left: (100*Math.random()<<0) + '%',
+      top: (100*Math.random()<<0) + '%',
+      fontSize: (40+60*size<<0) + 'px',
+      animationDelay: (Math.random()*duration) + 'ms'
+    })
+    style.setProperty('--deg', Math.random()*180<<0)
+    style.setProperty('--min', Math.random()<0.5?1:-1)
+    style.setProperty('--origin', 8*(Math.random()-0.5)+'em')
+    style.setProperty('--duration', (duration*(1.5 - size)<<0)+'ms')
+    body.appendChild(leaf)
+  })
+  
+  const startT = Date.now()
+  function animate(){
+    body.style.setProperty('--t', Date.now()-startT)
+    requestAnimationFrame(animate)
+  }
+  animate()
+</script>
+</body>
