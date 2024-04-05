@@ -15,7 +15,7 @@ const basePrototype = /** @name Experiment */{
   ,handleDrag
   ,handleDragEnd
   ,handleClick
-  ,fromURI
+  ,fromSrc
 }
 const baseProperties = {}
 
@@ -150,15 +150,12 @@ function handleClick(){
  * @param {string} uri
  * @returns {Experiment}
  */
-function fromURI(uri){
+function fromSrc(html, target){
+  if (target) this.target = target
   const iframe = document.createElement('iframe')
   Object.assign(iframe.style, {width:'100%', height:'100%', border: '0'})
-  fetch(uri)
-      .then(r=>r.text())
-      .then(html=> {
-        this.target.appendChild(iframe)
-        iframe.srcdoc = html
-      })
+  this.target.appendChild(iframe)
+  iframe.srcdoc = html
   return this
 }
 
