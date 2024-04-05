@@ -5,18 +5,19 @@
 import {resize,animate,dragstart,drag,dragend,experimentFrame} from '../signal/signals'
 
 const extend = Object.assign
-  ,basePrototype = /** @name Experiment */{
-    init
-    ,exit
-    ,pause
-    ,handleResize
-    ,handleAnimate
-    ,handleDragStart
-    ,handleDrag
-    ,handleDragEnd
-    ,handleClick
-  }
-  ,baseProperties = {}
+const basePrototype = /** @name Experiment */{
+  init
+  ,exit
+  ,pause
+  ,handleResize
+  ,handleAnimate
+  ,handleDragStart
+  ,handleDrag
+  ,handleDragEnd
+  ,handleClick
+  ,fromURI
+}
+const baseProperties = {}
 
 /**
  * Initialise and append the canvas element, add event listeners
@@ -24,6 +25,8 @@ const extend = Object.assign
  * @returns {HTMLCanvasElement}
  */
 function init(target){
+  console.log('init', this, target) // todo: remove log
+  //
   const canvas = document.createElement('canvas')
   const context = canvas.getContext(this.contextType,{preserveDrawingBuffer:true}) // preserveDrawingBuffer is for webgl to save images, but slower than the default false (=swapping instead of copying)
   //
@@ -41,11 +44,13 @@ function init(target){
   })
   target.appendChild(canvas)
   //
-  resize.add(this.handleResize)
-  animate.add(this.handleAnimate)
-  dragstart.add(this.handleDragStart)
-  drag.add(this.handleDrag)
-  dragend.add(this.handleDragEnd)
+  this.bindings = [
+    resize.add(this.handleResize.bind(this))
+    ,animate.add(this.handleAnimate.bind(this))
+    ,dragstart.add(this.handleDragStart.bind(this))
+    ,drag.add(this.handleDrag.bind(this))
+    ,dragend.add(this.handleDragEnd.bind(this))
+  ]
   this.canvas.addEventListener('click',this.handleClick)
   //
   return this.canvas
@@ -56,11 +61,8 @@ function init(target){
  */
 function exit() {
   const {target} = this
-  resize.remove(this.handleResize)
-  animate.remove(this.handleAnimate)
-  dragstart.remove(this.handleDragStart)
-  drag.remove(this.handleDrag)
-  dragend.remove(this.handleDragEnd)
+  this.bindings?.forEach(binding=>binding.detach())
+  this.bindings?.splice(0, Number.MAX_SAFE_INTEGER)
   this.canvas?.removeEventListener('click',this.handleClick)
   this.canvas?.remove()
   while (target.children.length) target.firstChild.remove()
@@ -144,6 +146,23 @@ function handleClick(){
 }
 
 /**
+ * Create experiment in iframe from uri
+ * @param {string} uri
+ * @returns {Experiment}
+ */
+function fromURI(uri){
+  const iframe = document.createElement('iframe')
+  Object.assign(iframe.style, {width:'100%', height:'100%', border: '0'})
+  fetch(uri)
+      .then(r=>r.text())
+      .then(html=> {
+        this.target.appendChild(iframe)
+        iframe.srcdoc = html
+      })
+  return this
+}
+
+/**
  *
  * @param {string} name
  * @param {object} extension
@@ -170,7 +189,7 @@ export default function(name,extension,contextType) {
       inst.zuper[s] = inst[s].bind(inst)
     }
     // bind private- unoverridden methods to inst
-    if (extension && !extension.hasOwnProperty(s)) {// todo: exclude public
+    if (extension?.hasOwnProperty(s)) {// todo: exclude public
       inst[s] = basePrototype[s].bind(inst)
     }
   }
@@ -186,8 +205,10 @@ export default function(name,extension,contextType) {
   }
   // extend expose property with public methods
   extend(inst.expose,{
-    init: inst.init.bind(inst),exit: inst.exit.bind(inst),pause: inst.pause.bind(inst)
-    ,toString: function () {
+    init: inst.init.bind(inst)
+    ,exit: inst.exit.bind(inst)
+    ,pause: inst.pause.bind(inst)
+    ,toString(){
       return '[object ' + inst.name + ']'
     }
   })

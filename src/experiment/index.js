@@ -19,6 +19,7 @@ export * from './forest'
 export * from './pinkcheese'
 export * from './spokes'
 export * from './ladybugs'
+export * from './leafs'
 export * from './radialdifference' // broken in Firefox because of globalCompositeOperation
 export * from './hypno' // broken in Firefox because of globalCompositeOperation
 // export * from './snow' // broken

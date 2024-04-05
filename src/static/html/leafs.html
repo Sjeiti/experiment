@@ -1,0 +1,118 @@
+<!doctype html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<div class="leaf"></div>
+<style>
+  :root{
+    --deg: 0;
+    --min: 1;
+    --origin: 0;
+    --duration: 1ms;
+  }
+  html, body {
+    width: 100%;
+    height: 100%;
+    max-width: 100vw;
+    max-height: 100vh;
+    margin: 0;
+    padding: 0;
+  }
+  body {
+		overflow: hidden;
+    background: radial-gradient(circle at 30% -10%, #203134, #15191e);
+  }
+  .leaf {
+    --h: calc(31 + 9*var(--random));
+    --s: calc(25% + 9%*var(--random));
+    --l: calc(25% + 9%*var(--random));
+    --color-leaf: hsl(var(--h) var(--s) var(--l));
+    --color-leaf-light: hsl(var(--h) var(--s) calc(1.1*var(--l)));
+    --color-leaf-dark: hsl(var(--h) var(--s) calc(0.9*var(--l)));
+    
+    position: absolute;
+    width: 1em;
+    height: 1em;
+    border-radius: 0 100%;
+    
+    transform-origin: var(--origin) var(--origin);
+    transform:
+      rotate(calc(0.1deg*var(--t)*var(--min) + 1deg*var(--deg)))
+      skew(-11deg,-11deg)
+    ;
+
+	  animation: linear var(--duration) infinite flow;
+    
+    background: repeating-linear-gradient(180deg, var(--color-leaf) 2%, var(--color-leaf-light) 20%);
+    
+    &:before, &:after {
+      content: '';
+      position: absolute;
+      display: block;
+    }
+
+    &:after {
+      left: 1em;
+      top: 1em;
+			width: 1.5em;
+			height: 0.04em;
+      transform-origin: 0 50%;
+      transform:
+        translateY(-50%)
+        rotate(-135deg)
+      ;
+			clip-path: polygon(0 50%, 100% 0, 100% 100%);
+      background-color: var(--color-leaf-dark);
+    }
+
+    &:before {
+      left: 0;
+      top: 0;
+			width: 1em;
+			height: 1em;
+			border-radius: 0 100%;
+			clip-path: polygon(0 0, 0% 100%, 100% 100%);
+			background: repeating-linear-gradient(90deg, var(--color-leaf-dark) 2%, var(--color-leaf-light) 20%);
+    }
+  }
+
+	@keyframes flow {
+		from { left: -10%; }
+		to { left: 110%; }
+	}
+</style>
+
+<script>
+  const {clientWidth} = document.documentElement
+  const {body} = document
+  const duration = 1.8*clientWidth//1000
+  const num = 200
+  Array.from(new Array(num)).forEach(()=>{
+    const leaf = document.createElement('div')
+    const {style} = leaf
+    leaf.classList.add('leaf')
+    const size = Math.random()*Math.random()
+    Object.assign(style, {
+      left: (100*Math.random()<<0) + '%',
+      top: (100*Math.random()<<0) + '%',
+      fontSize: (40+60*size<<0) + 'px',
+      animationDelay: (Math.random()*duration) + 'ms'
+    })
+    style.setProperty('--random', Math.random()-0.5)
+    style.setProperty('--deg', Math.random()*180<<0)
+    style.setProperty('--min', Math.random()<0.5?1:-1)
+    style.setProperty('--origin', 8*(Math.random()-0.5)+'em')
+    style.setProperty('--duration', (duration*(1.5 - size)<<0)+'ms')
+    body.appendChild(leaf)
+  })
+  
+  const startT = Date.now()
+  function animate(){
+    body.style.setProperty('--t', Date.now()-startT)
+    requestAnimationFrame(animate)
+  }
+  animate()
+</script>
+</body>
