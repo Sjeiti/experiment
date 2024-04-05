@@ -2,6 +2,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<div class="leaf"></div>
 <style>
   :root{
     --deg: 0;
@@ -19,8 +22,7 @@
   }
   body {
 		overflow: hidden;
-    background: radial-gradient(#203134, #15191e);
-    background-position: 10% 10%;
+    background: radial-gradient(circle at 30% -10%, #203134, #15191e);
   }
   .leaf {
     --h: calc(31 + 9*var(--random));
@@ -37,13 +39,13 @@
     
     transform-origin: var(--origin) var(--origin);
     transform:
-      rotate(calc(0.1deg*var(--t)*var(--min) + 1deg*var(--deg))) 
+      rotate(calc(0.1deg*var(--t)*var(--min) + 1deg*var(--deg)))
       skew(-11deg,-11deg)
     ;
 
 	  animation: linear var(--duration) infinite flow;
     
-    background: repeating-linear-gradient(180deg, var(--color-leaf) 2%, var(--color-leaf-light) 20%); 
+    background: repeating-linear-gradient(180deg, var(--color-leaf) 2%, var(--color-leaf-light) 20%);
     
     &:before, &:after {
       content: '';
@@ -57,8 +59,8 @@
 			width: 1.5em;
 			height: 0.04em;
       transform-origin: 0 50%;
-      transform: 
-        translateY(-50%) 
+      transform:
+        translateY(-50%)
         rotate(-135deg)
       ;
 			clip-path: polygon(0 50%, 100% 0, 100% 100%);
@@ -82,11 +84,11 @@
 	}
 </style>
 
-<body>
 <script>
-  const duration = 1000
-  const num = 100
+  const {clientWidth} = document.documentElement
   const {body} = document
+  const duration = 1.8*clientWidth//1000
+  const num = 200
   Array.from(new Array(num)).forEach(()=>{
     const leaf = document.createElement('div')
     const {style} = leaf
