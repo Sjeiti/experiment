@@ -1,3 +1,7 @@
+<!doctype html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
   :root{
     --deg: 0;
@@ -8,46 +12,67 @@
   html, body {
     width: 100%;
     height: 100%;
-
+    max-width: 100vw;
+    max-height: 100vh;
+    margin: 0;
+    padding: 0;
+  }
+  body {
+		overflow: hidden;
     background: radial-gradient(#203134, #15191e);
     background-position: 10% 10%;
-		overflow: hidden;
-  
-		/*--s: 100px;
-		--_g: #ECEDDC !* first color *! 90deg, #0000 90.5deg;
-		background:
-			conic-gradient(from -45deg,var(--_g)),
-			conic-gradient(from 135deg,var(--_g)) calc(var(--s)/2) 0,
-			#29AB87; !* second color *!
-    background-repeat: repeat;*/
   }
   .leaf {
-    --leafColor: hsl(31 43% 28%);
+    --h: calc(31 + 9*var(--random));
+    --s: calc(25% + 9%*var(--random));
+    --l: calc(25% + 9%*var(--random));
+    --color-leaf: hsl(var(--h) var(--s) var(--l));
+    --color-leaf-light: hsl(var(--h) var(--s) calc(1.1*var(--l)));
+    --color-leaf-dark: hsl(var(--h) var(--s) calc(0.9*var(--l)));
     
     position: absolute;
     width: 1em;
     height: 1em;
     border-radius: 0 100%;
     
-    /*transform-origin: -2em -2em;*/
     transform-origin: var(--origin) var(--origin);
-    transform: rotate(calc(0.1deg*var(--t)*var(--min) + 1deg*var(--deg))) skew(-11deg,-11deg);
+    transform:
+      rotate(calc(0.1deg*var(--t)*var(--min) + 1deg*var(--deg))) 
+      skew(-11deg,-11deg)
+    ;
 
-    /*left: mod(calc(0.1%*var(--t)),100%);*/
 	  animation: linear var(--duration) infinite flow;
     
-    background: repeating-linear-gradient(180deg, #493a2a 2%, #4b4030 20%);
+    background: repeating-linear-gradient(180deg, var(--color-leaf) 2%, var(--color-leaf-light) 20%); 
     
-    /*box-shadow: .1em .1em .2em #000 inset;*/
-    
-    &:after {
+    &:before, &:after {
       content: '';
+      position: absolute;
       display: block;
+    }
+
+    &:after {
+      left: 1em;
+      top: 1em;
+			width: 1.5em;
+			height: 0.04em;
+      transform-origin: 0 50%;
+      transform: 
+        translateY(-50%) 
+        rotate(-135deg)
+      ;
+			clip-path: polygon(0 50%, 100% 0, 100% 100%);
+      background-color: var(--color-leaf-dark);
+    }
+
+    &:before {
+      left: 0;
+      top: 0;
 			width: 1em;
 			height: 1em;
 			border-radius: 0 100%;
 			clip-path: polygon(0 0, 0% 100%, 100% 100%);
-			background: repeating-linear-gradient(90deg, #3f3325 2%, #463b2d 20%);
+			background: repeating-linear-gradient(90deg, var(--color-leaf-dark) 2%, var(--color-leaf-light) 20%);
     }
   }
 
@@ -59,7 +84,7 @@
 
 <body>
 <script>
-  const duration = 10000
+  const duration = 1000
   const num = 100
   const {body} = document
   Array.from(new Array(num)).forEach(()=>{
@@ -73,6 +98,7 @@
       fontSize: (40+60*size<<0) + 'px',
       animationDelay: (Math.random()*duration) + 'ms'
     })
+    style.setProperty('--random', Math.random()-0.5)
     style.setProperty('--deg', Math.random()*180<<0)
     style.setProperty('--min', Math.random()<0.5?1:-1)
     style.setProperty('--origin', 8*(Math.random()-0.5)+'em')
