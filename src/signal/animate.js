@@ -1,16 +1,16 @@
-import Signal from 'signals'
-import {requestAnimationFrame} from '../utils/utils'
+import {createSignal} from 'state-signals'
 
 let fDeltaT = 0
-  ,iCurMillis
-  ,iLastMillis = Date.now()
-const signal = new Signal
-  ,iMilliLen = 10
-  ,aMillis = (function(a,n){
+let iCurMillis
+let iLastMillis = Date.now()
+const iMilliLen = 10
+const aMillis = Array.from(new Array(iMilliLen)).map(()=>iLastMillis)
+/*const aMillis = (function(a,n){
     for (let i=0;i<iMilliLen;i++) a.push(n)
     return a
-  })([],iLastMillis)
-  ,iFrameNr = 0
+  })([],iLastMillis)*/
+const iFrameNr = 0
+const signal = createSignal(fDeltaT/iMilliLen,iCurMillis,iFrameNr)
 
 animate()
 
@@ -18,10 +18,9 @@ function animate(){
   iCurMillis = Date.now()
   aMillis.push(iCurMillis-iLastMillis)
   aMillis.shift()
-  fDeltaT = 0
-  for (let i=0;i<iMilliLen;i++) fDeltaT += aMillis[i]
+  fDeltaT = aMillis.reduce((acc,n)=>acc+n,0)/iMilliLen
   iLastMillis = iCurMillis
-  signal.dispatch(fDeltaT/iMilliLen,iCurMillis,iFrameNr)
+  signal.dispatch(fDeltaT,iCurMillis,iFrameNr)
   requestAnimationFrame(animate)
 }
 

@@ -61,7 +61,8 @@ function init(target){
  */
 function exit() {
   const {target} = this
-  this.bindings?.forEach(binding=>binding.detach())
+  this.bindings?.forEach(binding=>binding.remove())
+  //this.bindings?.forEach(binding=>binding.detach())
   this.bindings?.splice(0, Number.MAX_SAFE_INTEGER)
   this.canvas?.removeEventListener('click',this.handleClick)
   this.canvas?.remove()

@@ -1,47 +1,37 @@
-import color from '../math/color'
-import experiment from './base'
+<!doctype html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    html, body {
+      width: 100%;
+      height: 100%;
+      max-width: 100vw;
+      max-height: 100vh;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      overflow: hidden;
+      background-color: #333;
+    }
+  </style>
+  <script>
+    const isMobile = window.matchMedia('(max-device-width: 600px)').matches
+    const isLocalhost = window.location.hostname==='localhost'
 
-/**
- * Pink cheese
- * @module experiment/rotate
- * @see module:experiment/base
- */
-
-const name = 'pinkcheese'
-const colorWhite = color(255,255,255)
-
-const inst = experiment(name,{
-  init
-  ,handleAnimate
-})
-const {zuper} = inst
-
-let main
-let mainStyle
-
-const div = document.createElement('div')
-div.innerHTML = '<label><input type="checkbox"><div></div></label>'
-const blueprint = div.querySelector('label')
-
-function init(_target){
-  initWrapper(_target)
-  initStyle(_target)
-  zuper.init(_target).remove()
-}
-
-function initWrapper(root){
-  main = element('div', root,{class:name})
-  mainStyle = main.style
-
-  requestAnimationFrame(fillMain)
-
-  setColor('#F04')
-  main.addEventListener('click', onMainClick)
-}
-
-function initStyle(root){
-  const style = document.createElement('style')
-  style.textContent = `
+    isMobile
+      &&isLocalhost
+      &&document.addEventListener('DOMContentLoaded',()=>{
+        const script = document.createElement('script')
+        script.src = '//cdn.jsdelivr.net/npm/eruda'
+        document.body.appendChild(script)
+        script.addEventListener('load',()=>eruda.init())
+      })
+  </script>
+</head>
+<body>
+<style>
 :root {
   --deg: 0;
   --radians: 0;
@@ -51,7 +41,7 @@ function initStyle(root){
   --sin: 1;
   --t: 1;
 }
-.${name} {
+.pinkcheese {
   --size: 1em;
   --color: #F04;
   --color-dark: #FA0044;
@@ -113,9 +103,38 @@ function initStyle(root){
     background-color: var(--color-light);
   }
 }
-`
-  root.appendChild(style)
-}
+</style>
+
+<div class="cheese"></div>
+
+<scipt src="../math/color" module />
+
+<script>
+import color from '../math/color'
+
+/**
+ * Pink cheese
+ * @module experiment/rotate
+ * @see module:experiment/base
+ */
+
+const name = 'pinkcheese'
+const colorWhite = color(255,255,255)
+
+const main = document.querySelector('.cheese')
+const mainStyle = document.querySelector('style')
+
+const div = document.createElement('div')
+div.innerHTML = '<label><input type="checkbox"><div></div></label>'
+const blueprint = div.querySelector('label')
+
+//////////////////////
+
+  main.addEventListener('click', onMainClick)
+  requestAnimationFrame(fillMain)
+  setColor('#F04')
+
+//////////////////////
 
 function fillMain(){
   const {clientHeight:h,clientWidth:w} = main
@@ -194,3 +213,7 @@ function getRandomColor(){
 }
 
 export const pinkcheese = inst.expose
+
+</script>
+</body>
+
