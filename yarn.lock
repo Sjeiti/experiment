@@ -5211,9 +5211,9 @@ spdx-license-ids@^3.0.0:
   integrity sha512-XkD+zwiqXHikFZm4AX/7JSCXA98U5Db4AFd5XUg/+9UNtnH75+Z9KxtpYiJZx36mUDVOwH83pl7yvCer6ewM3w==
 
 state-signals@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/state-signals/-/state-signals-1.0.2.tgz#9aa207fcc6c001ec035115242f4f23697126f644"
-  integrity sha512-0HXJmNCb4XjsZV2NZcE/wOVVII9tfKICIXwNFkCXnedV3yi3EAmeVFqJGAIo+tsgUXhrGJpA6AaDK/y1B/H51w==
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/state-signals/-/state-signals-1.0.3.tgz#695f0f285cea54af26ded1eb698264db1aa0f8ca"
+  integrity sha512-F/LSalKpbtx3v6lkbBPiyKnBcNQCFven/pAwY/x7n8x9Ux0fu8C1nOwlSQvsWnBMx6DZaWCWuavipgYZeXr+IA==
 
 statuses@2.0.1:
   version "2.0.1"
