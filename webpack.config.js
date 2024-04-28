@@ -75,6 +75,7 @@ module.exports = env => {
         patterns: [
           { from: 'src/index.html', to: './'}
           ,{ from: 'src/static', to: './static' }
+          ,{ from: 'src/math', to: './math' }
         ]
       })
       ,new webpack.DefinePlugin({
