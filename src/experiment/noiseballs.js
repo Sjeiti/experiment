@@ -153,7 +153,7 @@ function initBalls(){
         }
         if (b>0) this.b = b-1
         vx = frc*(vx+spdv*orientationX+fieldHeight*(n-nx))
-        vy = frc*(vy+spdv*orientationY+fieldHeight*(n-ny)+0.1)
+        vy = frc*(vy+spdv*orientationY+fieldHeight*(n-ny)+0.04)
         this.x += vx
         this.y += vy
         this.vx = vx
@@ -272,6 +272,8 @@ function onOrientation(evt){
   }
   orientationX = evt.gamma
   orientationY = evt.beta
+  orientationX = 0
+  orientationY = 0
 }
 
 export const noiseballs = inst.expose
