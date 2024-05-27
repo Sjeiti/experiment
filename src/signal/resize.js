@@ -1,25 +1,28 @@
-import Signal from 'signals'
+import {createSignal} from 'state-signals'
 
-let resize = new Signal
-    ,win = window
-    ,doc = document
-    ,html = doc.documentElement
-    ,body = doc.body
-    ,w
-    ,h
+const win = window
+const doc = document
+const html = doc.documentElement
+const body = doc.body
 
-setSize()
+let [w,h] = getSize()
+
+const resize = createSignal(w,h,w,h)
 
 win.addEventListener('resize', function(docElm){
   const wOld = w
-    ,hOld = h
-  setSize()
+  const hOld = h
+  const [wNew,hNew] = getSize()
+  w = wNew
+  h = hNew
   resize.dispatch(w,h,wOld,hOld)
 },false)
 
-function setSize(){
-  resize.w = resize.width  = w = win.innerWidth  || html.clientWidth || body.clientWidth
-  resize.h = resize.height = h = win.innerHeight || html.clientHeight|| body.clientHeight
+function getSize(){
+  return [
+    win.innerWidth || html.clientWidth || body.clientWidth
+    ,win.innerHeight || html.clientHeight|| body.clientHeight
+  ]
 }
 
 export default resize

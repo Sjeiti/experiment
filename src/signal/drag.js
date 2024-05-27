@@ -1,4 +1,4 @@
-import Signal from 'signals'
+import {createSignal} from 'state-signals'
 import vector from '../math/vector'
 
 /**
@@ -36,9 +36,9 @@ let typeOfTouch = typeof window.Touch
     for (let i=0,l=oa.length;i<l;i++) fn(oa[i])
   }
   ,iFakeId = 0
-  ,dragstart = new Signal
-  ,drag = Object.assign(new Signal,{stopPageScroll:false,touch})
-  ,dragend = new Signal
+  ,dragstart = createSignal()
+  ,drag = Object.assign(createSignal(),{stopPageScroll:false,touch})
+  ,dragend = createSignal()
   ,oTouches = {}
 
 Object.defineProperty(oTouches,'length',{

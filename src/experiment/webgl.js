@@ -12,6 +12,8 @@ import {loadImage} from '../utils/utils'
 let glProto = WebGLRenderingContext.prototype
     ,uniformsXF = [function(){},glProto.uniform1fv,glProto.uniform2fv,glProto.uniform3fv]
 
+const bindings = []
+
 /**
  * Webgl scaffold that parses the following uniforms
  * - {float} time Time in seconds
@@ -113,8 +115,10 @@ function webgl(name,scriptUri,options={}){
     // call child init before events
     callChildMethod(options.init,arguments)
     //
-    key.press.add(handleKeyPress)
-    key.up.add(handleKeyUp)
+    bindings.push(
+      key.press.add(handleKeyPress)
+      ,key.up.add(handleKeyUp)
+    )
     //
     handleResize()
     //
@@ -126,8 +130,13 @@ function webgl(name,scriptUri,options={}){
    */
   function exit(){
     zuper.exit()
-    key.press.remove(handleKeyPress)
-    key.up.remove(handleKeyUp)
+    console.log('b',bindings)
+    console.log('h',bindings[0].hasOwnProperty('remove'))
+    console.log('h',bindings[0].remove)
+    console.log('h',bindings[0])
+
+    bindings.forEach(b=>b.remove())
+    bindings.length = 0
   }
 
   /**

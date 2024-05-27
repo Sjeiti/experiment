@@ -1,0 +1,104 @@
+<!doctype html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+
+  <div>
+    <div class="pie"></div>
+    <label class="legend">qux<input type="checkbox"></label>
+    <label class="legend">qux<input type="checkbox"></label>
+    <label class="legend">qux<input type="checkbox"></label>
+    <label class="legend">qux<input type="checkbox"></label>
+    <label class="legend">qux<input type="checkbox"></label>
+  </div>
+
+<style>
+:root {
+  --color1: red;
+  --color2: orange;
+  --color3: lime;
+  --color4: blue;
+  --color5: yellow;
+  --colorh1: blue;
+  --colorh2: red;
+  --colorh3: green;
+  --colorh4: #008;
+  --colorh5: #880;
+  --size1: 3;
+  --size2: 5;
+  --size3: 2;
+  --size4: 1;
+  --size5: 0;
+  --step1: 30;
+  --step2: 50;
+  --step3: 70;
+  --step4: 100;
+  --color: #f04;
+}
+body {
+  background: black;
+}
+.pie:has(~ .legend:nth-of-type(1) > input:checked){
+  --color1: var(--colorh1)!important;
+}
+.pie:has(~ .legend:nth-of-type(2) > input:checked){
+  --color2: var(--colorh2)!important;
+}
+.pie:has(~ .legend:nth-of-type(3) > input:checked){
+  --color3: var(--colorh3)!important;
+}
+.pie:has(~ .legend:nth-of-type(4) > input:checked){
+  --color4: var(--colorh4)!important;
+}
+.pie:has(~ .legend:nth-of-type(5) > input:checked){
+  --color5: var(--colorh5)!important;
+}
+.pie {
+  --cumulative: calc(var(--size1) + var(--size2) + var(--size3) + var(--size4) + var(--size5));
+  --step1: calc((var(--size1) / var(--cumulative)) * 360deg);
+  --step2: calc(((var(--size1) + var(--size2)) / var(--cumulative)) * 360deg);
+  --step3: calc((var(--size1) + var(--size2) + var(--size3)) / var(--cumulative) * 360deg);
+  --step4: calc((var(--size1) + var(--size2) + var(--size3) + var(--size4)) / var(--cumulative) * 360deg);
+  
+  display: inline-block;
+  width: 5em;
+  height: 5em;
+  margin: 0.125em;
+  background: conic-gradient(
+    var(--color1) 0 var(--step1),
+    var(--color2) var(--step1) var(--step2),
+    var(--color3) var(--step2) var(--step3),
+    var(--color4) var(--step3) var(--step4),
+    var(--color5) var(--step4)
+  );
+  border-radius: 50%;
+  font-size: .25rem;
+  transition: all 300ms ease-in-out;
+  box-shadow: 0.125em 0.25em 0.25em 0 #0004;
+}
+</style>
+<script>
+const {body} = document
+const slices = [1,1,1,1,1]
+Array.from(new Array(1111)).forEach(()=>{
+	const div = document.createElement('div')
+  div.classList.add('pie') 
+  slices.forEach((o,i)=>{
+    div.style.setProperty(`--color${i+1}`, color())
+    div.style.setProperty(`--size${i+1}`, 1 + 10*Math.random()<<0)
+  })
+	
+  body.appendChild(div)
+  
+})
+
+function color(){
+  //return `hsl(${Math.random()*360<<0}deg 40% 30%)`
+  return '#' + ((1 << 24) * Math.random() | 0).toString(16).padStart(6, '0')
+}
+</script>
+</body>

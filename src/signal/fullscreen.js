@@ -1,7 +1,7 @@
-import Signal from 'signals'
+import {createSignal} from 'state-signals'
 
-const fullScreen = new Signal
-    ,vendorPrefixes = ['','webkit','moz','ms']
+const fullScreen = createSignal(false)
+const vendorPrefixes = ['','webkit','moz','ms']
 
 export default fullScreen
 
