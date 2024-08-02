@@ -1,0 +1,290 @@
+<!doctype html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    html, body {
+      width: 100%;
+      height: 100%;
+      max-width: 100vw;
+      max-height: 100vh;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      overflow: hidden;
+      background-color: #333;
+    }
+  </style>
+  <script>
+ 
+    const isMobile = window.matchMedia('(max-device-width: 600px)').matches
+    const isLocalhost = window.location.hostname==='localhost'
+
+    const inited = ()=>document.body.dispatchEvent(new CustomEvent('inited'))
+
+    isMobile
+      &&isLocalhost
+      &&!window.eruda
+      &&document.addEventListener('DOMContentLoaded',()=>{
+        const script = loadScript('//cdn.jsdelivr.net/npm/eruda')
+        script.addEventListener('load',()=>{
+          eruda.init()
+          console.log('r1')
+          inited()
+        })
+      })
+      ||inited()
+    
+    /*
+    ;(async function foo(){
+      await (new Promise(resolve=>{
+        const isMobile = window.matchMedia('(max-device-width: 600px)').matches
+        const isLocalhost = window.location.hostname==='localhost'
+        if (isMobile&&isLocalhost) {
+          const script = loadScript('//cdn.jsdelivr.net/npm/eruda')
+          script.onload = function(){
+            eruda.init()
+            resolve()
+            console.log('r1')
+          }
+        } else {
+          resolve()
+          console.log('r2')
+        }
+      }))
+    })()
+    */
+
+    function loadScript(src){
+      const script = document.createElement('script')
+      script.src = src
+      document.body.appendChild(script)
+      return script
+    }
+
+  </script>
+</head>
+<body>
+  <form></form>
+<style>
+:root {
+  --deg: 0;
+  --radians: 0;
+  --lightRadians: -1.1;
+  --w: 40;
+  --h: 40;
+  --sin: 1;
+  --t: 1;
+  --addRotation: 0;
+  --lightDist: 1;
+}
+html {
+  box-sizing: border-box;
+}
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+html,body{
+  width: 100%;
+  height: 100%;
+  margin:0;
+  padding:0;
+}
+form {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  z-index: 1;
+  width: 100%;
+  padding: 1rem;
+  input { width: 100%; }
+}
+.map {
+  --size: 1em;
+  --color: #F04;
+  --color-ground: #939B8B;
+  --olor-ground: #444;
+  --color-roof: #D0742B;
+  --color-wall: #CBCB90;
+  --color-dark: #FA0044;
+  --color-light: #F2B;
+  
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-ground);
+  background-image: radial-gradient(circle at 70% 140%, #fff2 0, transparent 50% 70%, #0002 100%)
+  overflow: hidden;
+  transition: all 300ms ease;
+  
+  .house {
+    --degHouse: calc(var(--deg) + var(--addRotation));
+    --radians: calc((var(--degHouse))/-180*pi);
+    --rdns: calc(var(--radians) + var(--lightRadians));
+    ---rdns: calc(var(--radians));
+    --emX: calc(cos(var(--rdns))*-1em);
+    --emY: calc(sin(var(--rdns))*-1em);
+
+    --pcRds: calc(var(--rdns) + 0.001*var(--t));
+    --pcRds: calc(1*var(--rdns) + 1*PI);
+    --pcRds: calc(var(--rdns) - var(--rdns) + 0.5*PI);
+    --lightDistEm: calc(1em*var(--lightDist));
+    --pcX: calc(cos(var(--pcRds))*var(--lightDistEm));
+    --pcY: calc(sin(var(--pcRds))*var(--lightDistEm));
+    
+    position: absolute;
+    left: calc(1em*var(--x));
+    top: calc(1em*var(--y));
+    display: block;
+    width:  calc(1em*var(--w));
+    height: calc(1em*var(--h));
+    transform: translate(-50%,-50%) rotate(calc(1deg*var(--degHouse))) scale(3);
+
+    background: var(--color-roof) linear-gradient(#0002 0 50%, #fff2 50% 100%);
+    box-shadow: var(--emX) var(--emY) 0.5em #0003;
+
+    background: var(--color-roof) conic-gradient(
+      from calc(-1deg*var(--degHouse) + var(--lightRadians)/PI*180deg + 90deg)
+      at calc(50% + var(--pcX)) calc(50% + var(--pcY)),
+      #fff4 0deg,
+      #8880 90deg,
+      #0004 180deg, 
+      #8880 270deg,
+      #fff4 360deg
+    );
+    &:before{
+      content: '';
+      display: block;
+      width: 100%;
+      height: 50%;
+      position: absolute;
+      left: 0;
+      top: 50%;
+    --pcX: calc(cos(var(--rdns))*3333%);
+    --pcY: calc(sin(var(--rdns))*3333%);
+    ackground: var(--color-roof) conic-gradient(
+      from calc(-1deg*var(--degHouse) + var(--lightRadians)*180deg)
+      at calc(50% + var(--pcX)) calc(50% + var(--pcY)),
+      #fff8 0deg,
+      #8880 90deg,
+      #0008 180deg, 
+      #8880 270deg,
+      #fff8 360deg
+    );
+    
+    --pcRds: calc(2*var(--rdns) - 0.5*PI);
+    --pcX: calc(cos(var(--pcRds))*+111em);
+    --pcY: calc(sin(var(--pcRds))*-111em);
+    ackground: lime conic-gradient(
+      from calc(-1deg*var(--deg) + var(--lightRadians)*180deg)
+      at calc(50% + var(--pcX)) calc(50% + var(--pcY)),
+      #fff4 0deg,
+      #8880 90deg,
+      #0004 180deg, 
+      #8880 270deg,
+      #fff4 360deg
+    );
+    ackground: inherit;
+    ackground: lime;
+    background: #0ff4;
+    }
+  }
+}
+</style>
+
+<div class="map"></div>
+
+<script>
+
+const name = 'map'
+
+const main = document.querySelector('.'+name)
+const mainStyle = main.style
+
+const div = document.createElement('div')
+div.innerHTML = `<div class="house"></div>`
+const blueprint = div.querySelector('.house')
+
+let color
+let colorWhite
+
+document.body.addEventListener('inited',async ()=>{
+  console.log('colinitedor') 
+  color = (await import('../../math/color.js')).default
+  console.log('color') 
+  colorWhite = color(255,255,255)
+
+  const [sheet] = document.styleSheets
+  console.log('sheet',sheet)
+  for(let i=1;i<=33;i++){
+    sheet.insertRule(`.melon div:nth-child(${i}){
+      transform: rotate(${i*137.5}deg) translate(${(35+i)*0.25}em) scaleY(0.4) rotate(-45deg);
+    }`)
+  }
+
+  fillMain()
+})
+
+function fillMain(){
+  const {clientHeight:h,clientWidth:w} = main
+  main.style.fontSize = Math.sqrt(w*h*4E-5) + 'px'
+  const numTarget = 12
+  const numCurrent = main.children.length
+  if (numCurrent>numTarget) {
+    while (main.children.length>numTarget) main.firstChild.remove()
+  } else if (numCurrent<numTarget) {
+    Array.from(new Array(numTarget-numCurrent)).forEach((o,i)=>{
+      const house = blueprint.cloneNode(true)
+      const {style} = house
+      const part = i/numTarget
+      style.setProperty('--deg',Math.random()*360)
+      style.setProperty('--w',2+Math.random()*3)
+      style.setProperty('--h',2+Math.random()*3)
+      style.setProperty('--x',Math.random()*100)
+      style.setProperty('--y',Math.random()*100)
+      //
+      const {sin,cos,PI} = Math
+      style.setProperty('--deg',part*360)
+      style.setProperty('--x',50-40*sin(part*2*PI))
+      style.setProperty('--y',50+40*cos(part*2*PI))
+      //
+      main.appendChild(house)
+    })
+  }
+}
+
+let start
+function handleAnimate(){
+  const millis = Date.now()
+  start||(start=millis)
+  const elapsed = millis-start
+  setCSSProp('t', elapsed)
+  //setCSSProp('lightRadians', 0.001*elapsed)
+  requestAnimationFrame(handleAnimate)
+}
+handleAnimate()
+
+const form = document.querySelector('form')
+function addRange(fn){
+  const input = document.createElement('input')
+  input.type = 'range'
+  input.addEventListener('input',fn)
+  form.appendChild(input)
+}
+addRange(e=>
+  setCSSProp('lightRadians', 0.1*e.target.valueAsNumber)
+)
+addRange(e=>
+  setCSSProp('addRotation', 2*3.6*e.target.valueAsNumber)
+)
+addRange(e=>
+  setCSSProp('lightDist', 0.2*e.target.valueAsNumber)
+)
+
+function setCSSProp(name, value){
+  mainStyle.setProperty(`--${name}`, value)
+}
+</script>
+</body>
+
