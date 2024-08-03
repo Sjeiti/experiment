@@ -77,7 +77,17 @@
   --sin: 1;
   --t: 1;
   --addRotation: 0;
-  --lightDist: 1;
+  --lightDist: 4;
+
+  --size: 1em;
+  --color: #F04;
+  --color-ground: #939B8B;
+  --olor-ground: #444;
+  --color-roof: #D0742B;
+  --color-wall: #CBCB90;
+  --color-dark: #FA0044;
+  --color-light: #F2B;
+  
 }
 html {
   box-sizing: border-box;
@@ -91,30 +101,33 @@ html,body{
   margin:0;
   padding:0;
 }
+body {
+  background-color: var(--color-ground);
+}
+svg {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+svg, path {
+  fill: transparent;
+  stoke: #777;  
+  stoke-width: 4;  
+}
 form {
   position: absolute;
   left: 0;
   bottom: 0;
-  z-index: 1;
+  z-index: 10;
   width: 100%;
   padding: 1rem;
   input { width: 100%; }
 }
 .map {
-  --size: 1em;
-  --color: #F04;
-  --color-ground: #939B8B;
-  --olor-ground: #444;
-  --color-roof: #D0742B;
-  --color-wall: #CBCB90;
-  --color-dark: #FA0044;
-  --color-light: #F2B;
-  
   position: relative;
   width: 100%;
   height: 100%;
-  background-color: var(--color-ground);
-  background-image: radial-gradient(circle at 70% 140%, #fff2 0, transparent 50% 70%, #0002 100%)
+  z-index: 3;
   overflow: hidden;
   transition: all 300ms ease;
   
@@ -126,23 +139,25 @@ form {
     --emX: calc(cos(var(--rdns))*-1em);
     --emY: calc(sin(var(--rdns))*-1em);
 
-    --pcRds: calc(var(--rdns) + 0.001*var(--t));
-    --pcRds: calc(1*var(--rdns) + 1*PI);
-    --pcRds: calc(var(--rdns) - var(--rdns) + 0.5*PI);
+    --pcRds: calc(0.5*PI);
     --lightDistEm: calc(1em*var(--lightDist));
     --pcX: calc(cos(var(--pcRds))*var(--lightDistEm));
     --pcY: calc(sin(var(--pcRds))*var(--lightDistEm));
     
     position: absolute;
-    left: calc(1em*var(--x));
-    top: calc(1em*var(--y));
+    left: calc(1px*var(--x));
+    top: calc(1px*var(--y));
     display: block;
     width:  calc(1em*var(--w));
     height: calc(1em*var(--h));
-    transform: translate(-50%,-50%) rotate(calc(1deg*var(--degHouse))) scale(3);
+    transform: translate(-50%,-50%) rotate(calc(1deg*var(--degHouse)));
 
     background: var(--color-roof) linear-gradient(#0002 0 50%, #fff2 50% 100%);
-    box-shadow: var(--emX) var(--emY) 0.5em #0003;
+    box-shadow: 
+      var(--emX) var(--emY) 0.5em #0003,
+      calc(0.5*var(--emX)) calc(0.5*var(--emY)) 0.25em #0003,
+      calc(0.25*var(--emX)) calc(0.25*var(--emY)) 0.125em #0003
+    ;
 
     background: var(--color-roof) conic-gradient(
       from calc(-1deg*var(--degHouse) + var(--lightRadians)/PI*180deg + 90deg)
@@ -161,33 +176,16 @@ form {
       position: absolute;
       left: 0;
       top: 50%;
-    --pcX: calc(cos(var(--rdns))*3333%);
-    --pcY: calc(sin(var(--rdns))*3333%);
-    ackground: var(--color-roof) conic-gradient(
-      from calc(-1deg*var(--degHouse) + var(--lightRadians)*180deg)
-      at calc(50% + var(--pcX)) calc(50% + var(--pcY)),
-      #fff8 0deg,
-      #8880 90deg,
-      #0008 180deg, 
-      #8880 270deg,
-      #fff8 360deg
-    );
-    
-    --pcRds: calc(2*var(--rdns) - 0.5*PI);
-    --pcX: calc(cos(var(--pcRds))*+111em);
-    --pcY: calc(sin(var(--pcRds))*-111em);
-    ackground: lime conic-gradient(
-      from calc(-1deg*var(--deg) + var(--lightRadians)*180deg)
-      at calc(50% + var(--pcX)) calc(50% + var(--pcY)),
-      #fff4 0deg,
-      #8880 90deg,
-      #0004 180deg, 
-      #8880 270deg,
-      #fff4 360deg
-    );
-    ackground: inherit;
-    ackground: lime;
-    background: #0ff4;
+
+      background: var(--color-roof) conic-gradient(
+        from calc(-1deg*var(--degHouse) + var(--lightRadians)/PI*180deg + 90deg + 180deg)
+        at calc(50% + var(--pcX)) calc(50% + var(--pcY)),
+        #fff4 0deg,
+        #8880 90deg,
+        #0004 180deg, 
+        #8880 270deg,
+        #fff4 360deg
+      );
     }
   }
 }
@@ -196,6 +194,8 @@ form {
 <div class="map"></div>
 
 <script>
+
+const {sin,cos,PI,random} = Math
 
 const name = 'map'
 
@@ -222,36 +222,140 @@ document.body.addEventListener('inited',async ()=>{
       transform: rotate(${i*137.5}deg) translate(${(35+i)*0.25}em) scaleY(0.4) rotate(-45deg);
     }`)
   }
+  sheet.insertRule(`body{
+    background:
+      ${a(9).map((o,i)=>`radial-gradient(circle
+          at ${50+r(100)<<0}% ${50+r(100)<<0}%,
+          ${i%2&&'#fff2'||'#0002'},
+          transparent ${40+r(20)<<0}%)
+      `).join(',')}
+    ;
+  }`)
 
   fillMain()
 })
 
+function a(n){
+  return Array.from(new Array(n))
+}
+
+function r(n=1){
+  return n*(Math.random()-0.5)
+}
+
+function normalized([x,y]){
+  const d = Math.sqrt(x*x + y*y)
+  return [x/d, y/d]
+}
+
+function perpendicular([x,y]){
+  return [y, -x]
+}
+
 function fillMain(){
-  const {clientHeight:h,clientWidth:w} = main
-  main.style.fontSize = Math.sqrt(w*h*4E-5) + 'px'
-  const numTarget = 12
-  const numCurrent = main.children.length
-  if (numCurrent>numTarget) {
-    while (main.children.length>numTarget) main.firstChild.remove()
-  } else if (numCurrent<numTarget) {
-    Array.from(new Array(numTarget-numCurrent)).forEach((o,i)=>{
-      const house = blueprint.cloneNode(true)
-      const {style} = house
-      const part = i/numTarget
-      style.setProperty('--deg',Math.random()*360)
-      style.setProperty('--w',2+Math.random()*3)
-      style.setProperty('--h',2+Math.random()*3)
-      style.setProperty('--x',Math.random()*100)
-      style.setProperty('--y',Math.random()*100)
-      //
-      const {sin,cos,PI} = Math
-      style.setProperty('--deg',part*360)
-      style.setProperty('--x',50-40*sin(part*2*PI))
-      style.setProperty('--y',50+40*cos(part*2*PI))
-      //
-      main.appendChild(house)
-    })
+  const {clientHeight:h,clientWidth:w} = document.body
+  
+  const xmlns = 'http://www.w3.org/2000/svg'
+
+  const svg = document.createElementNS(xmlns, 'svg')
+  svg.setAttributeNS(null, 'viewBox', '0 0 ' + w + ' ' + h)
+  svg.setAttributeNS(null, 'width', w)
+  svg.setAttributeNS(null, 'height', h)
+
+  const path = document.createElementNS(xmlns, 'path')
+  path.setAttributeNS(null, 'd', `M ${w/2} ${h/2} 
+    ${a(5).map(()=>` s ${r(30)} ${r(30)}, ${r(50)} ${r(50)}`).join('')}
+  `)
+  path.style.fill = 'transparent'
+  path.style.stroke = '#0004'
+  path.style.strokeWidth = '4'
+  svg.appendChild(path)
+
+  const lines = []
+
+  const vs = normalized([r(),r()])
+  const d0 = getD(w/2,h/2,vs)
+  const d1 = getD(w/2,h/2,vs.map(n=>-n))
+
+  const ds = [d0,d1,...a(5).map(()=>{
+    const points = getRandom(lines)
+    const n1 = points.length*random()<<0
+    const n2 = n1===0?1:n1-1
+    const p1 = points[n1]
+    const p2 = points[n2]
+    const side = r()<0&&1||-1
+    const v = p2&&perpendicular(normalized([side*(p1[0]-p2[0]),side*(p1[1]-p2[1])]))
+    return v&&getD(...p1,v)||''
+  })].join('')
+
+  path.setAttributeNS(null, 'd', ds)
+
+  function getRandom(from){
+    return from[random()*from.length<<0]
   }
+
+  function getD(x,y,_v){
+    let v = _v||normalized([random(),random()])
+    let d = `M ${x} ${y} `
+    const dist = 44
+    const points = []
+    points.push([x,y])
+    while (x>0&&x<w&&y>0&&y<h){
+    //for(let i=0;i<6;i++){
+      const [vx,vy] = v
+
+      const diff = 1
+      v = normalized([vx+r(diff),vy+r(diff)])
+
+      const nx = x + dist*vx
+      const ny = y + dist*vy
+      const hx = x + (nx-x)/2 + 0.7*dist*(random()-0.5)
+      const hy = y + (ny-y)/2 + 0.7*dist*(random()-0.5)
+      d = d + ` S ${hx} ${hy}, ${nx} ${ny} `
+      points.push([nx,ny])
+      addHouses(x,y,nx,ny)
+      x = nx
+      y = ny
+    }
+    lines.push(points)
+    return d
+  }
+
+  document.body.appendChild(svg)
+
+  main.style.fontSize = Math.sqrt(w*h*4E-5) + 'px'
+}
+
+function addHouses(x1,y1,x2,y2){
+  const v = [x1-x2,y1-y2]
+  const d = Math.sqrt(v[0]*v[0] + v[1]*v[1])
+  const n = normalized(v)
+  const part = [
+    x1 + random()*d*n[0],
+    y1 + random()*d*n[1]
+  ]
+  const side = r()<0&&1||-1
+  const s = perpendicular(n)
+  const p = [side*s[0],side*s[1]]
+  const x = part[0] + 10*p[0]
+  const y = part[1] + 10*p[1]
+  const deg = vectorToDegrees(v) + (r()>0?90:0)
+  addHouse(x,y,deg)
+}
+
+function vectorToDegrees([x,y]){
+  return Math.atan2(y, x) * (180 / Math.PI);
+}
+
+function addHouse(x,y,deg){
+  const house = blueprint.cloneNode(true)
+  const {style} = house
+  style.setProperty('--deg',deg||Math.random()*360)
+  style.setProperty('--w',2+Math.random()*3)
+  style.setProperty('--h',2+Math.random()*3)
+  style.setProperty('--x',x||Math.random()*100)
+  style.setProperty('--y',y||Math.random()*100)
+  main.appendChild(house)
 }
 
 let start
@@ -260,7 +364,6 @@ function handleAnimate(){
   start||(start=millis)
   const elapsed = millis-start
   setCSSProp('t', elapsed)
-  //setCSSProp('lightRadians', 0.001*elapsed)
   requestAnimationFrame(handleAnimate)
 }
 handleAnimate()
@@ -279,7 +382,7 @@ addRange(e=>
   setCSSProp('addRotation', 2*3.6*e.target.valueAsNumber)
 )
 addRange(e=>
-  setCSSProp('lightDist', 0.2*e.target.valueAsNumber)
+  setCSSProp('lightDist', 0.05*e.target.valueAsNumber)
 )
 
 function setCSSProp(name, value){
