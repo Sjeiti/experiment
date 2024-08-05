@@ -66,6 +66,8 @@
   </script>
 </head>
 <body>
+  <div class="map"></div>
+  <svg></svg>
   <form></form>
 <style>
 :root {
@@ -82,7 +84,7 @@
   --size: 1em;
   --color: #F04;
   --color-ground: #939B8B;
-  --olor-ground: #444;
+  --color-ground: #64694E;
   --color-roof: #D0742B;
   --color-wall: #CBCB90;
   --color-dark: #FA0044;
@@ -190,17 +192,19 @@ form {
   }
 }
 </style>
-
-<div class="map"></div>
-
 <script>
 
-const {sin,cos,PI,random} = Math
+const {sin,cos,PI,random,sqrt,abs} = Math
+const {clientHeight:h,clientWidth:w} = document.body
 
 const name = 'map'
 
 const main = document.querySelector('.'+name)
 const mainStyle = main.style
+
+const svg = document.querySelector('svg')
+
+const form = document.querySelector('form')
 
 const div = document.createElement('div')
 div.innerHTML = `<div class="house"></div>`
@@ -208,13 +212,31 @@ const blueprint = div.querySelector('.house')
 
 let color
 let colorWhite
+  
+const xmlns = 'http://www.w3.org/2000/svg'
+
+const lines = []
 
 document.body.addEventListener('inited',async ()=>{
-  console.log('colinitedor') 
   color = (await import('../../math/color.js')).default
-  console.log('color') 
   colorWhite = color(255,255,255)
 
+  reset()
+  
+  initUI()
+})
+
+
+function reset(){
+  main.style.fontSize = Math.sqrt(w*h*4E-5) + 'px'
+  empty(main,svg)
+
+  drawGround()
+  drawRoads()
+  drawHouses()
+}
+ 
+function drawGround(){
   const [sheet] = document.styleSheets
   console.log('sheet',sheet)
   for(let i=1;i<=33;i++){
@@ -231,120 +253,158 @@ document.body.addEventListener('inited',async ()=>{
       `).join(',')}
     ;
   }`)
-
-  fillMain()
-})
-
-function a(n){
-  return Array.from(new Array(n))
 }
 
-function r(n=1){
-  return n*(Math.random()-0.5)
-}
-
-function normalized([x,y]){
-  const d = Math.sqrt(x*x + y*y)
-  return [x/d, y/d]
-}
-
-function perpendicular([x,y]){
-  return [y, -x]
-}
-
-function fillMain(){
-  const {clientHeight:h,clientWidth:w} = document.body
+function drawRoads(){
   
-  const xmlns = 'http://www.w3.org/2000/svg'
+  lines.length = 0
 
-  const svg = document.createElementNS(xmlns, 'svg')
   svg.setAttributeNS(null, 'viewBox', '0 0 ' + w + ' ' + h)
   svg.setAttributeNS(null, 'width', w)
   svg.setAttributeNS(null, 'height', h)
 
   const path = document.createElementNS(xmlns, 'path')
-  path.setAttributeNS(null, 'd', `M ${w/2} ${h/2} 
-    ${a(5).map(()=>` s ${r(30)} ${r(30)}, ${r(50)} ${r(50)}`).join('')}
-  `)
   path.style.fill = 'transparent'
-  path.style.stroke = '#0004'
-  path.style.strokeWidth = '4'
+  path.style.stroke = '#0003'
+  path.style.strokeWidth = '3'
   svg.appendChild(path)
-
-  const lines = []
 
   const vs = normalized([r(),r()])
   const d0 = getD(w/2,h/2,vs)
   const d1 = getD(w/2,h/2,vs.map(n=>-n))
 
-  const ds = [d0,d1,...a(5).map(()=>{
+  const ds = [d0,d1,...a(7).map(()=>{
     const points = getRandom(lines)
-    const n1 = points.length*random()<<0
+    const p1 = getRandom(points)
+    const isPointEdge = lines.reduce((acc,points,i)=>{
+      acc.push(points[0].join())
+      acc.push(points[points.length-1].join())
+      return acc
+    },[]).includes(p1.join())
+    //const p1 = points[1 + (random()*(points.length-2)<<0)]
+    const n1 = points.indexOf(p1)
     const n2 = n1===0?1:n1-1
-    const p1 = points[n1]
     const p2 = points[n2]
     const side = r()<0&&1||-1
     const v = p2&&perpendicular(normalized([side*(p1[0]-p2[0]),side*(p1[1]-p2[1])]))
-    return v&&getD(...p1,v)||''
+    return !isPointEdge&&v&&getD(...p1,v)||''
   })].join('')
 
   path.setAttributeNS(null, 'd', ds)
+}
 
-  function getRandom(from){
-    return from[random()*from.length<<0]
-  }
-
-  function getD(x,y,_v){
-    let v = _v||normalized([random(),random()])
-    let d = `M ${x} ${y} `
-    const dist = 44
-    const points = []
-    points.push([x,y])
-    while (x>0&&x<w&&y>0&&y<h){
-    //for(let i=0;i<6;i++){
-      const [vx,vy] = v
-
-      const diff = 1
-      v = normalized([vx+r(diff),vy+r(diff)])
-
-      const nx = x + dist*vx
-      const ny = y + dist*vy
-      const hx = x + (nx-x)/2 + 0.7*dist*(random()-0.5)
-      const hy = y + (ny-y)/2 + 0.7*dist*(random()-0.5)
-      d = d + ` S ${hx} ${hy}, ${nx} ${ny} `
-      points.push([nx,ny])
-      addHouses(x,y,nx,ny)
-      x = nx
-      y = ny
+function drawHouses(){
+  lines.forEach(points=>{ 
+    for(let i=0;i<3;i++){
+      const p1 = getRandom(points,true)
+      const n1 = points.indexOf(p1)
+      const n2 = n1===0?1:n1-1
+      const p2 = points[n2]
+      p2&&addHouses(...p1,...p2)
     }
-    lines.push(points)
-    return d
+  })
+}
+
+function initUI(){
+  addInput('button',e=>{
+    reset()
+  },{value:'reset'})
+  addInput('range',e=>
+    setCSSProp('lightRadians', 0.1*e.target.valueAsNumber)
+  )
+  addInput('range',e=>
+    setCSSProp('addRotation', 2*3.6*e.target.valueAsNumber)
+  )
+  addInput('range',e=>
+    setCSSProp('lightDist', 0.05*e.target.valueAsNumber)
+  )
+}
+
+function getD(x,y,_v){
+  helperPoint(x,y) 
+  let v = _v||normalized([random(),random()])
+  let d = `M ${x} ${y} `
+  const dist = 44
+  const points = []
+  points.push([x,y])
+  while (x>0&&x<w&&y>0&&y<h){
+    const [vx,vy] = v
+
+    const nx = x + dist*vx
+    const ny = y + dist*vy
+    const hx = x + (nx-x)/2 + r(0.8*dist)
+    const hy = y + (ny-y)/2 + r(0.8*dist)
+    d = d + ` S ${hx} ${hy}, ${nx} ${ny} `
+    points.push([nx,ny])
+    helperPoint(nx,ny)
+
+    //
+
+    const sa = 8
+    const [vax,vay] = getAway([nx,ny],dist)
+
+    const diff = 1
+    v = normalized([
+      vx + 0*r(diff) + sa*vax,
+      vy + 0*r(diff) + sa*vay
+    ])
+
+    x = nx
+    y = ny
   }
+  lines.push(points)
+  return d
+}
 
-  document.body.appendChild(svg)
+function getAway(point,minDist){
+  const [x,y] = point
+  let vx = 0
+  let vy = 0
+  lines.forEach(points=>{
+    points.forEach(p=>{
+      const [px,py] = p
+      const vpx = x-px
+      const vpy = y-py
+      const d = distance([vpx,vpy])
+      if (d>minDist){
+        const f = 1/(d*d)
+        //console.log('f',f,vpx,vpy,p)
+        vx = vx + f*vpx
+        vy = vy + f*vpy
+      }
+    })
+  })
+  //console.log('away',vx,vy)
+  return [vx,vy]
+}
 
-  main.style.fontSize = Math.sqrt(w*h*4E-5) + 'px'
+function getRandom(from,edge){
+  const {length} = from
+  if (edge) {
+    const nr = (random()*random()*random()*length)<<0
+    const end = r()<0?nr:length-nr-1
+    return from[end]
+  }
+  return from[random()*length<<0]
 }
 
 function addHouses(x1,y1,x2,y2){
-  const v = [x1-x2,y1-y2]
-  const d = Math.sqrt(v[0]*v[0] + v[1]*v[1])
-  const n = normalized(v)
-  const part = [
-    x1 + random()*d*n[0],
-    y1 + random()*d*n[1]
-  ]
-  const side = r()<0&&1||-1
-  const s = perpendicular(n)
-  const p = [side*s[0],side*s[1]]
-  const x = part[0] + 10*p[0]
-  const y = part[1] + 10*p[1]
-  const deg = vectorToDegrees(v) + (r()>0?90:0)
-  addHouse(x,y,deg)
-}
-
-function vectorToDegrees([x,y]){
-  return Math.atan2(y, x) * (180 / Math.PI);
+  for(let i=0;i<3;i++){
+    const v = [x1-x2,y1-y2]
+    const d = distance(v) // Math.sqrt(v[0]*v[0] + v[1]*v[1])
+    const n = normalized(v)
+    const part = [
+      x1 + random()*d*n[0],
+      y1 + random()*d*n[1]
+    ]
+    const side = r()<0&&1||-1
+    const s = perpendicular(n)
+    const p = [side*s[0],side*s[1]]
+    const x = part[0] + 10*p[0]
+    const y = part[1] + 10*p[1]
+    const deg = vectorToDegrees(v) + (r()>0?90:0)
+    addHouse(x,y,deg)
+  }
 }
 
 function addHouse(x,y,deg){
@@ -358,6 +418,47 @@ function addHouse(x,y,deg){
   main.appendChild(house)
 }
 
+function a(n){
+  return Array.from(new Array(n))
+}
+
+function r(n=1){
+  return n*(Math.random()-0.5)
+}
+
+function normalized(v){
+  const [x,y] = v
+  const d = distance(v)
+  return [x/d, y/d]
+}
+
+function perpendicular([x,y]){
+  return [y, -x]
+}
+
+function distance([x,y]){
+  return sqrt(x*x + y*y)
+}
+
+function vectorToDegrees([x,y]){
+  return Math.atan2(y, x) * (180 / Math.PI);
+}
+
+function empty(...parents){
+  parents.forEach(p=>{
+    while (p.firstChild) p.firstChild.remove()
+  })
+}
+
+function helperPoint(x,y){
+  const circle = document.createElementNS(xmlns, 'circle')
+  circle.setAttributeNS(null, 'cx', x)
+  circle.setAttributeNS(null, 'cy', y)
+  circle.setAttributeNS(null, 'r', 3)
+  circle.style.fill = '#f004'
+  svg.appendChild(circle)
+}
+
 let start
 function handleAnimate(){
   const millis = Date.now()
@@ -368,22 +469,13 @@ function handleAnimate(){
 }
 handleAnimate()
 
-const form = document.querySelector('form')
-function addRange(fn){
+function addInput(type,fn,props){
   const input = document.createElement('input')
-  input.type = 'range'
-  input.addEventListener('input',fn)
+  input.type = type
+  props&&Object.entries(props).forEach(([k,v])=>input[k]=v)
+  input.addEventListener({button:'click'}[type]||'input',fn)
   form.appendChild(input)
 }
-addRange(e=>
-  setCSSProp('lightRadians', 0.1*e.target.valueAsNumber)
-)
-addRange(e=>
-  setCSSProp('addRotation', 2*3.6*e.target.valueAsNumber)
-)
-addRange(e=>
-  setCSSProp('lightDist', 0.05*e.target.valueAsNumber)
-)
 
 function setCSSProp(name, value){
   mainStyle.setProperty(`--${name}`, value)
