@@ -23,6 +23,7 @@
     "clean": "del-cli dist -f",
     "serve": "node task/serve dist 8877",
     "serve:temp": "node task/serve temp 8777",
+    "serve:html": "node task/serve src 8888",
     "lint:fix": "eslint src/**/*.js --fix",
     "version": "next-version package.json",
     "version:minor": "npm run version -- --minor",
