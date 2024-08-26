@@ -17,17 +17,52 @@
     }
   </style>
   <script>
+ 
     const isMobile = window.matchMedia('(max-device-width: 600px)').matches
     const isLocalhost = window.location.hostname==='localhost'
 
+    const inited = ()=>document.body.dispatchEvent(new CustomEvent('inited'))
+
     isMobile
       &&isLocalhost
+      //&&!eruda
       &&document.addEventListener('DOMContentLoaded',()=>{
-        const script = document.createElement('script')
-        script.src = '//cdn.jsdelivr.net/npm/eruda'
-        document.body.appendChild(script)
-        script.addEventListener('load',()=>eruda.init())
+        const script = loadScript('//cdn.jsdelivr.net/npm/eruda')
+        script.addEventListener('load',()=>{
+          eruda.init()
+          console.log('r1')
+          inited()
+        })
       })
+      ||inited()
+    
+    /*
+    ;(async function foo(){
+      await (new Promise(resolve=>{
+        const isMobile = window.matchMedia('(max-device-width: 600px)').matches
+        const isLocalhost = window.location.hostname==='localhost'
+        if (isMobile&&isLocalhost) {
+          const script = loadScript('//cdn.jsdelivr.net/npm/eruda')
+          script.onload = function(){
+            eruda.init()
+            resolve()
+            console.log('r1')
+          }
+        } else {
+          resolve()
+          console.log('r2')
+        }
+      }))
+    })()
+    */
+
+    function loadScript(src){
+      const script = document.createElement('script')
+      script.src = src
+      document.body.appendChild(script)
+      return script
+    }
+
   </script>
 </head>
 <body>
@@ -55,7 +90,7 @@
   overflow: hidden;
   transition: all 300ms ease;
   
-  div {
+  .melon {
     --radians: calc(var(--deg)/-180*pi);
     --rdns: calc(var(--radians) + var(--lightRadians));
     --emX: calc(cos(var(--rdns))*-1em);
@@ -65,14 +100,22 @@
     display: block;
     width:  calc(1em*var(--w));
     height: calc(1em*var(--h));
-    transform: translate(-50%,-50%) rotate(calc(1deg*var(--deg))) scale(calc(1 + 0.5*sin(calc(var(--sin) + 0.00005*var(--t)))));
+    transform: translate(-50%,-50%) rotate(calc(1deg*var(--deg))) scale(calc(1.5 + 0.25*sin(calc(var(--sin) + 0.00005*var(--t)))));
     border-radius: 50%;
+    /*
     box-shadow:
       calc( 1*var(--emX)) calc( 1*var(--emY)) 3em #FFF2,
       calc( 6*var(--emX)) calc( 6*var(--emY)) 12em 4em #0001 inset,
       calc( 5*var(--emX)) calc( 5*var(--emY)) 8em 5em #0002 inset,
       calc(-7*var(--emX)) calc(-7*var(--emY)) 9em 0 var(--color) inset,
       calc(-1*var(--emX)) calc(-1*var(--emY)) 2em #0001
+    ;
+    */
+    box-shadow:
+      0 0 1em 1em #009902 inset,
+      0 0 1em 2em #D8FFD8 inset,
+      0 0 10em 10em #EA1133 inset,
+      0 0 0 99em #FF638F inset
     ;
     background-color: var(--color-dark);
     transition:
@@ -83,6 +126,16 @@
         box-shadow 300ms ease,
         backgroumd-color 300ms ease
     ;
+    div {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 2em;
+      height: 2em;
+      background-color: black;
+      border-radius: 130% 50%;
+      box-shadow: 0.2em 0.2em 1em 0.1em pink;
+    }
   }
   input {
     display: none;
@@ -115,22 +168,30 @@ const main = document.querySelector('.'+name)
 const mainStyle = main.style
 
 const div = document.createElement('div')
-div.innerHTML = '<label><input type="checkbox"><div></div></label>'
+div.innerHTML = `<label><input type="checkbox"><div class="melon">${'<div></div>'.repeat(22)}</div></label>`
 const blueprint = div.querySelector('label')
 
 let color
 let colorWhite
 
-;(async()=>{
+document.body.addEventListener('inited',async ()=>{
+  console.log('colinitedor') 
   color = (await import('../../math/color.js')).default
-
+  console.log('color') 
   colorWhite = color(255,255,255)
+
+  const [sheet] = document.styleSheets
+  console.log('sheet',sheet)
+  for(let i=1;i<=33;i++){
+    sheet.insertRule(`.melon div:nth-child(${i}){
+      transform: rotate(${i*137.5}deg) translate(${(35+i)*0.25}em) scaleY(0.4) rotate(-45deg);
+    }`)
+  }
 
   main.addEventListener('click', onMainClick)
   requestAnimationFrame(fillMain)
-  setColor('#F04')
-
-})()
+  setColor('#Fa4')
+})
 
 function fillMain(){
   const {clientHeight:h,clientWidth:w} = main
@@ -176,32 +237,21 @@ function setHoleStyle(holeStyle){
   Object.assign(holeStyle, {
     left: Math.random()*100+'%',
     top: Math.random()*100+'%',
-    borderRadius: [0,0,0,0].map(()=>(45+Math.random()*30<<0)+'%').join(' ')
+    borderRadius: [0,0,0,0].map(()=>(45+Math.random()*10<<0)+'%').join(' ')
   })
   const randomSize = Math.random()
-  holeStyle.setProperty('--w', 35+15*randomSize<<0)
-  holeStyle.setProperty('--h', 35+15*(1-randomSize)<<0)
+  holeStyle.setProperty('--w', 45+5*randomSize<<0)
+  holeStyle.setProperty('--h', 45+5*(1-randomSize)<<0)
   holeStyle.setProperty('--deg', 360*(Math.random()-0.5)<<0)
   holeStyle.setProperty('--sin', 1E4*Math.random())
 }
 
-/*
 let start
 function handleAnimate(deltaT,millis){
   start||(start=millis)
   const elapsed = millis-start
   setCSSProp('t', elapsed)
 }
-*/
-let start
-function handleAnimate(){
-  const millis = Date.now()
-  start||(start=millis)
-  const elapsed = millis-start
-  setCSSProp('t', elapsed)
-  requestAnimationFrame(handleAnimate)
-}
-handleAnimate()
 
 function setCSSProp(name, value){
   mainStyle.setProperty(`--${name}`, value)
