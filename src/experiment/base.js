@@ -16,6 +16,7 @@ const basePrototype = /** @name Experiment */{
   ,handleDragEnd
   ,handleClick
   ,fromSrc
+  ,fromUri
 }
 const baseProperties = {}
 
@@ -148,7 +149,8 @@ function handleClick(){
 
 /**
  * Create experiment in iframe from uri
- * @param {string} uri
+ * @param {string} html
+ * @param {HTMLElement} target
  * @returns {Experiment}
  */
 function fromSrc(html, target){
@@ -159,6 +161,22 @@ function fromSrc(html, target){
   iframe.srcdoc = html
   return this
 }
+
+/**
+ * Create experiment in iframe from uri
+ * @param {string} uri
+ * @param {HTMLElement} target
+ * @returns {Experiment}
+ */
+function fromUri(uri, target){
+  fetch(uri)
+      .then(r=>r.text())
+      .then(html=> {
+        fromSrc.call(this, html, target)
+      })
+  return this
+}
+
 
 /**
  *
