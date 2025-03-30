@@ -1,0 +1,261 @@
+<!doctype html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    html, body {
+      width: 100%;
+      height: 100%;
+      max-width: 100vw;
+      max-height: 100vh;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      overflow: hidden;
+      background-color: #333;
+    }
+  </style>
+  <script>
+ 
+    const isMobile = window.matchMedia('(max-device-width: 600px)').matches
+    const isLocalhost = window.location.hostname==='localhost'
+
+    const inited = ()=>document.body.dispatchEvent(new CustomEvent('inited'))
+
+    isMobile
+      &&isLocalhost
+      //&&!eruda
+      &&document.addEventListener('DOMContentLoaded',()=>{
+        const script = loadScript('//cdn.jsdelivr.net/npm/eruda')
+        script.addEventListener('load',()=>{
+          eruda.init()
+          console.log('r1')
+          inited()
+        })
+      })
+      ||inited()
+    
+    /*
+    ;(async function foo(){
+      await (new Promise(resolve=>{
+        const isMobile = window.matchMedia('(max-device-width: 600px)').matches
+        const isLocalhost = window.location.hostname==='localhost'
+        if (isMobile&&isLocalhost) {
+          const script = loadScript('//cdn.jsdelivr.net/npm/eruda')
+          script.onload = function(){
+            eruda.init()
+            resolve()
+            console.log('r1')
+          }
+        } else {
+          resolve()
+          console.log('r2')
+        }
+      }))
+    })()
+    */
+
+    function loadScript(src){
+      const script = document.createElement('script')
+      script.src = src
+      document.body.appendChild(script)
+      return script
+    }
+
+  </script>
+</head>
+<body>
+<style>
+:root {
+  --deg: 0;
+  --radians: 0;
+  --lightRadians: -2.1;
+  --w: 40;
+  --h: 40;
+  --sin: 1;
+  --t: 1;
+}
+.pinkcheese {
+  --size: 1em;
+  --color: #F04;
+  --color-dark: #FA0044;
+  --color-light: #F2B;
+  
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: var(--color);
+  background-image: radial-gradient(circle at 70% 140%, #fff2 0, transparent 50% 70%, #0002 100%)
+  overflow: hidden;
+  transition: all 300ms ease;
+  
+  .melon {
+    --radians: calc(var(--deg)/-180*pi);
+    --rdns: calc(var(--radians) + var(--lightRadians));
+    --emX: calc(cos(var(--rdns))*-1em);
+    --emY: calc(sin(var(--rdns))*-1em);
+    
+    position: absolute;
+    display: block;
+    width:  calc(1em*var(--w));
+    height: calc(1em*var(--h));
+    transform: translate(-50%,-50%) rotate(calc(1deg*var(--deg))) scale(calc(1.5 + 0.25*sin(calc(var(--sin) + 0.00005*var(--t)))));
+    border-radius: 50%;
+    /*
+    box-shadow:
+      calc( 1*var(--emX)) calc( 1*var(--emY)) 3em #FFF2,
+      calc( 6*var(--emX)) calc( 6*var(--emY)) 12em 4em #0001 inset,
+      calc( 5*var(--emX)) calc( 5*var(--emY)) 8em 5em #0002 inset,
+      calc(-7*var(--emX)) calc(-7*var(--emY)) 9em 0 var(--color) inset,
+      calc(-1*var(--emX)) calc(-1*var(--emY)) 2em #0001
+    ;
+    */
+    box-shadow:
+      0 0 1em 1em #009902 inset,
+      0 0 1em 2em #D8FFD8 inset,
+      0 0 10em 10em #EA1133 inset,
+      0 0 0 99em #FF638F inset
+    ;
+    background-color: var(--color-dark);
+    transition:
+        left 300ms ease,
+        top 300ms ease,
+        width 300ms ease,
+        height 300ms ease,
+        box-shadow 300ms ease,
+        backgroumd-color 300ms ease
+    ;
+    div {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 2em;
+      height: 2em;
+      background-color: black;
+      border-radius: 130% 50%;
+      box-shadow: 0.2em 0.2em 1em 0.1em pink;
+    }
+  }
+  input {
+    display: none;
+  }
+  input:checked ~ div {
+    --radians: calc(var(--deg)/-180*pi);
+    --rdns: calc(var(--radians) + var(--lightRadians));
+    --emX: calc(cos(var(--rdns))*1em);
+    --emY: calc(sin(var(--rdns))*1em);
+    
+    box-shadow:
+      calc( 1*var(--emX)) calc( 1*var(--emY)) 2em #FFF2,
+      calc( 3*var(--emX)) calc( 3*var(--emY)) 3em 1em #0001 inset,
+      calc( 5*var(--emX)) calc( 5*var(--emY)) 8em 5em #0002 inset,
+      calc( 9*var(--emX)) calc( 9*var(--emY)) 4em 13em var(--color) inset,
+      calc(-4*var(--emX)) calc(-4*var(--emY)) 2em #0001
+    ;
+    background-color: var(--color-light);
+  }
+}
+</style>
+
+<div class="pinkcheese"></div>
+
+<script>
+
+const name = 'pinkcheese'
+
+const main = document.querySelector('.'+name)
+const mainStyle = main.style
+
+const div = document.createElement('div')
+div.innerHTML = `<label><input type="checkbox"><div class="melon">${'<div></div>'.repeat(22)}</div></label>`
+const blueprint = div.querySelector('label')
+
+let color
+let colorWhite
+
+document.body.addEventListener('inited',async ()=>{
+  console.log('colinitedor') 
+  color = (await import('../../math/color.js')).default
+  console.log('color') 
+  colorWhite = color(255,255,255)
+
+  const [sheet] = document.styleSheets
+  console.log('sheet',sheet)
+  for(let i=1;i<=33;i++){
+    sheet.insertRule(`.melon div:nth-child(${i}){
+      transform: rotate(${i*137.5}deg) translate(${(35+i)*0.25}em) scaleY(0.4) rotate(-45deg);
+    }`)
+  }
+
+  main.addEventListener('click', onMainClick)
+  requestAnimationFrame(fillMain)
+  setColor('#Fa4')
+})
+
+function fillMain(){
+  const {clientHeight:h,clientWidth:w} = main
+  main.style.fontSize = Math.sqrt(w*h*4E-5) + 'px'
+  const numTarget = 12
+  const numCurrent = main.children.length
+  if (numCurrent>numTarget) {
+    while (main.children.length>numTarget) main.firstChild.remove()
+  } else if (numCurrent<numTarget) {
+    Array.from(new Array(numTarget-numCurrent)).forEach(()=>{
+      main.appendChild(blueprint.cloneNode(true))
+    })
+  }
+  Array.from(main.querySelectorAll('label>div')).forEach((div)=>{
+    setHoleStyle(div.style)
+  })
+}
+
+function onMainClick(e){
+  if(e.target.classList.contains(name)){
+    fillMain()
+  } else {
+    const inputs = Array.from(main.querySelectorAll('input'))
+    const allChecked = !inputs.map(n=>n.checked).includes(false)
+    if (allChecked){
+      setTimeout(()=>{
+        setColor(color().randomize().hex)
+        inputs.forEach(n=>n.checked = false)
+      },1000)
+    }
+  }
+}
+
+function setColor(colorMain){
+  const colorObj = color(colorMain)
+  setCSSProp('color', colorMain)
+  setCSSProp('color-dark', colorObj.clone().multiply(0.95).hex)
+  setCSSProp('color-light', colorObj.average(colorWhite, 0.3).hex)
+
+}
+
+function setHoleStyle(holeStyle){
+  Object.assign(holeStyle, {
+    left: Math.random()*100+'%',
+    top: Math.random()*100+'%',
+    borderRadius: [0,0,0,0].map(()=>(45+Math.random()*10<<0)+'%').join(' ')
+  })
+  const randomSize = Math.random()
+  holeStyle.setProperty('--w', 45+5*randomSize<<0)
+  holeStyle.setProperty('--h', 45+5*(1-randomSize)<<0)
+  holeStyle.setProperty('--deg', 360*(Math.random()-0.5)<<0)
+  holeStyle.setProperty('--sin', 1E4*Math.random())
+}
+
+let start
+function handleAnimate(deltaT,millis){
+  start||(start=millis)
+  const elapsed = millis-start
+  setCSSProp('t', elapsed)
+}
+
+function setCSSProp(name, value){
+  mainStyle.setProperty(`--${name}`, value)
+}
+</script>
+</body>
+

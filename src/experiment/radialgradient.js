@@ -15,6 +15,7 @@ const speed = 0.000005
 const speedScale = Math.PI
 const scale = 400
 const state = []
+const bindings = []
 
 function init(_target){
 
@@ -57,14 +58,16 @@ function initEvents(){
   input.addEventListener('change', onInputChange, false)
   target.addEventListener('click', onTargetClick, false)
   window.addEventListener('hashchange', onHashChange, false)
-  animate.add(setColor)
+  bindings.push(animate.add(setColor))
 }
 
 function exit(){
   input.removeEventListener('change', onInputChange)
   target.removeEventListener('click', onTargetClick)
   window.removeEventListener('hashchange', onHashChange)
-  animate.remove(setColor)
+  //animate.remove(setColor)
+  bindings.splice(0,Number.MAX_SAFE_INTEGER)
+    .forEach(b=>b.remove())
   target.style.removeProperty('background')
 }
 

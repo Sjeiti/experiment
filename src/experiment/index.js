@@ -25,10 +25,10 @@ export * from './hypno' // broken in Firefox because of globalCompositeOperation
 // export * from './snow' // broken
 // export * from './infinitecubes' // broken
 
-// export * from './voronoi'
+//export * from './voronoi' // broken?
 // export * from './river'
 // export * from './copyclouds'
-// export * from './earth'
-// export * from './noiseballs'
-// export * from './flowfield'
+// export * from './earth' // broken?
+export * from './noiseballs'
+export * from './flowfield'
 export * from './lines'

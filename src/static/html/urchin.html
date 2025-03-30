@@ -1,0 +1,106 @@
+<!doctype html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+<style>
+body { background:black; }
+</style>
+
+<script>
+const svgns = 'http://www.w3.org/2000/svg'
+
+const svg = document.createElementNS(svgns, 'svg')
+svg.setAttribute('viewBox', '0 0 1000 1000')
+svg.setAttribute('xmlns', svgns)
+
+///////////////////////////////////////////////////////////
+
+const defs = elmns(svg, 'defs')
+
+const radialGradient = elmns(defs, 'radialGradient')
+radialGradient.id = 'a'
+elmns(radialGradient,'stop',{offset:'0%','stop-color':'white'})
+elmns(radialGradient,'stop',{offset:'100%','stop-color':'black'})
+
+///////////////////////////////////////////////////////////
+
+const style = elmns(svg, 'style')
+style.textContent = `
+	.circle-bg {
+    mix-blend-mode: lighten;
+  }
+	.circle-fg {
+    position: relative;
+  }
+`
+
+///////////////////////////////////////////////////////////
+
+//circle(svg, 500, 500, 500, '#000')
+
+const g = elmns(svg,'g')
+
+
+Array.from(new Array(5)).forEach((o,j)=>{
+Array.from(new Array(11)).forEach((o,i)=>{
+	const sx = 500 + (50+i**2.3)*(i%2 - 0.5)
+	const sy = 500 + 60 + (i**1.3)*25
+  const r = 15+2*i**1.4
+  const [x,y] = rotatePoint(sx, sy, 500, 500, j*360/5)
+  const fill = url(radialGradient)
+	circle(g,x,y, 4*r,fill).classList.add('circle-bg')
+})
+})
+Array.from(new Array(5)).forEach((o,j)=>{
+Array.from(new Array(11)).forEach((o,i)=>{
+	const sx = 500 + (50+i**2.3)*(i%2 - 0.5)
+	const sy = 500 + 60 + (i**1.3)*25
+  const r = 15+2*i**1.4
+  const [x,y] = rotatePoint(sx, sy, 500, 500, j*360/5)
+  const fill = url(radialGradient)
+	circle(g,x,y, r,fill).classList.add('circle-fg')
+})
+})
+
+false&&Array.from(new Array(4)).forEach((o,i)=>{
+	const row = g.cloneNode(true)
+  row.setAttributeNS(null, 'transform', `translate(500,500) rotate(-${(i+1)*(360/5)}) translate(-500,-500)`)
+	svg.appendChild(row)
+})
+
+document.body.appendChild(svg)
+
+///////////////////////////////////////////////////////////
+
+function url(elm){
+	return `url('#${elm.id}')`
+}
+
+function elmns(parent,name,attrs){
+  const elm = document.createElementNS(svgns, name)
+  attrs&&Object.entries(attrs).forEach(([key,value])=>elm.setAttributeNS(null, key, value))
+  parent.appendChild(elm)
+  return elm
+}
+
+function circle(parent,cx,cy,r,fill){
+  return elmns(parent,'circle',{cx,cy,r,fill})
+}
+
+function rotatePoint(x, y, cx, cy, angle) {
+  // Convert angle from degrees to radians
+  const radians = (angle * Math.PI) / 180;
+
+  // Calculate the new coordinates
+  const newX = Math.cos(radians) * (x - cx) - Math.sin(radians) * (y - cy) + cx;
+  const newY = Math.sin(radians) * (x - cx) + Math.cos(radians) * (y - cy) + cy;
+
+  return [newX,newY];
+}
+
+</script>
+</body>

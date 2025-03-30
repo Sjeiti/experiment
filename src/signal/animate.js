@@ -1,27 +1,22 @@
-import Signal from 'signals'
-import {requestAnimationFrame} from '../utils/utils'
+import {createSignal} from 'state-signals'
 
-let fDeltaT = 0
-  ,iCurMillis
-  ,iLastMillis = Date.now()
-const signal = new Signal
-  ,iMilliLen = 10
-  ,aMillis = (function(a,n){
-    for (let i=0;i<iMilliLen;i++) a.push(n)
-    return a
-  })([],iLastMillis)
-  ,iFrameNr = 0
+let frameNr = 0
+let lastMillis = Date.now()
+const millisNum = 10
+const millisList = Array.from(new Array(millisNum)).map(()=>lastMillis)
+const signal = createSignal(30, lastMillis, frameNr)
 
 animate()
 
 function animate(){
-  iCurMillis = Date.now()
-  aMillis.push(iCurMillis-iLastMillis)
-  aMillis.shift()
-  fDeltaT = 0
-  for (let i=0;i<iMilliLen;i++) fDeltaT += aMillis[i]
-  iLastMillis = iCurMillis
-  signal.dispatch(fDeltaT/iMilliLen,iCurMillis,iFrameNr)
+  // const [,lastMillis,frameNr] = signal.state
+  frameNr++
+  const iCurMillis = Date.now()
+  millisList.push(iCurMillis-lastMillis)
+  millisList.shift()
+  const fDeltaT = millisList.reduce((acc,n)=>acc+n,0)/millisNum
+  lastMillis = iCurMillis
+  signal.dispatch(fDeltaT,iCurMillis,frameNr)
   requestAnimationFrame(animate)
 }
 
@@ -41,23 +36,23 @@ signal.during = (duration,step,complete)=>{
     ,isRunning = true
     ,fnRun = function(){
       if (isRunning) {
-        let timeCurrent = Date.now()-timeStart;
+        let timeCurrent = Date.now()-timeStart
         if (timeCurrent<duration) {
-          step(timeCurrent/duration);
-          requestAnimationFrame(fnRun);
+          step(timeCurrent/duration)
+          requestAnimationFrame(fnRun)
         } else {
-          step(1);
-          complete&&complete();
+          step(1)
+          complete&&complete()
         }
       }
     };
   function cancel(){
-    isRunning = false;
+    isRunning = false
   }
-  fnRun();
+  fnRun()
   return {
     cancel
-  };
+  }
 }
 
 export default signal

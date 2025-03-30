@@ -1,7 +1,7 @@
 {
   "name": "experiments",
   "filename": "index.js",
-  "version": "1.1.46",
+  "version": "1.1.50",
   "description": "",
   "main": "dist/index.js",
   "license": "MIT",
@@ -23,6 +23,7 @@
     "clean": "del-cli dist -f",
     "serve": "node task/serve dist 8877",
     "serve:temp": "node task/serve temp 8777",
+    "serve:html": "node task/serve src 8888",
     "lint:fix": "eslint src/**/*.js --fix",
     "version": "next-version package.json",
     "version:minor": "npm run version -- --minor",
@@ -33,7 +34,7 @@
   "dependencies": {
     "@emmetio/expand-abbreviation": "^0.7.3",
     "gsap": "^3.6.0",
-    "signals": "^1.0.0",
+    "state-signals": "^1.0.2",
     "voronoi": "^1.0.0"
   },
   "devDependencies": {
@@ -60,7 +61,6 @@
     "next-version": "^0.11.7",
     "node-fetch": "^3.3.1",
     "node-html-parser": "^6.1.5",
-    "node-sass": "^8.0.0",
     "npm-run-all": "^4.1.5",
     "open": "^9.1.0",
     "raw-loader": "^4.0.2",
