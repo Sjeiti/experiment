@@ -43,7 +43,10 @@ module.exports = env => {
         }]
       },{
         test: /\.(html)/
-        ,loader: 'html-loader'
+        ,loader: 'html-loader',
+        options: {
+          minimize: false
+        }
       },{
         test: /\.(mp3|mp4)$/
         ,use: [{
