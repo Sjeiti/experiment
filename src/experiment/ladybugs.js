@@ -4,10 +4,8 @@
  * @see module:experiment/base
  */
 import experiment from './base'
-import html from '../static/html/ladybugs.html'
 
 export const ladybugs = experiment('ladybugs',{init(target){
-    //this.fromSrc(html, target)
     this.fromUri('./static/html/ladybugs.html', target)
   }})
     .expose
