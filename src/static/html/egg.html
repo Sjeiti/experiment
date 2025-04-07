@@ -1,4 +1,5 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<title>egg</title>
 <style>
 :root{
   --deg: 30;
@@ -18,8 +19,9 @@ html,body{
 body{
   background-color: #333;
   background-image: radial-gradient(circle at 70% 20%, #fff2 0, transparent 50% 70%, #0002 100%)
+  font-size: 16px;
 }
-input{
+.wrap{
   position: absolute;
   z-index: 1;
   width:80%;
@@ -37,29 +39,19 @@ input{
   --color: #FFB330;
 
   position: absolute;
-  left: 20vw;
+  /*left: 20vw;
   top: 10vh;
   width: 60vw;
   height: 45vw;
   background-color: #ddd;
-  border-radius: 60% 40% 50% 55%;
+  border-radius: 60% 40% 50% 55%;*/
   box-shadow:
-    0 0.25rem 0.25rem #0008,
-    0 0.5rem 0.5rem #fff inset,
-    0 2.5rem 5rem #fff inset,
-    0 -2.5rem 5rem #0004 inset,
-    0 -0.25rem 0.25rem #0008 inset
-  ;
-  box-shadow:
-    calc( -0.25*var(--emX)) calc( 0.25*var(--emY)) 0.25rem #0008,
-    calc( -0.5*var(--emX)) calc( 0.5*var(--emY)) 0.5rem #fff inset,
-    calc( -2.5*var(--emX)) calc( 2.5*var(--emY)) 5rem #fff inset,
-    calc( 2.5*var(--emX)) calc( -2.5*var(--emY)) 5rem #0004 inset,
+    calc( -0.25*var(--emX)) calc( 0.25*var(--emY)) 0.25em #0008,
+    calc( -0.5*var(--emX)) calc( 0.5*var(--emY)) 0.5em #fff inset,
+    calc( -2.5*var(--emX)) calc( 2.5*var(--emY)) 5em #fff inset,
+    calc( 2.5*var(--emX)) calc( -2.5*var(--emY)) 5em #0004 inset,
     calc( 0.25*var(--emX)) calc( -0.25*var(--emY)) 0.25rem #0004 inset
   ;
-
-  transform: rotate(calc(1deg*var(--deg)));
-  transform-origin: 50% 50%;
 
   transform: rotate(calc(var(--radians)*1rad - 1.5rad));
   transform-origin: 50% 50%;
@@ -70,30 +62,16 @@ input{
     position: absolute;
   }
   &:before{
-    left: 15vw;
-    top: 4vh;
-    width: 30vw;
-    height: 25vw;
-    background-color: var(--color);
-    border-radius: 60% 70% 50% 55%;
-    ////
     left: var(--left);
     top: var(--top);
     width: var(--width);
     height: var(--height);
     border-radius: var(--borderRadius);
-    ////
+    background-color: var(--color);
 
     --distHigh: 3;
     --offHigh: 30;
 
-    background-image: radial-gradient(
-      ellipse farthest-corner at 30% 30%,
-      #FFFD 0 15%,
-      #FFF6 15% 25%,
-      transparent 50%,
-      #0002 80% 100%
-    );
     background-image: radial-gradient(
       ellipse farthest-corner at calc(50% + var(--offHigh)*var(--emPcX)) calc(50% - var(--offHigh)*var(--emPcY)),
       #FFFD 0 15%,
@@ -101,41 +79,46 @@ input{
       transparent 50%,
       #0002 80% 100%
     );
-
-    box-shadow:
-      0 -2rem 2rem 1rem #E6A300 inset,
-      0 0 1rem 0.5rem var(--color)
-    ;
     box-shadow:
       calc( var(--distHigh)*var(--emX)) calc( -1*var(--distHigh)*var(--emY)) 2em 1em #E6A300 inset,
       0 0 0.25em 0.125em var(--color)
-    ;
-    biox-shadow:
-      calc( 1*var(--emX)) calc( 1*var(--emY)) 2em #FFF2,
-      calc( 3*var(--emX)) calc( 3*var(--emY)) 3em 1em #0001 inset,
-      calc( 5*var(--emX)) calc( 5*var(--emY)) 8em 5em #0002 inset,
-      calc( 9*var(--emX)) calc( 9*var(--emY)) 4em 13em var(--color) inset,
-      calc(-4*var(--emX)) calc(-4*var(--emY)) 2em #0001
-    ;
-    ox-shadow:
-      calc( 1*var(--emX)) calc( 1*var(--emY)) 3em #FFF2,
-      calc( 6*var(--emX)) calc( 6*var(--emY)) 12em 4em #0001 inset,
-      calc( 5*var(--emX)) calc( 5*var(--emY)) 8em 5em #0002 inset,
-      calc(-7*var(--emX)) calc(-7*var(--emY)) 9em 0 var(--color) inset,
-      calc(-1*var(--emX)) calc(-1*var(--emY)) 2em #0001
     ;
 
   }
 }
 </style>
-<input type="range">
+<script src="//cdn.jsdelivr.net/npm/eruda"></script>
 <script>
 
     const {body} = document
 
     const w = document.documentElement.clientWidth // todo update onresize
     const h = document.documentElement.clientHeight
-    const input = document.querySelector('input')
+
+    const ce = (name, parent, props) => {
+      const elm = document.createElement(name)
+      //props&&Object.entries(props).forEach(([prop,value])=>elm.setProperty(prop, value))
+      parent?.appendChild(elm)
+      return elm
+    }
+
+    const wrap = ce('div', body)
+    wrap.classList.add('wrap')
+
+    Object.entries({
+      '--deg': n=>n*3.6,
+      fontSize: n=>1+64*n
+    }).forEach(args=>{
+      const [name, mapper] = args
+      //const input = ce('input', wrap, {type: 'range'})
+      const input = ce('input', wrap)
+      input.addEventListener('input', e=>{
+        const value = e.currentTarget.value
+        body.style.setProperty(name, mapper(value))
+      }) 
+    })
+
+    /*const input = document.querySelector('input')
     const egg = document.querySelector('.egg')
     const step = 60
     const num = w*h/3E3<<0
@@ -144,7 +127,7 @@ input{
       const value = e.currentTarget.value
       body.style.setProperty('--deg', value*3.6)
       //body.style.setProperty('--radians', value/50*Math.PI)
-    })
+    })*/
 
     const {random} = Math
     const r = (m=1)=>m*random();
@@ -155,11 +138,11 @@ input{
       const size = 30+r(40)
       Object.assign(div.style,{
 
-        left: `${10+r(60)}vw`,
-        top: `${10+r(70)}vh`,
+        left: `${1+r(60)}em`,
+        top: `${1+r(70)}em`,
 
-        width: `${size}vw`,
-        height: `${size+10*(r()-0.5)}vw`,
+        width: `${size}em`,
+        height: `${size+10*(r()-0.5)}em`,
 
         borderRadius: `${40+r(20)}% ${40+r(20)}% ${40+r(20)}% ${40+r(20)}%`
       })
@@ -167,13 +150,16 @@ input{
 
       ////
 
+      const yolkSize = 30 + r(30)
+      const restSize = 100 - yolkSize - 20
+
       Object.entries({
 
-        left: `${10+r(40)}%`,
-        top: `${10+r(40)}%`,
+        left: `${5+r(restSize)}%`,
+        top: `${5+r(restSize)}%`,
 
-        width: `${size}%`,
-        height: `${size+10*(r()-0.5)}%`,
+        width: `${yolkSize}%`,
+        height: `${yolkSize+10*(r()-0.5)}%`,
 
         borderRadius: `${40+r(20)}% ${40+r(20)}% ${40+r(20)}% ${40+r(20)}%`
       }).forEach((args)=>{
