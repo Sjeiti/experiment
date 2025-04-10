@@ -9,31 +9,44 @@
         --h: 40;
         --sin: 1;
         --t: 1;
+        --step: 1;
     }
     html,body{
         width:100vw;
         height:100vh;
         margin:0;
-        overflow: hidden;
     }
     body{
         background-color: #333;
         background-image: radial-gradient(circle at 70% 20%, #fff2 0, transparent 50% 70%, #0002 100%);
-        font-size: 16px;
+        font-size: 1px;
     }
     .wrap{
-        position: absolute;
-        width:80%;
-        z-index: 1;
+        position: fixed;
+        width:80vw;
+        z-index: 1000000000;
         top: 60vh;
-        left: 10%;
+        left: 10vw;
+        label {
+            &:after {
+              content: attr(data-value);
+            }
+        }
         input {
             display:block;
             width:100%;
+            margin-bottom: 4em;
         }
     }
-    .egg{
-        --radians: calc(var(--deg)/-180*pi);
+    .pan {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+    .egg {
+        --radians: calc(0.002*var(--t) + var(--deg)/-180*pi);
         --rdns: calc(var(--radians) + var(--lightRadians));
         --emX: calc(cos(var(--rdns))*-1em);
         --emY: calc(sin(var(--rdns))*-1em);
@@ -55,9 +68,9 @@
                 calc( -2.5*var(--emX)) calc( 2.5*var(--emY)) 5em #fff inset,
                 calc( 2.5*var(--emX)) calc( -2.5*var(--emY)) 5em #0004 inset,
                 calc( 0.25*var(--emX)) calc( -0.25*var(--emY)) 0.25rem #0004 inset
-    ;
+        ;
 
-        transform: rotate(calc(var(--radians)*1rad - 1.5rad));
+        transform: translate(-50%,-50%) rotate(calc(var(--radians)*1rad - 1.5rad));
         transform-origin: 50% 50%;
 
         &:before,&:after{
@@ -92,12 +105,20 @@
     }
 </style>
 <body>
-egg
 <script src="//cdn.jsdelivr.net/npm/eruda"></script>
 <script>
+    eruda?.init()
+
+    //import {animate} from '../signal/signals'
 
     const {body, documentElement} = document
     const {clientWidth:w, clientHeight:h} = documentElement
+
+    const {PI,sin,cos,random,sqrt} = Math
+    const r = (m=1)=>m*random()
+
+    const goldenAngle = 137.5077641
+    const goldenRad = goldenAngle / 180 * PI
 
     const ce = (name, parent, props) => {
         const elm = document.createElement(name)
@@ -111,34 +132,57 @@ egg
 
     Object.entries({
         '--deg': n=>n*3.6,
-        'font-size': n=>`${0.1+2*n}px`
+        '--step': n=>n*0.03,
+        'font-size': n=>`${0.01+0.02*n}px`
     }).forEach(args=>{
         const [name, mapper] = args
-        const input = ce('input', wrap, {type: 'range'})
+        const label = ce('label', wrap)
+        const input = ce('input', label, {type: 'range'})
         input.addEventListener('input', e=>{
-            const value = e.currentTarget.value
-            body.style.setProperty(name, mapper(value))
+          const value = e.currentTarget.value
+          label.dataset.value = value
+          body.style.setProperty(name, mapper(value))
         })
     })
 
-    const {random} = Math
-    const r = (m=1)=>m*random();
+    //
 
-    for(let i=0;i<6;i++){
-        const div = document.createElement('div')
-        div.classList.add('egg');
+
+    const pan = ce('div', body, {class:'pan'})
+
+    for(let i=0;i<2E2;i++){
+
+        const c = 6
+        const d = 70
+        const q = sqrt(d*d + d*d)/2
+        //const y = i/c<<0
+        //const x = i%c - (y%2&&0.5||0)
+
+        const step = 222
+        const dist = sqrt(step*i)
+        const rdns = i*goldenRad
+        const x = dist*sin(rdns)
+        const y = dist*cos(rdns)
+
+        const div = ce('div', pan, {class:'egg'})
+
         const size = 30+r(40)
+
         Object.assign(div.style,{
 
-            left: `${1+r(60)}em`,
-            top: `${1+r(70)}em`,
+            left: `${-11 + d*x + r(1)}em`,
+            top:  `${-11 + q*y + r(1)}em`,
+
+            left: `calc(50% + var(--step)*${x}em)`,
+            top:  `calc(50% + var(--step)*${y}em)`,
+
+            zIndex: 1E9 - i,
 
             width: `${size}em`,
             height: `${size+10*(r()-0.5)}em`,
 
             borderRadius: `${40+r(20)}% ${40+r(20)}% ${40+r(20)}% ${40+r(20)}%`
         })
-        body.appendChild(div)
 
         ////
 
@@ -154,6 +198,7 @@ egg
             height: `${yolkSize+10*(r()-0.5)}%`,
 
             borderRadius: `${40+r(20)}% ${40+r(20)}% ${40+r(20)}% ${40+r(20)}%`
+
         }).forEach((args)=>{
 
             const [key, value] = args
@@ -161,6 +206,15 @@ egg
 
         })
     }
+
+    //
+
+    const start = Date.now()
+    function animate(){
+      document.body.style.setProperty('--t', Date.now() - start)
+      requestAnimationFrame(animate)
+    }
+    animate()
 
 </script>
 </body>
