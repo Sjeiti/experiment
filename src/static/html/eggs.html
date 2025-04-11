@@ -1,220 +1,213 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>egg</title>
 <style>
-    :root{
-        --deg: 30;
-        --radians: 0;
-        --lightRadians: -2.1;
-        --w: 40;
-        --h: 40;
-        --sin: 1;
-        --t: 1;
-        --step: 1;
-    }
-    html,body{
-        width:100vw;
-        height:100vh;
-        margin:0;
-    }
-    body{
-        background-color: #333;
-        background-image: radial-gradient(circle at 70% 20%, #fff2 0, transparent 50% 70%, #0002 100%);
-        font-size: 1px;
-    }
-    .wrap{
-        position: fixed;
-        width:80vw;
-        z-index: 1000000000;
-        top: 60vh;
-        left: 10vw;
-        label {
-            &:after {
-              content: attr(data-value);
-            }
-        }
-        input {
-            display:block;
-            width:100%;
-            margin-bottom: 4em;
-        }
-    }
-    .pan {
-        position: relative;
-        width: 100vw;
-        height: 100vh;
-        overflow: hidden;
-        white-space: nowrap;
-    }
-    .egg {
-        --radians: calc(0.002*var(--t) + var(--deg)/-180*pi);
-        --rdns: calc(var(--radians) + var(--lightRadians));
-        --emX: calc(cos(var(--rdns))*-1em);
-        --emY: calc(sin(var(--rdns))*-1em);
-        --emPcX: calc(cos(var(--rdns))*-1%);
-        --emPcY: calc(sin(var(--rdns))*-1%);
+	:root {
+		--deg: 30;
+		--radians: 0;
+		--lightRadians: -2.1;
+		--w: 40;
+		--h: 40;
+		--sin: 1;
+		--t: 1;
+		--i: 1;
+		--step: 1;
+    --font-size: 1;
+	}
 
-        --color: #FFB330;
+	html, body {
+		width: 100vw;
+		height: 100vh;
+		margin: 0;
+	}
 
-        position: absolute;
-        background-color: #ddd;
-        /*left: 20vw;
-        top: 10vh;
-        width: 60vw;
-        height: 45vw;
-        border-radius: 60% 40% 50% 55%;*/
-        box-shadow:
-                calc( -0.25*var(--emX)) calc( 0.25*var(--emY)) 0.25em #0008,
-                calc( -0.5*var(--emX)) calc( 0.5*var(--emY)) 0.5em #fff inset,
-                calc( -2.5*var(--emX)) calc( 2.5*var(--emY)) 5em #fff inset,
-                calc( 2.5*var(--emX)) calc( -2.5*var(--emY)) 5em #0004 inset,
-                calc( 0.25*var(--emX)) calc( -0.25*var(--emY)) 0.25rem #0004 inset
-        ;
+	body {
+		background-color: #333;
+		background-image: radial-gradient(circle at 70% 20%, #fff2 0, transparent 50% 70%, #0002 100%);
+	}
 
-        transform: translate(-50%,-50%) rotate(calc(var(--radians)*1rad - 1.5rad));
-        transform-origin: 50% 50%;
+	.wrap {
+		position: fixed;
+		width: 80vw;
+		z-index: 1000000000;
+		top: 60vh;
+		left: 10vw;
+		font-family: monospace;
+		color: white;
+    font-size: 18px;
 
-        &:before,&:after{
-            content: '';
-            display: block;
-            position: absolute;
-        }
-        &:before{
-            left: var(--left);
-            top: var(--top);
-            width: var(--width);
-            height: var(--height);
-            border-radius: var(--borderRadius);
-            background-color: var(--color);
+		label {
+      display: flex;
+			&:after {
+				content: attr(data-value);
+			}
+		}
 
-            --distHigh: 3;
-            --offHigh: 30;
+		input {
+			display: block;
+			width: 100%;
+			margin-bottom: 4em;
+		}
+	}
 
-            background-image: radial-gradient(
-                    ellipse farthest-corner at calc(50% + var(--offHigh)*var(--emPcX)) calc(50% - var(--offHigh)*var(--emPcY)),
-                    #FFFD 0 15%,
-                    #FFF6 15% 25%,
-                    transparent 50%,
-                    #0002 80% 100%
-            );
-            box-shadow:
-                    calc( var(--distHigh)*var(--emX)) calc( -1*var(--distHigh)*var(--emY)) 2em 1em #E6A300 inset,
-                    0 0 0.25em 0.125em var(--color)
-        ;
+	.pan {
+		position: relative;
+		width: 100vw;
+		height: 100vh;
+		overflow: hidden;
+		white-space: nowrap;
+    font-size: var(--font-size);
+	}
 
-        }
-    }
+	.egg {
+    /*--lr: mod(var(--i), 2) - 0.5;*/
+    /*--lr: var(--modi) - 0.5;*/
+		--radians: calc(var(--modi) * 0.002 * var(--t) + var(--deg) / -180 * pi);
+		--rdns: calc(var(--radians) + var(--lightRadians));
+		--emX: calc(cos(var(--rdns)) * -1em);
+		--emY: calc(sin(var(--rdns)) * -1em);
+		--emPcX: calc(cos(var(--rdns)) * -1%);
+		--emPcY: calc(sin(var(--rdns)) * -1%);
+
+		--color: #FFB330;
+
+		position: absolute;
+		background-color: #ddd;
+  
+		box-shadow: calc(-0.25 * var(--emX)) calc(0.25 * var(--emY)) 0.25em #0008,
+		calc(-0.5 * var(--emX)) calc(0.5 * var(--emY)) 0.5em #fff inset,
+		calc(-2.5 * var(--emX)) calc(2.5 * var(--emY)) 5em #fff inset,
+		calc(2.5 * var(--emX)) calc(-2.5 * var(--emY)) 5em #0004 inset,
+		calc(0.25 * var(--emX)) calc(-0.25 * var(--emY)) 0.25rem #0004 inset;
+
+		transform: translate(-50%, -50%) rotate(calc(var(--radians) * 1rad - 1.5rad));
+		/*transform: translate(-50%, -50%) rotate(calc((var(--radians) * (mod(var(--i), 2) - 0.5)) * 1rad - 1.5rad));*/
+		transform-origin: 50% 50%;
+
+		&:before, &:after {
+			content: '';
+			display: block;
+			position: absolute;
+		}
+
+		&:before {
+			left: var(--left);
+			top: var(--top);
+			width: var(--width);
+			height: var(--height);
+			border-radius: var(--borderRadius);
+			background-color: var(--color);
+
+			--distHigh: 3;
+			--offHigh: 30;
+
+			background-image: radial-gradient(
+				ellipse farthest-corner at calc(50% + var(--offHigh) * var(--emPcX)) calc(50% - var(--offHigh) * var(--emPcY)),
+				#FFFD 0 15%,
+				#FFF6 15% 25%,
+				transparent 50%,
+				#0002 80% 100%
+			);
+			box-shadow: calc(var(--distHigh) * var(--emX)) calc(-1 * var(--distHigh) * var(--emY)) 2em 1em #E6A300 inset,
+			0 0 0.25em 0.125em var(--color);
+
+		}
+	}
 </style>
 <body>
 <script src="//cdn.jsdelivr.net/npm/eruda"></script>
 <script>
-    eruda?.init()
+  eruda?.init()
 
-    //import {animate} from '../signal/signals'
+  const {body,documentElement} = document
+  const {clientWidth: w,clientHeight: h} = documentElement
 
-    const {body, documentElement} = document
-    const {clientWidth:w, clientHeight:h} = documentElement
+  const {PI,sin,cos,random,sqrt} = Math
+  const r = (m = 1) => m * random()
 
-    const {PI,sin,cos,random,sqrt} = Math
-    const r = (m=1)=>m*random()
+  const goldenAngle = 137.5077641
+  const goldenRad = goldenAngle / 180 * PI
 
-    const goldenAngle = 137.5077641
-    const goldenRad = goldenAngle / 180 * PI
+  const ce = (name,parent,props) => {
+    const elm = document.createElement(name)
+    props && Object.entries(props).forEach(([prop,value]) => elm.setAttribute(prop,value))
+    parent?.appendChild(elm)
+    return elm
+  }
 
-    const ce = (name, parent, props) => {
-        const elm = document.createElement(name)
-        props&&Object.entries(props).forEach(([prop,value])=>elm.setAttribute(prop, value))
-        parent?.appendChild(elm)
-        return elm
-    }
+  const wrap = ce('div',body)
+  wrap.classList.add('wrap')
 
-    const wrap = ce('div', body)
-    wrap.classList.add('wrap')
+  Object.entries({
+    '--deg': [50, n => n * 3.6],
+    '--step': [80, n => n * 0.03],
+    '--font-size': [100, n => `${0.01 + 0.02 * n}px`]
+  }).forEach(args => {
+    const [name, [value, mapper]] = args
+    const label = ce('label',wrap)
+    const input = ce('input',label,{type: 'range', value})
+    input.addEventListener('input', e => {
+      const value = e.currentTarget.value
+      label.dataset.value = value
+      body.style.setProperty(name,mapper(value))
+    })
+    input.dispatchEvent(new CustomEvent('input'))
+  })
 
-    Object.entries({
-        '--deg': n=>n*3.6,
-        '--step': n=>n*0.03,
-        'font-size': n=>`${0.01+0.02*n}px`
-    }).forEach(args=>{
-        const [name, mapper] = args
-        const label = ce('label', wrap)
-        const input = ce('input', label, {type: 'range'})
-        input.addEventListener('input', e=>{
-          const value = e.currentTarget.value
-          label.dataset.value = value
-          body.style.setProperty(name, mapper(value))
-        })
+  //
+
+  const pan = ce('div',body,{class: 'pan'})
+
+  for (let i = 0; i<2E2; i++) {
+    
+    if (i===1) i = 2; // skip 1 for cluttered center
+    
+    const step = 222
+    const dist = sqrt(step * i)
+    const rdns = i * goldenRad
+    const x = dist * sin(rdns)
+    const y = dist * cos(rdns)
+
+    const div = ce('div',pan,{class: 'egg'})
+    div.style.setProperty('--i', i)
+    div.style.setProperty('--modi', i%2&&-1||1)
+
+    const size = 30 + r(40)
+
+    Object.assign(div.style,{
+      left: `calc(50% + var(--step)*${x}em)`,
+      top: `calc(50% + var(--step)*${y}em)`,
+      zIndex: 1E9 - i,
+      width: `${size}em`,height: `${size + 10 * (r() - 0.5)}em`,
+      borderRadius: `${40 + r(20)}% ${40 + r(20)}% ${40 + r(20)}% ${40 + r(20)}%`
     })
 
-    //
+    ////
 
+    const yolkSize = 30 + r(30)
+    const restSize = 100 - yolkSize - 20
 
-    const pan = ce('div', body, {class:'pan'})
+    Object.entries({
+      left: `${5 + r(restSize)}%`,top: `${5 + r(restSize)}%`,
+      width: `${yolkSize}%`,height: `${yolkSize + 10 * (r() - 0.5)}%`,
+      borderRadius: `${40 + r(20)}% ${40 + r(20)}% ${40 + r(20)}% ${40 + r(20)}%`
+    }).forEach((args) => {
 
-    for(let i=0;i<2E2;i++){
+      const [key,value] = args
+      div.style.setProperty('--' + key,value)
 
-        const c = 6
-        const d = 70
-        const q = sqrt(d*d + d*d)/2
-        //const y = i/c<<0
-        //const x = i%c - (y%2&&0.5||0)
+    })
+  }
 
-        const step = 222
-        const dist = sqrt(step*i)
-        const rdns = i*goldenRad
-        const x = dist*sin(rdns)
-        const y = dist*cos(rdns)
+  //
 
-        const div = ce('div', pan, {class:'egg'})
+  const start = Date.now()
 
-        const size = 30+r(40)
+  function animate() {
+    document.body.style.setProperty('--t',Date.now() - start)
+    requestAnimationFrame(animate)
+  }
 
-        Object.assign(div.style,{
-
-            left: `${-11 + d*x + r(1)}em`,
-            top:  `${-11 + q*y + r(1)}em`,
-
-            left: `calc(50% + var(--step)*${x}em)`,
-            top:  `calc(50% + var(--step)*${y}em)`,
-
-            zIndex: 1E9 - i,
-
-            width: `${size}em`,
-            height: `${size+10*(r()-0.5)}em`,
-
-            borderRadius: `${40+r(20)}% ${40+r(20)}% ${40+r(20)}% ${40+r(20)}%`
-        })
-
-        ////
-
-        const yolkSize = 30 + r(30)
-        const restSize = 100 - yolkSize - 20
-
-        Object.entries({
-
-            left: `${5+r(restSize)}%`,
-            top: `${5+r(restSize)}%`,
-
-            width: `${yolkSize}%`,
-            height: `${yolkSize+10*(r()-0.5)}%`,
-
-            borderRadius: `${40+r(20)}% ${40+r(20)}% ${40+r(20)}% ${40+r(20)}%`
-
-        }).forEach((args)=>{
-
-            const [key, value] = args
-            div.style.setProperty('--'+key, value)
-
-        })
-    }
-
-    //
-
-    const start = Date.now()
-    function animate(){
-      document.body.style.setProperty('--t', Date.now() - start)
-      requestAnimationFrame(animate)
-    }
-    animate()
+  animate()
 
 </script>
 </body>
