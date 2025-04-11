@@ -26,6 +26,7 @@
 	}
 
 	.wrap {
+    display: none;
 		position: fixed;
 		width: 80vw;
 		z-index: 1000000000;
@@ -59,9 +60,7 @@
 	}
 
 	.egg {
-    /*--lr: mod(var(--i), 2) - 0.5;*/
-    /*--lr: var(--modi) - 0.5;*/
-		--radians: calc(var(--modi) * 0.002 * var(--t) + var(--deg) / -180 * pi);
+		--radians: calc(var(--speed) * var(--modi) * 0.0002 * var(--t) + var(--deg) / -180 * pi);
 		--rdns: calc(var(--radians) + var(--lightRadians));
 		--emX: calc(cos(var(--rdns)) * -1em);
 		--emY: calc(sin(var(--rdns)) * -1em);
@@ -80,7 +79,6 @@
 		calc(0.25 * var(--emX)) calc(-0.25 * var(--emY)) 0.25rem #0004 inset;
 
 		transform: translate(-50%, -50%) rotate(calc(var(--radians) * 1rad - 1.5rad));
-		/*transform: translate(-50%, -50%) rotate(calc((var(--radians) * (mod(var(--i), 2) - 0.5)) * 1rad - 1.5rad));*/
 		transform-origin: 50% 50%;
 
 		&:before, &:after {
@@ -114,9 +112,9 @@
 	}
 </style>
 <body>
-<script src="//cdn.jsdelivr.net/npm/eruda"></script>
+<!--<script src="//cdn.jsdelivr.net/npm/eruda"></script>-->
 <script>
-  eruda?.init()
+  // eruda?.init()
 
   const {body,documentElement} = document
   const {clientWidth: w,clientHeight: h} = documentElement
@@ -170,6 +168,7 @@
     const div = ce('div',pan,{class: 'egg'})
     div.style.setProperty('--i', i)
     div.style.setProperty('--modi', i%2&&-1||1)
+    div.style.setProperty('--speed', i%7 + 1)
 
     const size = 30 + r(40)
 
