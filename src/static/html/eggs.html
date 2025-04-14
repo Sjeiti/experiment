@@ -1,5 +1,5 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>egg</title>
+<title>eggs</title>
 <style>
 	:root {
 		--deg: 30;
@@ -30,7 +30,7 @@
 		position: fixed;
 		width: 80vw;
 		z-index: 1000000000;
-		top: 60vh;
+		top: 10vh;
 		left: 10vw;
 		font-family: monospace;
 		color: white;
@@ -46,7 +46,7 @@
 		input {
 			display: block;
 			width: 100%;
-			margin-bottom: 4em;
+			margin-bottom: 3em;
 		}
 	}
 
@@ -112,9 +112,9 @@
 	}
 </style>
 <body>
-<!--<script src="//cdn.jsdelivr.net/npm/eruda"></script>-->
+<script src="//cdn.jsdelivr.net/npm/eruda"></script>
 <script>
-  // eruda?.init()
+  eruda?.init()
 
   const {body,documentElement} = document
   const {clientWidth: w,clientHeight: h} = documentElement
@@ -122,7 +122,7 @@
   const {PI,sin,cos,random,sqrt} = Math
   const r = (m = 1) => m * random()
 
-  const goldenAngle = 137.5077641
+  const goldenAngle = 137.50776405003785
   const goldenRad = goldenAngle / 180 * PI
 
   const ce = (name,parent,props) => {
@@ -136,9 +136,9 @@
   wrap.classList.add('wrap')
 
   Object.entries({
-    '--deg': [50, n => n * 3.6],
+    '--deg': [45, n => n * 3.6],
     '--step': [80, n => n * 0.03],
-    '--font-size': [100, n => `${0.01 + 0.02 * n}px`]
+    '--font-size': [50, n => `${0.01 + 0.02 * n}px`]
   }).forEach(args => {
     const [name, [value, mapper]] = args
     const label = ce('label',wrap)
@@ -155,7 +155,7 @@
 
   const pan = ce('div',body,{class: 'pan'})
 
-  for (let i = 0; i<2E2; i++) {
+  for (let i = 0; i<3E2; i++) {
     
     if (i===1) i = 2; // skip 1 for cluttered center
     
@@ -174,7 +174,7 @@
 
     Object.assign(div.style,{
       left: `calc(50% + var(--step)*${x}em)`,
-      top: `calc(50% + var(--step)*${y}em)`,
+      top: `calc(0% + var(--step)*${y}em)`,
       zIndex: 1E9 - i,
       width: `${size}em`,height: `${size + 10 * (r() - 0.5)}em`,
       borderRadius: `${40 + r(20)}% ${40 + r(20)}% ${40 + r(20)}% ${40 + r(20)}%`
