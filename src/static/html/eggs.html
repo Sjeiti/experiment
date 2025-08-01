@@ -26,7 +26,7 @@
 	}
 
 	.wrap {
-    display: none;
+    dsplay: none;
 		position: fixed;
 		width: 80vw;
 		z-index: 1000000000;
@@ -37,7 +37,8 @@
     font-size: 18px;
 
 		label {
-      display: flex;
+      dispay: flex;
+			margin-bottom: 3em;
 			&:after {
 				content: attr(data-value);
 			}
@@ -46,7 +47,6 @@
 		input {
 			display: block;
 			width: 100%;
-			margin-bottom: 3em;
 		}
 	}
 
@@ -112,97 +112,128 @@
 	}
 </style>
 <body>
-<script src="//cdn.jsdelivr.net/npm/eruda"></script>
 <script>
-  eruda?.init()
+  const isMobile = window.matchMedia('(max-device-width: 600px)').matches
+  const isLocalhost = window.location.hostname==='localhost'
+  const isParamEruda = /eruda/.test(location.search)
+  if (isMobile&&isLocalhost||isParamEruda) {
+    const script = loadScript('//cdn.jsdelivr.net/npm/eruda')
+    script.onload = ()=>{
+      eruda.init
+      start()
+    }
+  } else {
+    start()
+  }
 
-  const {body,documentElement} = document
-  const {clientWidth: w,clientHeight: h} = documentElement
+  //
+  function start() {
+      
+    const {body,documentElement} = document
+    const {clientWidth: w,clientHeight: h} = documentElement
 
-  const {PI,sin,cos,random,sqrt} = Math
-  const r = (m = 1) => m * random()
+    const {PI,sin,cos,random,sqrt} = Math
+    const r = (m = 1) => m * random()
 
-  const goldenAngle = 137.50776405003785
-  const goldenRad = goldenAngle / 180 * PI
+    const goldenAngle = 137.50776405003785
+    const goldenRad = goldenAngle / 180 * PI
 
-  const ce = (name,parent,props) => {
+    const wrap = ce('div',body,isLocalhost?{}:{display:'none'})
+    wrap.classList.add('wrap')
+
+    body.addEventListener('dblclick', (event) => {
+      wrap.style.display = wrap.style.display==='block'?'none':'block'
+    })
+
+    Object.entries({
+      '--ga': [45, n => goldenRad.toFixed(n/10<<0)],
+      '--step': [80, n => n * 0.03],
+      '--font-size': [50, n => `${0.01 + 0.02 * n}px`]
+    }).forEach(args => {
+      const [name, [value, mapper]] = args
+      const label = ce('label',wrap)
+      const input = ce('input',label,{type: 'range', value})
+      input.addEventListener('input', e => {
+        const value = e.currentTarget.value
+        label.dataset.value = value
+        label.dataset.value = mapper(value)
+        body.style.setProperty(name,mapper(value))
+      })
+      input.dispatchEvent(new CustomEvent('input'))
+    })
+
+    //
+
+    const pan = ce('div',body,{class: 'pan'})
+
+    for (let i = 0; i<3E2; i++) {
+      
+      if (i===1) i = 2; // skip 1 for cluttered center
+      
+      const step = 222
+      const dist = sqrt(step * i)
+      const rdns = i * goldenRad
+      const x = dist * sin(rdns)
+      const y = dist * cos(rdns)
+
+      const div = ce('div',pan,{class: 'egg'})
+      div.style.setProperty('--x', x)
+      div.style.setProperty('--y', y)
+
+      div.style.setProperty('--dist', dist)
+      div.style.setProperty('--rdnss', `calc(${i}*var(--ga)`)
+      div.style.setProperty('--x', `calc(var(--dist)*sin(var(--rdnss)))`)
+      div.style.setProperty('--y', `calc(var(--dist)*cos(var(--rdnss)))`)
+
+      div.style.setProperty('--i', i)
+      div.style.setProperty('--modi', i%2&&-1||1)
+      div.style.setProperty('--speed', i%7 + 1)
+
+      const size = 30 + r(40)
+
+      Object.assign(div.style,{
+        left: `calc(50% + var(--step)*var(--x)*1em)`,
+        top:  `calc( 0% + var(--step)*var(--y)*1em)`,
+        zIndex: 1E9 - i,
+        width: `${size}em`,height: `${size + 10 * (r() - 0.5)}em`,
+        borderRadius: `${40 + r(20)}% ${40 + r(20)}% ${40 + r(20)}% ${40 + r(20)}%`
+      })
+
+      ////
+
+      const yolkSize = 30 + r(30)
+      const restSize = 100 - yolkSize - 20
+
+      Object.entries({
+        left: `${5 + r(restSize)}%`,top: `${5 + r(restSize)}%`,
+        width: `${yolkSize}%`,height: `${yolkSize + 10 * (r() - 0.5)}%`,
+        borderRadius: `${40 + r(20)}% ${40 + r(20)}% ${40 + r(20)}% ${40 + r(20)}%`
+      }).forEach((args) => {
+
+        const [key,value] = args
+        div.style.setProperty('--' + key,value)
+
+      })
+    }
+  }
+
+  //
+
+  function loadScript(src){
+    return ce('script',document.body,{src})
+  }
+
+  function ce(name,parent,props) {
     const elm = document.createElement(name)
     props && Object.entries(props).forEach(([prop,value]) => elm.setAttribute(prop,value))
     parent?.appendChild(elm)
     return elm
   }
 
-  const wrap = ce('div',body)
-  wrap.classList.add('wrap')
-
-  Object.entries({
-    '--deg': [45, n => n * 3.6],
-    '--step': [80, n => n * 0.03],
-    '--font-size': [50, n => `${0.01 + 0.02 * n}px`]
-  }).forEach(args => {
-    const [name, [value, mapper]] = args
-    const label = ce('label',wrap)
-    const input = ce('input',label,{type: 'range', value})
-    input.addEventListener('input', e => {
-      const value = e.currentTarget.value
-      label.dataset.value = value
-      body.style.setProperty(name,mapper(value))
-    })
-    input.dispatchEvent(new CustomEvent('input'))
-  })
-
-  //
-
-  const pan = ce('div',body,{class: 'pan'})
-
-  for (let i = 0; i<3E2; i++) {
-    
-    if (i===1) i = 2; // skip 1 for cluttered center
-    
-    const step = 222
-    const dist = sqrt(step * i)
-    const rdns = i * goldenRad
-    const x = dist * sin(rdns)
-    const y = dist * cos(rdns)
-
-    const div = ce('div',pan,{class: 'egg'})
-    div.style.setProperty('--i', i)
-    div.style.setProperty('--modi', i%2&&-1||1)
-    div.style.setProperty('--speed', i%7 + 1)
-
-    const size = 30 + r(40)
-
-    Object.assign(div.style,{
-      left: `calc(50% + var(--step)*${x}em)`,
-      top: `calc(0% + var(--step)*${y}em)`,
-      zIndex: 1E9 - i,
-      width: `${size}em`,height: `${size + 10 * (r() - 0.5)}em`,
-      borderRadius: `${40 + r(20)}% ${40 + r(20)}% ${40 + r(20)}% ${40 + r(20)}%`
-    })
-
-    ////
-
-    const yolkSize = 30 + r(30)
-    const restSize = 100 - yolkSize - 20
-
-    Object.entries({
-      left: `${5 + r(restSize)}%`,top: `${5 + r(restSize)}%`,
-      width: `${yolkSize}%`,height: `${yolkSize + 10 * (r() - 0.5)}%`,
-      borderRadius: `${40 + r(20)}% ${40 + r(20)}% ${40 + r(20)}% ${40 + r(20)}%`
-    }).forEach((args) => {
-
-      const [key,value] = args
-      div.style.setProperty('--' + key,value)
-
-    })
-  }
-
-  //
-
-  const start = Date.now()
+  const now = Date.now()
 
   function animate() {
-    document.body.style.setProperty('--t',Date.now() - start)
+    document.body.style.setProperty('--t',Date.now() - now)
     requestAnimationFrame(animate)
   }
 
