@@ -20,15 +20,14 @@
     }
   </style>
   <script>
- 
     const isMobile = window.matchMedia('(max-device-width: 600px)').matches
     const isLocalhost = window.location.hostname==='localhost'
 
-    const inited = ()=>document.body.dispatchEvent(new CustomEvent('inited'))
+    const inited = ()=>requestAnimationFrame(()=>document.body.dispatchEvent(new CustomEvent('inited')))
 
     isMobile
       &&isLocalhost
-      //&&!eruda
+      &&!globalThis.eruda
       &&document.addEventListener('DOMContentLoaded',()=>{
         const script = loadScript('//cdn.jsdelivr.net/npm/eruda')
         script.addEventListener('load',()=>{
