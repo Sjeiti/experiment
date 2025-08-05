@@ -1,0 +1,165 @@
+<!doctype html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    html {
+      font-size: 16px;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      max-width: 100vw;
+      max-height: 100vh;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+    body {
+      verflow: hidden;
+      background-color: #EEE;
+    }
+  </style>
+  <script>
+    const isMobile = window.matchMedia('(max-device-width: 600px)').matches
+    const isLocalhost = window.location.hostname==='localhost'
+
+    const inited = ()=>requestAnimationFrame(()=>document.body.dispatchEvent(new CustomEvent('inited')))
+
+    isMobile
+      &&isLocalhost
+      &&!globalThis.eruda
+      ?document.addEventListener('DOMContentLoaded',()=>{
+        const script = loadScript('//cdn.jsdelivr.net/npm/eruda')
+        script.addEventListener('load',()=>{
+          eruda.init()
+          console.log('r12')
+          inited()
+        })
+      })
+      :inited()
+    
+    function loadScript(src){
+      const script = document.createElement('script')
+      script.src = src
+      document.body.appendChild(script)
+      return script
+    }
+  </script>
+</head>
+<body>
+<style>
+:root {
+  --t: 1;
+  --w: 8rem;
+  --c1: transparent;
+  --c2: transparent;
+}
+body {
+  background-color: #000;
+}
+.circles {
+  width: 100%;
+  height: 100%;
+  padding: 50% 0 0 50%;
+  div {
+    position: absolute;
+    width: var(--w);
+    height: var(--w);
+    rder-radius: 50%;
+    box-shadow: 0 0 4rem var(--c1), 0 0 3rem var(--c2) inset;
+    transform: translate(-50%,-50%);
+    mix-blend-mode: plus-lighter;
+    mix-blend-mode: normal;
+  }
+  &>div {
+    position: static;
+    ileft: 50vw;
+    itop: 50vw;
+    width: 50vw;
+    height: 50vw;
+  }
+}
+select {
+  position: absolute;
+  left: 0;
+  bottom: 4rem;
+}
+menu {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  display: flex;
+  width: 100%;
+  padding: 0;
+  box-shadow: 0 0 0 1px black;
+  button {
+    flex: 1 1 auto;
+    line-height: 2rem;
+  }
+}
+</style>
+<script>
+  const {body,styleSheets} = document
+
+  body.addEventListener('inited',()=>{
+
+    const div = 'div'
+    const circles = createElement(div,body,null)
+    circles.classList.add('circles')
+
+    let circle = circles
+    arf(20).map(()=>circle=createElement(div,circle))
+
+    const style = styleSheets[styleSheets.length-1]
+    style.insertRule('.circles>div div { color: white }', 0)
+    const rule = style.rules[0]
+    console.log(rule)
+
+    const resetStyle = reset.bind(null,rule.style)
+    body.addEventListener('click',resetStyle)
+    resetStyle()
+
+  })
+
+  function reset(style){
+    console.log('reset',style)
+    style.transform = `
+      rotate(calc(120deg + 40deg * sin(${rnd(0.0001)} * var(--t))))
+      translate(${rnd(70,20,'%')},0)
+    `
+    style.borderRadius = rnd(2)<1?0:'50%'
+    style.setProperty('--w', rnd(40,102,'%'))
+    style.setProperty('--c1', randomColor())
+    style.setProperty('--c2', randomColor())
+  }
+
+  function arf(len){
+    return Array.from(typeof len==='number'?new Array(len):len)
+  }
+
+  function createElement(type, parent, style, props){
+    const elm = document.createElement(type)
+    style&&Object.assign(elm.style, style)
+    parent?.appendChild(elm)
+    return elm
+  }
+
+  function rnd(size=1, offset=0, unit=0){
+    return (offset + size*Math.random()) + unit
+  }
+
+  function randomColor(){
+    return '#'+Math.random().toString(16).slice(-6)// + '66'
+  }
+
+  const startT = Date.now() - (rnd(1e6)<<0)
+  function animate(){
+    body.style.setProperty('--t', Date.now()-startT)
+    requestAnimationFrame(animate)
+  }
+  animate()
+
+</script>
+</body>
+
