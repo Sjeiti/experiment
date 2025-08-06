@@ -33,7 +33,6 @@
         const script = loadScript('//cdn.jsdelivr.net/npm/eruda')
         script.addEventListener('load',()=>{
           eruda.init()
-          console.log('r12')
           inited()
         })
       })
@@ -66,43 +65,38 @@ body {
     position: absolute;
     width: var(--w);
     height: var(--w);
-    rder-radius: 50%;
     box-shadow: 0 0 4rem var(--c1), 0 0 3rem var(--c2) inset;
     transform: translate(-50%,-50%);
-    mix-blend-mode: plus-lighter;
-    mix-blend-mode: normal;
+    transition: all 3000ms ease;
   }
   &>div {
     position: static;
-    ileft: 50vw;
-    itop: 50vw;
     width: 50vw;
     height: 50vw;
-  }
-}
-select {
-  position: absolute;
-  left: 0;
-  bottom: 4rem;
-}
-menu {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  display: flex;
-  width: 100%;
-  padding: 0;
-  box-shadow: 0 0 0 1px black;
-  button {
-    flex: 1 1 auto;
-    line-height: 2rem;
   }
 }
 </style>
 <script>
   const {body,styleSheets} = document
 
+  let seed = 1234
+  const md = 2**32
+  function random(_seed){
+    if (_seed!==undefined) seed = _seed
+    seed = (1664525*seed + 1013904223)%md
+    return seed/md
+  }
+
+  const startT = Date.now() - (rnd(1E9)<<0)
+  function animate(){
+    body.style.setProperty('--t', Date.now()-startT)
+    requestAnimationFrame(animate)
+  }
+  animate()
+  
   body.addEventListener('inited',()=>{
+
+    readHash()
 
     const div = 'div'
     const circles = createElement(div,body,null)
@@ -114,22 +108,35 @@ menu {
     const style = styleSheets[styleSheets.length-1]
     style.insertRule('.circles>div div { color: white }', 0)
     const rule = style.rules[0]
-    console.log(rule)
 
-    const resetStyle = reset.bind(null,rule.style)
-    body.addEventListener('click',resetStyle)
-    resetStyle()
+    body.addEventListener('click',onBodyClick.bind(null,rule.style))
+    reset(rule.style)
 
+    window.addEventListener('hashchange', onHashChange.bind(null,rule.style), false)
   })
 
+  function onBodyClick(style){
+    location.hash = seed = Math.random()*2E9<<0
+    reset(style)
+  }
+  
+  function onHashChange(style){
+    readHash()
+    reset(style)
+  }
+
+  function readHash(){
+    const {hash} = location
+    if (/^#-?\d+$/.test(hash)) seed = parseInt(hash.substr(1),10)
+  }
+
   function reset(style){
-    console.log('reset',style)
     style.transform = `
       rotate(calc(120deg + 40deg * sin(${rnd(0.0001)} * var(--t))))
-      translate(${rnd(70,20,'%')},0)
+      translate(${rnd(70,20,'%',true)},0)
     `
     style.borderRadius = rnd(2)<1?0:'50%'
-    style.setProperty('--w', rnd(40,102,'%'))
+    style.setProperty('--w', rnd(40,102,'%',true))
     style.setProperty('--c1', randomColor())
     style.setProperty('--c2', randomColor())
   }
@@ -145,20 +152,14 @@ menu {
     return elm
   }
 
-  function rnd(size=1, offset=0, unit=0){
-    return (offset + size*Math.random()) + unit
+  function rnd(size=1, offset=0, unit=0, whole=false){
+    const w = i=>whole?parseInt(i,10):i
+    return w(offset + size*random()) + unit
   }
 
   function randomColor(){
-    return '#'+Math.random().toString(16).slice(-6)// + '66'
+    return '#'+random().toString(16).slice(-6)// + '66'
   }
-
-  const startT = Date.now() - (rnd(1e6)<<0)
-  function animate(){
-    body.style.setProperty('--t', Date.now()-startT)
-    requestAnimationFrame(animate)
-  }
-  animate()
 
 </script>
 </body>
