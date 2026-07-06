@@ -1,0 +1,191 @@
+<!doctype html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<div class="glass"></div>
+<style>
+  :root{
+    --color-ground: #141109;
+    --color-sky: #88A5DA;
+    --color-sun: #FF08;
+    --deg: 180;
+    --min: 1;
+    --origin: 0;
+    --duration: 1ms;
+    --bg: transparent;
+    --pi: 3.14159;
+  }
+  html, body {
+    width: 100%;
+    height: 100%;
+    max-width: 100vw;
+    max-height: 100vh;
+    margin: 0;
+    padding: 0;
+  }
+  body {
+		verflow: hidden;
+  }
+  .glass, .drop {
+    --rad: calc(var(--deg) * var(--pi) / 180);
+    --p1-rad: calc(var(--rad) + 0.00001*var(--t) + 0*var(--pi));
+    --p1-d: 50%;
+    --p1-x: calc(50% + var(--p1-d) * cos(var(--p1-rad)));
+    --p1-y: calc(50% + var(--p1-d) * sin(var(--p1-rad)));
+    --bg: 
+      linear-gradient(calc(var(--deg)*1deg),transparent 40%,var(--color-ground) 80%),
+      radial-gradient(circle at var(--p1-x) var(--p1-y), #fff 0 15%, var(--color-sun) 20%, transparent 30%),
+      var(--color-sky)
+    ;
+
+    --ps-rad: calc(var(--rad) + 0.5*var(--pi));
+    --ps-d: 1px;
+    --ps-x: calc(var(--ps-d) * cos(var(--ps-rad)));
+    --ps-y: calc(var(--ps-d) * sin(var(--ps-rad)));
+    
+    --color-ground-a: rgb(from var(--color-ground) r g b / 0.3);
+    --color-sky-a: rgb(from var(--color-sky) r g b / 0.05);
+
+    box-shadow: 
+      var(--ps-x) var(--ps-y) 1px var(--color-ground-a),
+      var(--ps-x) var(--ps-y) 1px var(--color-sky-a) inset
+    ;
+
+    transition:
+      background 300ms linear,
+      width 300ms linear,
+      height 300ms linear,
+      left 300ms linear,
+      top 300ms linear
+    ;
+
+    /*&:before{
+      counter-reset: r var(--deg);
+      content: counter(r);
+      font-size: 10px;
+    }*/
+  }
+  .glass {
+    position: relative;
+		width: 100vw;
+		height: 100vh;
+    margin-bottom: 1px;
+    background: var(--bg);
+    background-size: 100%;
+    background-repeat: no-repeat;
+		overflow: hidden;
+    ox-shadow: 0 0 0 2px lime inset;
+  }
+  .drop{
+    position: absolute;
+		width: 20px;
+		height: 20px;
+    background: var(--bg);
+    transform: rotate(calc(-1deg*var(--deg)));
+
+    &:nth-child(-n+1111) {
+      margin-top: calc(100px*tan(0.0001*var(--t) + 10*sin(var(--seed))));
+      ox-shadow: 0 0 0 1px lime;
+    }
+
+    &:nth-child(965) {
+      box-shadow: 0 0 0 1px lime;
+      &:before {
+        content: '';
+        display: block;
+        z-index: -1;
+        width: 100%;
+        height: 100px;
+        opacity: 0.5;
+        background: inherit;
+        border-radius: inherit;
+        transform: rotate(calc(1deg*var(--deg) + 0.01deg*var(--t)));
+        transform-origin: 50% 0%;
+        position: absolute;
+        left: 0;
+        top: 0;
+        box-shadow: inherit;
+      }
+    }
+  }
+</style>
+
+<script>
+  const multiplier = 1664525
+  const increment = 1013904223
+  const modulus = 4294967296
+  let seed = Math.random()*modulus<<0
+  function random(_seed){
+    return seed = ( (_seed||seed) * multiplier + increment ) % modulus
+  }
+  function rand(_seed){
+    return random(_seed)/modulus
+  }
+
+  const num = 260
+  const {body} = document
+
+  const glass = document.querySelector('.glass')
+  Array.from(new Array(num)).forEach((o,i)=>{
+    const drop = document.createElement('div')
+    drop.classList.add('drop')
+    glass.appendChild(drop)
+  })
+  reset()
+  resetColor()
+
+  function reset(){ 
+    const {clientWidth:w,clientHeight:h} = document.documentElement
+
+    const wh = Math.ceil(Math.sqrt((w*h)/num))
+    const ww = Math.ceil(w/wh)
+    const hh = 2*wh-Math.sqrt(wh*wh/2)
+
+    Array.from(glass.children).forEach((drop,i)=>{
+      const {style} = drop
+
+      const size = 10 + 15*rand()*rand()
+      const deg = (360*rand())<<0
+      const xx = Math.ceil(i%ww)
+      const yy = Math.floor(i/ww)
+
+      Object.assign(style, {
+        left: 0.25*wh 
+            + wh*xx 
+            + (wh-size/2)*(rand()-0.5) 
+            + 'px',
+        top:  0.25*wh 
+            + hh*yy 
+            + (wh-size/2)*(rand()-0.5) 
+            + (xx%2*wh/2)
+            + 'px',
+        width:  (size+0.3*rand()) + 'px',
+        height: (size+0.3*rand()) + 'px',
+        borderRadius: [0,0,0,0].map(()=>(40+50*rand()<<0) + 'px').join(' ')
+      })
+      style.setProperty('--deg', deg)
+      style.setProperty('--seed', seed)
+    })
+  }
+  
+  function resetColor(){
+    body.style.setProperty('--color-ground', `hsl(${rand()*360} ${rand()*100<<0}% ${rand()*10<<0}%)`)
+    body.style.setProperty('--color-sky', `hsl(${rand()*360} ${rand()*100<<0}% ${50+rand()*50<<0}%)`)
+    body.style.setProperty('--color-sun', `hsl(${rand()*360} ${rand()*100<<0}% ${80+rand()*20<<0}%)`)
+  }
+  
+  const startT = Date.now()
+  function animate(){
+    body.style.setProperty('--t', Date.now()-startT)
+    requestAnimationFrame(animate)
+  }
+  animate()
+
+  glass.addEventListener('click',resetColor)
+
+  new ResizeObserver(reset).observe(glass)
+
+</script>
+</body>
