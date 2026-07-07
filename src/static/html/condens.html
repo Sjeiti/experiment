@@ -30,13 +30,13 @@
   }
   .glass, .drop {
     --rad: calc(var(--deg) * var(--pi) / 180);
-    --p1-rad: calc(var(--rad) + 0.00001*var(--t) + 0*var(--pi));
+    --p1-rad: calc(var(--rad) + 0.00005*var(--t) + 0*var(--pi));
     --p1-d: 50%;
     --p1-x: calc(50% + var(--p1-d) * cos(var(--p1-rad)));
     --p1-y: calc(50% + var(--p1-d) * sin(var(--p1-rad)));
     --bg: 
       linear-gradient(calc(var(--deg)*1deg),transparent 40%,var(--color-ground) 80%),
-      radial-gradient(circle at var(--p1-x) var(--p1-y), #fff 0 15%, var(--color-sun) 20%, transparent 30%),
+      radial-gradient(circle at var(--p1-x) var(--p1-y), #fffb 0 15%, var(--color-sun) 20%, transparent 30%),
       var(--color-sky)
     ;
 
@@ -47,25 +47,17 @@
     
     --color-ground-a: rgb(from var(--color-ground) r g b / 0.3);
     --color-sky-a: rgb(from var(--color-sky) r g b / 0.05);
+    --color-sky-aa: rgb(from var(--color-sky) r g b / 0.3);
 
-    box-shadow: 
-      var(--ps-x) var(--ps-y) 1px var(--color-ground-a),
-      var(--ps-x) var(--ps-y) 1px var(--color-sky-a) inset
-    ;
+    &.drop:after {
+      box-shadow: 
+        var(--ps-x) var(--ps-y) 1px var(--color-ground-a),
+        var(--ps-x) var(--ps-y) 1px var(--color-sky-a) inset
+      ;
+    }
 
-    transition:
-      background 300ms linear,
-      width 300ms linear,
-      height 300ms linear,
-      left 300ms linear,
-      top 300ms linear
-    ;
+    transition: background 300ms linear;
 
-    /*&:before{
-      counter-reset: r var(--deg);
-      content: counter(r);
-      font-size: 10px;
-    }*/
   }
   .glass {
     position: relative;
@@ -76,38 +68,42 @@
     background-size: 100%;
     background-repeat: no-repeat;
 		overflow: hidden;
-    ox-shadow: 0 0 0 2px lime inset;
   }
   .drop{
-    position: absolute;
-		width: 20px;
-		height: 20px;
-    background: var(--bg);
-    transform: rotate(calc(-1deg*var(--deg)));
 
-    &:nth-child(-n+1111) {
-      margin-top: calc(100px*tan(0.0001*var(--t) + 10*sin(var(--seed))));
-      ox-shadow: 0 0 0 1px lime;
+    --dripOffset: calc(100px*tan(0.00005*var(--t) + 10*sin(var(--seed))));
+
+    position: absolute;
+		width: var(--w);
+		height: var(--h);
+    margin-top: var(--dripOffset);
+
+    &:after{
+      content: '';
+      position: absolute;
+      display: block;
+      width: 100%;
+      height: 100%;
+      background: var(--bg);
+      transform: rotate(calc(-1deg*var(--deg)));
+      border-radius: var(--borderRadius);
     }
 
-    &:nth-child(965) {
-      box-shadow: 0 0 0 1px lime;
-      &:before {
-        content: '';
-        display: block;
-        z-index: -1;
-        width: 100%;
-        height: 100px;
-        opacity: 0.5;
-        background: inherit;
-        border-radius: inherit;
-        transform: rotate(calc(1deg*var(--deg) + 0.01deg*var(--t)));
-        transform-origin: 50% 0%;
-        position: absolute;
-        left: 0;
-        top: 0;
-        box-shadow: inherit;
-      }
+    &:before {
+      content: '';
+      display: block;
+      width: 90%;
+      height: 100px;
+      height: calc(abs(0.125 * var(--dripOffset)));
+      position: absolute;
+      left: 10%;
+      bottom: calc(0.5 * var(--h));
+      background:
+        radial-gradient(circle at bottom center, var(--color-ground), transparent calc(0.7*var(--w))),
+        radial-gradient(ellipse at bottom left, var(--color-ground-a), transparent 70%),
+        radial-gradient(ellipse at bottom right, var(--color-sky-aa), transparent 70%)
+      ;
+      border-radius: var(--borderRadius);
     }
   }
 </style>
@@ -116,7 +112,7 @@
   const multiplier = 1664525
   const increment = 1013904223
   const modulus = 4294967296
-  let seed = Math.random()*modulus<<0
+  let seed = (Math.random()*multiplier)<<0
   function random(_seed){
     return seed = ( (_seed||seed) * multiplier + increment ) % modulus
   }
@@ -160,13 +156,13 @@
             + hh*yy 
             + (wh-size/2)*(rand()-0.5) 
             + (xx%2*wh/2)
-            + 'px',
-        width:  (size+0.3*rand()) + 'px',
-        height: (size+0.3*rand()) + 'px',
-        borderRadius: [0,0,0,0].map(()=>(40+50*rand()<<0) + 'px').join(' ')
+            + 'px'
       })
+      style.setProperty('--w', (size+0.3*rand()) + 'px')
+      style.setProperty('--h', (size+0.3*rand()) + 'px')
       style.setProperty('--deg', deg)
       style.setProperty('--seed', seed)
+      style.setProperty('--borderRadius', [0,0,0,0].map(()=>(40+50*rand()<<0) + 'px').join(' '))
     })
   }
   
