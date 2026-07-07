@@ -120,20 +120,18 @@
     return random(_seed)/modulus
   }
 
-  const num = 260
   const {body} = document
 
   const glass = document.querySelector('.glass')
-  Array.from(new Array(num)).forEach((o,i)=>{
-    const drop = document.createElement('div')
-    drop.classList.add('drop')
-    glass.appendChild(drop)
-  })
+  
   reset()
   resetColor()
 
   function reset(){ 
     const {clientWidth:w,clientHeight:h} = document.documentElement
+
+    const num = w*h/1400<<0
+    fillElement(glass, num, 'drop')
 
     const wh = Math.ceil(Math.sqrt((w*h)/num))
     const ww = Math.ceil(w/wh)
@@ -182,6 +180,20 @@
   glass.addEventListener('click',resetColor)
 
   new ResizeObserver(reset).observe(glass)
-
+  
+  function fillElement(elm,numTarget,className){
+    const numCurrent = elm.children.length
+    if (numCurrent>numTarget) {
+      while (elm.children.length>numTarget) elm.firstChild.remove()
+    } else if (numCurrent<numTarget) {
+      const fragment = document.createDocumentFragment()
+      Array.from(new Array(numTarget-numCurrent)).forEach(()=>{
+        const child = document.createElement('div')
+        child.classList.add(className)
+        fragment.appendChild(child)
+      })
+      elm.appendChild(fragment)
+    }
+  }
 </script>
 </body>
