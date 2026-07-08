@@ -11,9 +11,7 @@
     --color-sky: #88A5DA;
     --color-sun: #FF08;
     --deg: 180;
-    --min: 1;
-    --origin: 0;
-    --duration: 1ms;
+    --degSun: 0;
     --bg: transparent;
     --pi: 3.14159;
   }
@@ -25,11 +23,10 @@
     margin: 0;
     padding: 0;
   }
-  body {
-		verflow: hidden;
-  }
   .glass, .drop {
     --rad: calc(var(--deg) * var(--pi) / 180);
+    --rad: calc((var(--deg) + var(--degSun)) * var(--pi) / 180);
+
     --p1-rad: calc(var(--rad) + 0.00005*var(--t) + 0*var(--pi));
     --p1-d: 50%;
     --p1-x: calc(50% + var(--p1-d) * cos(var(--p1-rad)));
@@ -71,7 +68,7 @@
   }
   .drop{
 
-    --dripOffset: calc(100px*tan(0.00005*var(--t) + 10*sin(var(--seed))));
+    --dripOffset: calc(10px*tan(0.00001*var(--t) + 100*sin(0.01*var(--seed))));
 
     position: absolute;
 		width: var(--w);
@@ -94,7 +91,7 @@
       display: block;
       width: 90%;
       height: 100px;
-      height: calc(abs(0.125 * var(--dripOffset)));
+      height: calc(abs(0.25 * var(--dripOffset)));
       position: absolute;
       left: 10%;
       bottom: calc(0.5 * var(--h));
@@ -165,9 +162,9 @@
   }
   
   function resetColor(){
-    body.style.setProperty('--color-ground', `hsl(${rand()*360} ${rand()*100<<0}% ${rand()*10<<0}%)`)
-    body.style.setProperty('--color-sky', `hsl(${rand()*360} ${rand()*100<<0}% ${50+rand()*50<<0}%)`)
-    body.style.setProperty('--color-sun', `hsl(${rand()*360} ${rand()*100<<0}% ${80+rand()*20<<0}%)`)
+    body.style.setProperty('--color-ground', `hsl(${rand()*360} ${rand()*100<<0}% ${10+rand()*10<<0}%)`)
+    body.style.setProperty('--color-sky', `hsl(${rand()*360} ${20+rand()*70<<0}% ${50+rand()*40<<0}%)`)
+    body.style.setProperty('--color-sun', `hsl(${rand()*360} ${20+rand()*80<<0}% ${80+rand()*20<<0}%)`)
   }
   
   const startT = Date.now()
@@ -177,7 +174,10 @@
   }
   animate()
 
-  glass.addEventListener('click',resetColor)
+  glass.addEventListener('click',()=>{
+    resetColor()
+    body.style.setProperty('--degSun', rand()*360<<0)
+  })
 
   new ResizeObserver(reset).observe(glass)
   
