@@ -6,6 +6,12 @@
 <body>
 <div class="glass"></div>
 <style>
+  @property --t {
+    syntax: "<number>";
+    initial-value: 0;
+    inherits: true;
+  }
+
   :root{
     --color-ground: #141109;
     --color-sky: #88A5DA;
@@ -14,7 +20,18 @@
     --degSun: 0;
     --bg: transparent;
     --pi: 3.14159;
+    --t: 0;
   }
+
+  @keyframes tick {
+    from { --t: 0; }
+    to { --t: 2147483647; }
+  }
+
+  html {
+    animation: tick 1000000s linear infinite;
+  }
+
   html, body {
     width: 100%;
     height: 100%;
@@ -24,10 +41,9 @@
     padding: 0;
   }
   .glass, .drop {
-    --rad: calc(var(--deg) * var(--pi) / 180);
     --rad: calc((var(--deg) + var(--degSun)) * var(--pi) / 180);
 
-    --p1-rad: calc(var(--rad) + 0.00005*var(--t) + 0*var(--pi));
+    --p1-rad: calc(var(--rad) + 0.00005*var(--t));
     --p1-d: 50%;
     --p1-x: calc(50% + var(--p1-d) * cos(var(--p1-rad)));
     --p1-y: calc(50% + var(--p1-d) * sin(var(--p1-rad)));
@@ -37,7 +53,7 @@
       var(--color-sky)
     ;
 
-    --ps-rad: calc(var(--rad) + 0.5*var(--pi));
+    --ps-rad: calc((var(--deg) + 90) * var(--pi) / 180);
     --ps-d: 1px;
     --ps-x: calc(var(--ps-d) * cos(var(--ps-rad)));
     --ps-y: calc(var(--ps-d) * sin(var(--ps-rad)));
@@ -68,7 +84,7 @@
   }
   .drop{
 
-    --dripOffset: calc(10px*tan(0.00001*var(--t) + 100*sin(0.01*var(--seed))));
+    --dripOffset: calc(10px*tan(0.00001*var(--t) + var(--seed)/var(--mod)*var(--pi)));
 
     position: absolute;
 		width: var(--w);
@@ -90,7 +106,6 @@
       content: '';
       display: block;
       width: 90%;
-      height: 100px;
       height: calc(abs(0.25 * var(--dripOffset)));
       position: absolute;
       left: 10%;
@@ -118,6 +133,8 @@
   }
 
   const {body} = document
+
+  body.style.setProperty('--mod', modulus)
 
   const glass = document.querySelector('.glass')
   
@@ -167,13 +184,6 @@
     body.style.setProperty('--color-sun', `hsl(${rand()*360} ${20+rand()*80<<0}% ${80+rand()*20<<0}%)`)
   }
   
-  const startT = Date.now()
-  function animate(){
-    body.style.setProperty('--t', Date.now()-startT)
-    requestAnimationFrame(animate)
-  }
-  animate()
-
   glass.addEventListener('click',()=>{
     resetColor()
     body.style.setProperty('--degSun', rand()*360<<0)
