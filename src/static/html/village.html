@@ -1,56 +1,3 @@
-<!doctype html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <script>
- 
-    const isMobile = window.matchMedia('(max-device-width: 600px)').matches
-    const isLocalhost = window.location.hostname==='localhost'
-
-    const inited = ()=>document.body.dispatchEvent(new CustomEvent('inited'))
-
-    isMobile
-      &&isLocalhost
-      &&!window.eruda
-      &&document.addEventListener('DOMContentLoaded',()=>{
-        const script = loadScript('//cdn.jsdelivr.net/npm/eruda')
-        script.addEventListener('load',()=>{
-          eruda.init()
-          console.log('r1')
-          inited()
-        })
-      })
-      ||inited()
-    
-    /*
-    ;(async function foo(){
-      await (new Promise(resolve=>{
-        const isMobile = window.matchMedia('(max-device-width: 600px)').matches
-        const isLocalhost = window.location.hostname==='localhost'
-        if (isMobile&&isLocalhost) {
-          const script = loadScript('//cdn.jsdelivr.net/npm/eruda')
-          script.onload = function(){
-            eruda.init()
-            resolve()
-            console.log('r1')
-          }
-        } else {
-          resolve()
-          console.log('r2')
-        }
-      }))
-    })()
-    */
-
-    function loadScript(src){
-      const script = document.createElement('script')
-      script.src = src
-      document.body.appendChild(script)
-      return script
-    }
-
-  </script>
-</head>
 <body>
   <div class="ground"></div>
   <div class="map"></div>
@@ -275,12 +222,9 @@ const xmlns = 'http://www.w3.org/2000/svg'
 
 const lines = []
 
-document.body.addEventListener('inited',async ()=>{
-  reset()
-  initUI()
-  new ResizeObserver(reset).observe(body)
-})
-
+reset()
+initUI()
+new ResizeObserver(reset).observe(body)
 
 function reset(){
   w = body.clientWidth
