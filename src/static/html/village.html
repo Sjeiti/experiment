@@ -2,20 +2,6 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    html, body {
-      width: 100%;
-      height: 100%;
-      max-width: 100vw;
-      max-height: 100vh;
-      margin: 0;
-      padding: 0;
-    }
-    body {
-      overflow: hidden;
-      background-color: #333;
-    }
-  </style>
   <script>
  
     const isMobile = window.matchMedia('(max-device-width: 600px)').matches
@@ -66,6 +52,7 @@
   </script>
 </head>
 <body>
+  <div class="ground"></div>
   <div class="map"></div>
   <svg></svg>
   <form></form>
@@ -85,6 +72,7 @@
   --color: #F04;
   --color-ground: #939B8B;
   --color-ground: #64694E;
+  --color-ground: #48503f;
   --color-roof: #D0742B;
   --color-wall: #CBCB90;
   --color-dark: #FA0044;
@@ -103,27 +91,54 @@ html,body{
   margin:0;
   padding:0;
 }
-body {
+.ground {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
   background-color: var(--color-ground);
+  height: calc(100vh + 1px);
+  &:before,&:after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+  &:before {
+    background: var(--noise);
+    mix-blend-mode: multiply;
+    opacity: 0.4;
+  }
+  &:after {
+    background: var(--hills);
+    mix-blend-mode: screen;
+    opacity: 0.2;
+  }
 }
 svg {
   position: absolute;
   left: 0;
   top: 0;
-}
-svg, path {
-  fill: transparent;
-  stoke: #777;  
-  stoke-width: 4;  
+  z-index: 2;
+  path {
+    stroke-width: 4px;
+    fill: transparent;
+    stroke: #432a;
+    box-shadow:  0 0 0 1px red;
+  }
+  circle {
+    fill: red;
+    fill: transparent;
+  }
 }
 form {
+  display: none;
   position: absolute;
   left: 0;
   bottom: 0;
   z-index: 10;
   width: 100%;
   padding: 1rem;
-  input { width: 100%; }
+  input { width: calc(100% - 2rem); }
+  label { display: block; }
 }
 .map {
   position: relative;
@@ -132,7 +147,6 @@ form {
   z-index: 3;
   overflow: hidden;
   transition: all 300ms ease;
-  
   .house, .tree {
     --degHouse: calc(var(--deg) + var(--addRotation));
     --radians: calc((var(--degHouse))/-180*pi);
@@ -190,26 +204,57 @@ form {
       );
     }
     &.tree {
-      --color-tree: #861;
+      z-index: 6;
       --pcRds: 0;
       border-radius: 50%;
-      ransform: initial;
-      --pcX: calc( -40% * sin(var(--lightRadians)));
-      --pcY: calc(40% * cos(var(--lightRadians)));
+      transform: initial;
+      overflow: hidden;
+      --pc: 40%;
+      --pcX: calc( var(--pc) * cos(var(--lightRadians)));
+      --pcY: calc( var(--pc) * sin(var(--lightRadians)));
       background: radial-gradient(
         circle at calc(50% + var(--pcX)) calc(50% + var(--pcY)), 
-        #861, 
-        #431 100%
+        #872, 
+        #432 100%
       );
-      &:before { content: initial; }
+      --em: calc(-0.6em * var(--w));
+      --emX: calc( var(--em) * cos(var(--lightRadians)));
+      --emY: calc( var(--em) * sin(var(--lightRadians)));
+      box-shadow: 
+        var(--emX) var(--emY) 0.5em #0002,
+        calc(0.5*var(--emX)) calc(0.5*var(--emY)) 0.25em #0002,
+        calc(0.25*var(--emX)) calc(0.25*var(--emY)) 0.125em #0002
+      ;
+      &:before {
+        inset: 0;
+        height: initial;
+        background: var(--noise);
+        background-repeat: repeat;
+        mix-blend-mode: lighten;
+        opacity: 0.2;
+      }
     }
   }
 }
 </style>
 <script>
+const multiplier = 1664525
+const increment = 1013904223
+const modulus = 4294967296
+//let seed = 217197374//(Math.random()*multiplier)<<0
+let seed = (Math.random()*multiplier)<<0
+function random(_seed){
+  return seed = ( (_seed||seed) * multiplier + increment ) % modulus
+}
+function rand(_seed){
+  return random(_seed)/modulus
+}
 
-const {sin,cos,PI,random,sqrt,abs} = Math
-const {clientHeight:h,clientWidth:w} = document.body
+const {body} = document
+const {style} = body
+
+const {sin,cos,PI,sqrt,abs} = Math
+let {clientHeight:h,clientWidth:w} = body
 
 const name = 'map'
 
@@ -226,45 +271,37 @@ const blueprint = div.querySelector('.house')
 div.innerHTML = `<div class="tree"></div>`
 const blueprintTree = div.querySelector('.tree')
 
-let color
-let colorWhite
-  
 const xmlns = 'http://www.w3.org/2000/svg'
 
 const lines = []
 
 document.body.addEventListener('inited',async ()=>{
-  color = (await import('../../math/color.js')).default
-  colorWhite = color(255,255,255)
-
   reset()
-  
   initUI()
+  new ResizeObserver(reset).observe(body)
 })
 
 
 function reset(){
-  main.style.fontSize = Math.sqrt(w*h*4E-5) + 'px'
+  w = body.clientWidth
+  h = body.clientHeight
+
+  main.style.fontSize = sqrt(w*h*4E-5) + 'px'
   empty(main,svg)
 
   drawGround()
   drawRoads()
   drawTrees()
   drawHouses()
+  drawNoise()
 }
  
 function drawGround(){
-  const [sheet] = document.styleSheets
-  console.log('sheet',sheet)
-  sheet.insertRule(`body{
-    background:
-      ${a(9).map((o,i)=>`radial-gradient(circle
-          at ${50+r(100)<<0}% ${50+r(100)<<0}%,
-          ${i%2&&'#fff2'||'#0002'},
-          transparent ${40+r(20)<<0}%)
-      `).join(',')}
-    ;
-  }`)
+  style.setProperty('--hills',a(9).map((o,i)=>`radial-gradient(circle
+        at ${50+r(100)<<0}% ${50+r(100)<<0}%,
+        ${i%2&&'#fff'||'#000'},
+        transparent ${40+r(20)<<0}%)
+    `).join(','))
 }
 
 function drawRoads(){
@@ -276,9 +313,6 @@ function drawRoads(){
   svg.setAttributeNS(null, 'height', h)
 
   const path = document.createElementNS(xmlns, 'path')
-  path.style.fill = 'transparent'
-  path.style.stroke = '#0003'
-  path.style.strokeWidth = '3'
   svg.appendChild(path)
 
   const vs = normalized([r(),r()])
@@ -293,7 +327,6 @@ function drawRoads(){
       acc.push(points[points.length-1].join())
       return acc
     },[]).includes(p1.join())
-    //const p1 = points[1 + (random()*(points.length-2)<<0)]
     const n1 = points.indexOf(p1)
     const n2 = n1===0?1:n1-1
     const p2 = points[n2]
@@ -309,12 +342,12 @@ function drawTrees(){
   a(222).map((a,b,c,d,x,y,deg)=>{
     const tree = blueprintTree.cloneNode(true)
     const {style} = tree
-    style.setProperty('--deg',deg||Math.random()*360)
-    const size = 3+Math.random()*3
+    style.setProperty('--deg',deg||rand()*360)
+    const size = 3+rand()*3
     style.setProperty('--w',size)
     style.setProperty('--h',size)
-    style.setProperty('--x',Math.random()*w)
-    style.setProperty('--y',Math.random()*h)
+    style.setProperty('--x',rand()*w)
+    style.setProperty('--y',rand()*h)
     main.appendChild(tree)
   })
 }
@@ -331,24 +364,31 @@ function drawHouses(){
   })
 }
 
+function drawNoise(){
+  style.setProperty('--noise', `url(${makeNoiseDataURL()})`)
+}
+
 function initUI(){
-  addInput('button',e=>{
+  addInput('button',null,e=>{
     reset()
   },{value:'reset'})
-  addInput('range',e=>
+  addInput('range','light',e=>
     setCSSProp('lightRadians', 0.1*e.target.valueAsNumber)
   )
-  addInput('range',e=>
+  addInput('range','rotation',e=>
     setCSSProp('addRotation', 2*3.6*e.target.valueAsNumber)
   )
-  addInput('range',e=>
+  addInput('range','distance',e=>
     setCSSProp('lightDist', 0.05*e.target.valueAsNumber)
   )
+  body.addEventListener('dblclick', (event) => {
+    form.style.display = form.style.display==='block'?'none':'block'
+  })
 }
 
 function getD(x,y,_v){
   helperPoint(x,y) 
-  let v = _v||normalized([random(),random()])
+  let v = _v||normalized([rand(),rand()])
   let d = `M ${x} ${y} `
   const dist = 44
   const points = []
@@ -407,11 +447,11 @@ function getAway(point,minDist){
 function getRandom(from,edge){
   const {length} = from
   if (edge) {
-    const nr = (random()*random()*random()*length)<<0
+    const nr = (rand()*rand()*rand()*length)<<0
     const end = r()<0?nr:length-nr-1
     return from[end]
   }
-  return from[random()*length<<0]
+  return from[rand()*length<<0]
 }
 
 function addHouses(x1,y1,x2,y2){
@@ -420,8 +460,8 @@ function addHouses(x1,y1,x2,y2){
     const d = distance(v) // Math.sqrt(v[0]*v[0] + v[1]*v[1])
     const n = normalized(v)
     const part = [
-      x1 + random()*d*n[0],
-      y1 + random()*d*n[1]
+      x1 + rand()*d*n[0],
+      y1 + rand()*d*n[1]
     ]
     const side = r()<0&&1||-1
     const s = perpendicular(n)
@@ -436,11 +476,11 @@ function addHouses(x1,y1,x2,y2){
 function addHouse(x,y,deg){
   const house = blueprint.cloneNode(true)
   const {style} = house
-  style.setProperty('--deg',deg||Math.random()*360)
-  style.setProperty('--w',2+Math.random()*3)
-  style.setProperty('--h',2+Math.random()*3)
-  style.setProperty('--x',x||Math.random()*100)
-  style.setProperty('--y',y||Math.random()*100)
+  style.setProperty('--deg',deg||rand()*360)
+  style.setProperty('--w',2+rand()*3)
+  style.setProperty('--h',2+rand()*3)
+  style.setProperty('--x',x||rand()*100)
+  style.setProperty('--y',y||rand()*100)
   main.appendChild(house)
 }
 
@@ -449,7 +489,7 @@ function a(n){
 }
 
 function r(n=1){
-  return n*(Math.random()-0.5)
+  return n*(rand()-0.5)
 }
 
 function normalized(v){
@@ -481,7 +521,6 @@ function helperPoint(x,y){
   circle.setAttributeNS(null, 'cx', x)
   circle.setAttributeNS(null, 'cy', y)
   circle.setAttributeNS(null, 'r', 3)
-  circle.style.fill = '#f004'
   svg.appendChild(circle)
 }
 
@@ -495,17 +534,41 @@ function handleAnimate(){
 }
 handleAnimate()
 
-function addInput(type,fn,props){
+function addInput(type,labelText,fn,props){ 
+  const label = document.createElement('label')
+  labelText && label.appendChild(document.createTextNode(labelText))
   const input = document.createElement('input')
   input.type = type
   props&&Object.entries(props).forEach(([k,v])=>input[k]=v)
   input.addEventListener({button:'click'}[type]||'input',fn)
-  form.appendChild(input)
+  label.appendChild(input)
+  form.appendChild(label)
 }
 
 function setCSSProp(name, value){
   mainStyle.setProperty(`--${name}`, value)
 }
+
+
+function makeNoiseDataURL(size = 128, fn, seed) {
+  const canvas = document.createElement('canvas')
+  canvas.width = size
+  canvas.height = size
+  const ctx = canvas.getContext('2d')
+  const imgData = ctx.createImageData(size, size)
+  const data = imgData.data
+
+  for (let i = 0; i < data.length; i += 4) {
+    data[i] =
+      data[i + 1] =
+      data[i + 2] = (fn?fn(rand()):rand()) * 255
+    data[i + 3] = 255
+  }
+
+  ctx.putImageData(imgData, 0, 0)
+  return canvas.toDataURL('image/png')
+}
+
 </script>
 </body>
 
