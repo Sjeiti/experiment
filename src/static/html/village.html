@@ -4,16 +4,29 @@
   <svg></svg>
   <form></form>
 <style>
+@property --t {
+  syntax: "<number>";
+  initial-value: 0;
+  inherits: true;
+}
+
+@keyframes tick {
+  from { --t: 0; }
+  to { --t: 2147483647; }
+}
+
 :root {
   --deg: 0;
   --radians: 0;
   --lightRadians: -1.1;
+  --lightRadiansT: -1.1;
   --w: 40;
   --h: 40;
   --sin: 1;
-  --t: 1;
   --addRotation: 0;
   --lightDist: 4;
+  --pi: 3.14159;
+  --t: 0;
 
   --size: 1em;
   --color: #F04;
@@ -24,9 +37,9 @@
   --color-wall: #CBCB90;
   --color-dark: #FA0044;
   --color-light: #F2B;
-  
 }
 html {
+  animation: tick 1000000s linear infinite;
   box-sizing: border-box;
 }
 *, *:before, *:after {
@@ -37,6 +50,9 @@ html,body{
   height: 100%;
   margin:0;
   padding:0;
+}
+body{
+  --lightRadiansT: calc(var(--lightRadians) + 0.0002*var(--t));
 }
 .ground {
   position: absolute;
@@ -70,6 +86,14 @@ svg {
     fill: transparent;
     stroke: #432a;
     box-shadow:  0 0 0 1px red;
+    &:first-of-type {
+      --radians: calc((var(--addRotation))/-180*pi);
+      --rdns: calc(var(--radians) + var(--lightRadiansT));
+      --emX: calc(cos(var(--rdns))*-0.2em);
+      --emY: calc(sin(var(--rdns))*-0.2em);
+      stroke: #fff2;
+      transform: translate(var(--emX),var(--emY));
+    }
   }
   circle {
     fill: red;
@@ -97,7 +121,7 @@ form {
   .house, .tree {
     --degHouse: calc(var(--deg) + var(--addRotation));
     --radians: calc((var(--degHouse))/-180*pi);
-    --rdns: calc(var(--radians) + var(--lightRadians));
+    --rdns: calc(var(--radians) + var(--lightRadiansT));
     ---rdns: calc(var(--radians));
     --emX: calc(cos(var(--rdns))*-1em);
     --emY: calc(sin(var(--rdns))*-1em);
@@ -123,7 +147,7 @@ form {
     ;
 
     background: var(--color-roof) conic-gradient(
-      from calc(-1deg*var(--degHouse) + var(--lightRadians)/PI*180deg + 90deg)
+      from calc(-1deg*var(--degHouse) + var(--lightRadiansT)/PI*180deg + 90deg)
       at calc(50% + var(--pcX)) calc(50% + var(--pcY)),
       #fff4 0deg,
       #8880 90deg,
@@ -141,7 +165,7 @@ form {
       top: 50%;
 
       background: var(--color-roof) conic-gradient(
-        from calc(-1deg*var(--degHouse) + var(--lightRadians)/PI*180deg + 90deg + 180deg)
+        from calc(-1deg*var(--degHouse) + var(--lightRadiansT)/PI*180deg + 90deg + 180deg)
         at calc(50% + var(--pcX)) calc(50% + var(--pcY)),
         #fff4 0deg,
         #8880 90deg,
@@ -157,16 +181,16 @@ form {
       transform: initial;
       overflow: hidden;
       --pc: 40%;
-      --pcX: calc( var(--pc) * cos(var(--lightRadians)));
-      --pcY: calc( var(--pc) * sin(var(--lightRadians)));
+      --pcX: calc( var(--pc) * cos(var(--lightRadiansT)));
+      --pcY: calc( var(--pc) * sin(var(--lightRadiansT)));
       background: radial-gradient(
         circle at calc(50% + var(--pcX)) calc(50% + var(--pcY)), 
         #872, 
         #432 100%
       );
       --em: calc(-0.6em * var(--w));
-      --emX: calc( var(--em) * cos(var(--lightRadians)));
-      --emY: calc( var(--em) * sin(var(--lightRadians)));
+      --emX: calc( var(--em) * cos(var(--lightRadiansT)));
+      --emY: calc( var(--em) * sin(var(--lightRadiansT)));
       box-shadow: 
         var(--emX) var(--emY) 0.5em #0002,
         calc(0.5*var(--emX)) calc(0.5*var(--emY)) 0.25em #0002,
@@ -259,6 +283,9 @@ function drawRoads(){
   const path = document.createElementNS(xmlns, 'path')
   svg.appendChild(path)
 
+  const path1 = document.createElementNS(xmlns, 'path')
+  svg.appendChild(path1)
+
   const vs = normalized([r(),r()])
   const d0 = getD(w/2,h/2,vs)
   const d1 = getD(w/2,h/2,vs.map(n=>-n))
@@ -280,6 +307,7 @@ function drawRoads(){
   })].join('')
 
   path.setAttributeNS(null, 'd', ds)
+  path1.setAttributeNS(null, 'd', ds)
 }
 
 function drawTrees(){
@@ -378,13 +406,11 @@ function getAway(point,minDist){
       const d = distance([vpx,vpy])
       if (d>minDist){
         const f = 1/(d*d)
-        //console.log('f',f,vpx,vpy,p)
         vx = vx + f*vpx
         vy = vy + f*vpy
       }
     })
   })
-  //console.log('away',vx,vy)
   return [vx,vy]
 }
 
@@ -468,16 +494,6 @@ function helperPoint(x,y){
   svg.appendChild(circle)
 }
 
-let start
-function handleAnimate(){
-  const millis = Date.now()
-  start||(start=millis)
-  const elapsed = millis-start
-  setCSSProp('t', elapsed)
-  requestAnimationFrame(handleAnimate)
-}
-handleAnimate()
-
 function addInput(type,labelText,fn,props){ 
   const label = document.createElement('label')
   labelText && label.appendChild(document.createTextNode(labelText))
@@ -492,7 +508,6 @@ function addInput(type,labelText,fn,props){
 function setCSSProp(name, value){
   mainStyle.setProperty(`--${name}`, value)
 }
-
 
 function makeNoiseDataURL(size = 128, fn, seed) {
   const canvas = document.createElement('canvas')
