@@ -38,3 +38,5 @@ export * from './hypno' // broken in Firefox because of globalCompositeOperation
 export * from './noiseballs'
 export * from './flowfield'
 export * from './lines'
+export * from './mosquitos'
+
