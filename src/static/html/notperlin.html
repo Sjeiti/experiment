@@ -1,0 +1,226 @@
+<!doctype html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <form></form>
+
+<style>
+@property --t {
+  syntax: "<number>";
+  initial-value: 0;
+  inherits: true;
+}
+
+@keyframes tick {
+  from { --t: 0; }
+  to { --t: 2147483647; }
+}
+
+:root {
+  --deg: 0;
+  --t: 0;
+  --speed: 0.001;
+}
+html {
+  animation: tick 1000000s linear infinite;
+  box-sizing: border-box;
+  font-size: 16px;
+}
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+html,body{
+  width: 100%;
+  height: 100%;
+  margin:0;
+  padding:0;
+}
+body{
+  position: relative;
+  background-color: #f04;
+}
+.noise{
+  position: absolute;
+  background:var(--noise);
+  background-repeat: repeat;
+  inset:0;
+  mix-blend-mode: screen;
+  mix-blend-mode: multiply;
+}
+form{
+  display: none;
+  position: absolute;
+  left:0;
+  bottom:10vh;
+  z-index:10;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  label {
+    display: flex;
+    width: 100%;
+    margin: 0;
+    padding: 1rem 0;
+    color: #fff;
+    .label { 
+      flex: 1 1 5vw;
+      text-align: right;
+    }
+    input { flex: 1 1 auto; }
+    .value { flex: 1 1 1rem; }
+  }
+}
+</style>
+<script>
+const multiplier = 1664525
+const increment = 1013904223
+const modulus = 4294967296
+//let seed = 217197374//(Math.random()*multiplier)<<0
+let seed = (Math.random()*multiplier)<<0
+function random(_seed){
+  return seed = ( (_seed||seed) * multiplier + increment ) % modulus
+}
+function rand(_seed){
+  return random(_seed)/modulus
+}
+  
+const {body} = document
+const {style} = body
+
+let {clientHeight:h,clientWidth:w} = body
+
+style.setProperty('--noise', `url(${makeNoiseDataURL()})`)
+
+const a = [
+  [0,1],
+  [1,1],
+  [1,0],
+  [1,-1],
+  [0,-1],
+  [-1,-1],
+  [-1,0],
+  [-1,1]
+]
+
+const rndpx = ()=>(1E4*rand()<<0)+'px'
+
+const divs = []
+
+const form = body.querySelector('form')
+
+const inputOctaves = addİnput(form,({target:{value}})=>{
+  reset(value)
+},{min:1,max:12,value:8},'octaves')
+
+addİnput(form,({target:{value}})=>{
+  setCSSProp(body,'speed',value)
+},{value:20},'speed')
+
+const inputSpread = addİnput(form,({target:{value}})=>{
+  const f = value/100
+  const l = divs.length
+  const center = (l-1)/(2*l)
+  const scale  = (2*l)/(l-1)
+  divs.forEach((div,i)=>{
+    const n = i/l
+    //div.style.opacity = 2*(1/l)*(2*f)*(2*n)
+    div.style.opacity = 2 * (1 + (2 * f - 1) * scale * (n - center)) / l
+  })
+},{value:30},'spread')
+
+let sizeLinear = false
+addİnput(form,({target:{checked}})=>{
+  sizeLinear = checked
+},{type:'checkbox',value:''},'linear')
+
+addİnput(form,({target:{value}})=>{
+  style.setProperty('--noise', `url(${makeNoiseDataURL()})`)
+},{type:'button',value:'noise'},'')
+
+inputOctaves.addEventListener('change',
+  ()=>inputSpread.dispatchEvent(
+    new CustomEvent('input')
+  )
+)
+
+body.addEventListener('dblclick', (event) => {
+  form.style.display = form.style.display==='block'?'none':'block'
+})
+
+function reset(octaves=8){
+  divs.forEach(div=>div.remove())
+  divs.length = 0
+  for(let i=0;i<octaves;i++){
+    /*const size = sizeLinear
+      ?i+1
+      :Math.pow(2,i)*/
+    const size = Math.pow(2,i)
+    const aa = a.slice(0)
+    aa.sort(()=>rand()<0.5?1:-1)
+    aa.push(...aa)
+    const [x,y] = aa[i].map(n=>(n*size).toString().replace('-',' -'))
+    const div = document.createElement('div')
+    div.classList.add('noise')
+    Object.assign(div.style,{
+      backgroundSize: 100*size+ '%',
+      //opacity: (1-((i+1)/(num+1)))**2.5,
+      //opacity: 0.1 + 0.5*(1-((i+1)/(num+1))),
+      //opacity: 0.1,
+      //opacity: 0.1 + 0.5*(1-((i+1)/(num+1))),
+      //opacity: 0.1 + i/num*0.5,
+      backgroundPosition: `calc(${rndpx()} + ${x} * 1px * var(--speed) * var(--t)) calc(${rndpx()} + ${y} * 1px * var(--speed) * var(--t))`
+    })
+    body.appendChild(div)
+    divs.push(div)
+  }
+}
+
+function addİnput(parent,fn,attrs,name){
+  attrs = Object.assign({type:'range'},attrs||{})
+  const isButton = attrs.type==='button'
+  const label = document.createElement('label')
+  const span = document.createElement('span')
+  span.classList.add('label')
+  span.appendChild(document.createTextNode(name))
+  const value = document.createElement('span')
+  value.classList.add('value')
+  value.textContent = isButton?'':attrs.value||0
+  const input = document.createElement('input')
+  Object.assign(input,attrs)
+  fn({target:input})
+  input.addEventListener('input',({target:{value:v}})=>value.textContent=v)
+  input.addEventListener(isButton?'click':'input',fn)
+  label.appendChild(span)
+  label.appendChild(input)
+  label.appendChild(value)
+  parent.appendChild(label)
+  return input
+}
+
+function setCSSProp(elm, name, value){
+  elm.style.setProperty(`--${name}`, 0.0001*value)
+}
+
+function makeNoiseDataURL(size = 128, fn, seed) {
+  const canvas = document.createElement('canvas')
+  canvas.width = size
+  canvas.height = size
+  const ctx = canvas.getContext('2d')
+  const imgData = ctx.createImageData(size, size)
+  const data = imgData.data
+
+  for (let i = 0; i < data.length; i += 4) {
+    data[i] =
+      data[i + 1] =
+      data[i + 2] = (fn?fn(rand()):rand()) * 255
+    data[i + 3] = 255
+  }
+
+  ctx.putImageData(imgData, 0, 0)
+  return canvas.toDataURL('image/png')
+}
+</script>
+</body>
+
