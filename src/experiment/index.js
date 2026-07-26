@@ -39,4 +39,5 @@ export * from './noiseballs'
 export * from './flowfield'
 export * from './lines'
 export * from './mosquitos'
+export * from './notperlin'
 

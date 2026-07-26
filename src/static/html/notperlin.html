@@ -104,6 +104,8 @@ const a = [
   [-1,1]
 ]
 
+let sizeLinear = false
+
 const rndpx = ()=>(1E4*rand()<<0)+'px'
 
 const divs = []
@@ -116,7 +118,7 @@ const inputOctaves = addİnput(form,({target:{value}})=>{
 
 addİnput(form,({target:{value}})=>{
   setCSSProp(body,'speed',value)
-},{value:20},'speed')
+},{value:10},'speed')
 
 const inputSpread = addİnput(form,({target:{value}})=>{
   const f = value/100
@@ -125,12 +127,10 @@ const inputSpread = addİnput(form,({target:{value}})=>{
   const scale  = (2*l)/(l-1)
   divs.forEach((div,i)=>{
     const n = i/l
-    //div.style.opacity = 2*(1/l)*(2*f)*(2*n)
-    div.style.opacity = 2 * (1 + (2 * f - 1) * scale * (n - center)) / l
+    div.style.opacity = 2*(1+(2*f-1)*scale*(n-center))/l
   })
-},{value:30},'spread')
+},{value:60},'spread')
 
-let sizeLinear = false
 addİnput(form,({target:{checked}})=>{
   sizeLinear = checked
 },{type:'checkbox',value:''},'linear')
@@ -140,9 +140,7 @@ addİnput(form,({target:{value}})=>{
 },{type:'button',value:'noise'},'')
 
 inputOctaves.addEventListener('change',
-  ()=>inputSpread.dispatchEvent(
-    new CustomEvent('input')
-  )
+  ()=>inputSpread.dispatchEvent(new CustomEvent('input'))
 )
 
 body.addEventListener('dblclick', (event) => {
@@ -153,10 +151,9 @@ function reset(octaves=8){
   divs.forEach(div=>div.remove())
   divs.length = 0
   for(let i=0;i<octaves;i++){
-    /*const size = sizeLinear
+    const size = sizeLinear
       ?i+1
-      :Math.pow(2,i)*/
-    const size = Math.pow(2,i)
+      :Math.pow(2,i);
     const aa = a.slice(0)
     aa.sort(()=>rand()<0.5?1:-1)
     aa.push(...aa)
@@ -165,11 +162,7 @@ function reset(octaves=8){
     div.classList.add('noise')
     Object.assign(div.style,{
       backgroundSize: 100*size+ '%',
-      //opacity: (1-((i+1)/(num+1)))**2.5,
-      //opacity: 0.1 + 0.5*(1-((i+1)/(num+1))),
-      //opacity: 0.1,
-      //opacity: 0.1 + 0.5*(1-((i+1)/(num+1))),
-      //opacity: 0.1 + i/num*0.5,
+      opacity: 0.1,
       backgroundPosition: `calc(${rndpx()} + ${x} * 1px * var(--speed) * var(--t)) calc(${rndpx()} + ${y} * 1px * var(--speed) * var(--t))`
     })
     body.appendChild(div)
