@@ -4,6 +4,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
+  <div class="wall"></div>
   <div class="mosquito">
 
     <div class="leg"><div><div><div></div></div></div></div>
@@ -72,6 +73,15 @@ body{
     mix-blend-mode: multiply;
     opacity: 0.1;
   }
+}
+
+.wall{
+  position: absolute;
+  left: 0;
+  top: 0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
 }
 
 .mosquito{
@@ -195,15 +205,16 @@ const {style} = body
 
 let {clientHeight:h,clientWidth:w} = body
 
+const wall = document.querySelector('.wall')
 const mosquito = document.querySelector('.mosquito')
 mosquito.remove()
 
 Array.from(new Array(20)).forEach(()=>{
   const m = mosquito.cloneNode(true)
-  body.appendChild(m)
+  wall.appendChild(m)
   const s = mosquito.cloneNode(true)
   s.classList.add('shade')
-  body.appendChild(s)
+  wall.appendChild(s)
   m.shade = s
 })
 
@@ -215,9 +226,14 @@ body.addEventListener('click',e=>{
     ?reset()
     :reset(target.closest('.mosquito'))
 },false)
+
+new ResizeObserver(()=>reset()).observe(body)
+
 reset()
 
 function reset(target){
+  w = body.clientWidth
+  h = body.clientHeight
   target||Array.from(document.querySelectorAll('.mosquito:not(.shade)')).forEach(m=>{
     const left = w*rand() + 'px'
     const top = h*rand() + 'px'
@@ -230,10 +246,6 @@ function reset(target){
     .forEach(m=>{
       setCSSProp(m,'deg',rand()*360 +'deg')
     })
-  //
-  //const c = target.cloneNode(true)
-  //body.appendChild(c)
-  //c.classList.add('shade')
 }
 
 
